@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D0M41N VERG3B3N</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #00ff41;
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .scanline {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.03) 2px, rgba(0,255,65,0.03) 4px);
+      pointer-events: none;
+      z-index: 10;
+    }
+    .container { text-align: center; position: relative; padding: 2rem; }
+    .finger {
+      font-size: 120px;
+      line-height: 1;
+      display: block;
+      filter: drop-shadow(0 0 20px #00ff41);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); filter: drop-shadow(0 0 20px #00ff41); }
+      50%      { transform: scale(1.1); filter: drop-shadow(0 0 40px #00ff41) drop-shadow(0 0 80px #00ff41); }
+    }
+    .glitch {
+      position: relative;
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: bold;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #00ff41;
+      text-shadow: 0 0 10px #00ff41;
+      animation: glitch 2s infinite;
+    }
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+    }
+    .glitch::before {
+      color: #ff0055;
+      animation: glitch-r 2s infinite;
+      clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+      transform: translate(-3px, 0);
+    }
+    .glitch::after {
+      color: #00ffff;
+      animation: glitch-b 2s infinite;
+      clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+      transform: translate(3px, 0);
+    }
+    @keyframes glitch {
+      0%,95% { transform: none; }
+      96%     { transform: skew(-1deg); }
+      98%     { transform: skew(1deg); }
+      100%    { transform: none; }
+    }
+    @keyframes glitch-r {
+      0%,95% { opacity: 0; }
+      96%    { opacity: 1; transform: translate(-3px, 0); }
+      100%   { opacity: 0; }
+    }
+    @keyframes glitch-b {
+      0%,95% { opacity: 0; }
+      96%    { opacity: 1; transform: translate(3px, 0); }
+      100%   { opacity: 0; }
+    }
+    .sub {
+      font-size: clamp(0.75rem, 2vw, 1rem);
+      color: #00aa2a;
+      margin-top: 1rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .terminal {
+      margin-top: 2rem;
+      background: #0a0a0a;
+      border: 1px solid #00ff41;
+      border-radius: 4px;
+      padding: 1rem 1.5rem;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 0 30px rgba(0,255,65,0.2);
+    }
+    .line { font-size: 0.85rem; color: #00aa2a; line-height: 2; white-space: nowrap; overflow: hidden; opacity: 0; }
+    .line.active { color: #00ff41; }
+    .line span.err  { color: #ff0055; }
+    .line span.warn { color: #ffcc00; }
+    .line span.ok   { color: #00ff41; }
+    .prompt::before { content: '> '; color: #00ff41; }
+  </style>
+</head>
+<body>
+  <div class="scanline"></div>
+  <div class="container">
+    <span class="finger">🖕</span>
+    <br><br>
+    <div class="glitch" data-text="D0M41N VERG3B3N">D0M41N VERG3B3N</div>
+    <div class="sub">[ 4CC3SS D3N13D <span class="blink">_</span> ]</div>
+    <div class="terminal">
+      <div class="line prompt active">wh0is lookup initiating...</div>
+      <div class="line"><span class="err">[ERR]</span> D0m41n already 0wn3d</div>
+      <div class="line"><span class="warn">[!!!]</span> St4tus: <span class="err">V3RG3B3N</span></div>
+      <div class="line"><span class="ok">[SYS]</span> Resp0ns3: <span class="err">GET L0ST</span></div>
+      <div class="line prompt active">sch4u w0anders <span class="blink">_</span></div>
+    </div>
+  </div>
+  <script>
+    const lines = document.querySelectorAll('.line');
+    lines.forEach((l, i) => {
+      setTimeout(() => {
+        l.style.transition = 'opacity 0.3s';
+        l.style.opacity = '1';
+      }, 300 + i * 400);
+    });
+  </script>
+</body>
+</html>
