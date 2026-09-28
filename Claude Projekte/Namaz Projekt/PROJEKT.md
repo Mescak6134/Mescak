@@ -15,8 +15,7 @@ Hauptbestandteile:
 - ESP32 als Hauptcontroller
 - WLAN
 - Weboberfläche auf dem ESP32
-- Audioausgabe
-- Soundcore 2 als Lautsprecher
+- Audioausgabe über I2S-Verstärker + kleinen Lautsprecher (siehe Entscheidung in Punkt 13)
 - vorinstallierte Ezan-Aufnahmen
 - Diyanet-Gebetszeiten als Datenquelle
 - automatische Uhrzeitsynchronisierung über das Internet
@@ -223,23 +222,35 @@ Es könnten unterschiedliche Aufnahmen für unterschiedliche Gebetszeiten verwen
 
 ## 13. Lautsprecher
 
-Als Lautsprecher soll ein vorhandener **Anker Soundcore 2 Bluetooth-Lautsprecher (schwarz)** verwendet werden.
+Ursprünglich war geplant, den vorhandenen **Anker Soundcore 2 Bluetooth-Lautsprecher** über AUX anzusteuern (siehe „Verworfene Idee" unten).
 
-Der Soundcore 2 besitzt einen eigenen Akku und einen AUX-Eingang. Die Idee ist, den ESP32 über einen geeigneten Audioausgang/DAC mit dem AUX-Eingang des Soundcore 2 zu verbinden.
+### Entscheidung (Stand 28.09.2026): eigener Mini-Lautsprecher statt Soundcore 2
 
-Da der Soundcore 2 seinen eigenen Verstärker besitzt, wird kein zusätzlicher großer Lautsprecherverstärker benötigt.
-
-Prinzip:
+Da für den Ezan keine Hi-Fi-Qualität nötig ist, sondern nur gute Hörbarkeit, verwenden wir stattdessen einen **eigenen kleinen Lautsprecher**, direkt am ESP32 über einen **I2S-Verstärker (MAX98357A)** angeschlossen:
 
 ```
-ESP32 → Audio-DAC → AUX → Soundcore 2
+ESP32 (I2S) → MAX98357A-Verstärkermodul → kleiner Lautsprecher (3 W, 4–8 Ω)
 ```
 
-Der Soundcore 2 verwendet seinen eigenen Akku für die Lautsprecherleistung. Der AUX-Anschluss liefert dabei kein Stromversorgungssignal für den Lautsprecher.
+Der MAX98357A enthält DAC und Class-D-Verstärker in einem und treibt den Lautsprecher direkt an – kein separates DAC-Modul, kein AUX-Kabel, kein Bluetooth-Pairing nötig.
 
-## 14. Audio-DAC
+**Vorteile gegenüber Soundcore-Lösung:**
+- Deutlich weniger Bauteile und Verkabelung.
+- Kein Akku-/Ladethema mehr (das größte Sicherheitsrisiko im ganzen Projekt entfällt komplett) — siehe Punkt 15–18, die dadurch obsolet sind.
+- Günstiger (~8–10 € für Verstärker + Lautsprecher zusammen).
+- Der Soundcore 2 bleibt frei für seinen ursprünglichen Zweck (Bluetooth-Musik).
 
-Der ESP32 soll nicht direkt einen Lautsprecher treiben. Für eine saubere Audioausgabe ist ein geeigneter I²S-DAC bzw. Audioausgang vorgesehen. Der DAC erzeugt das analoge Audiosignal, das über AUX in den Soundcore 2 geht. Ein separater Lautsprecherverstärker ist bei Verwendung des Soundcore 2 nicht notwendig.
+**Trade-off:** Weniger Lautstärke/Bass als der Soundcore 2 — für eine gesprochene Rufstimme in einem Zimmer aber ausreichend.
+
+Stromversorgung: ESP32 und Verstärker+Lautsprecher laufen gemeinsam an einem normalen 5V-USB-Netzteil (kein eigener Akku nötig, siehe Punkt 19).
+
+## 14. Audio-Verstärker (MAX98357A)
+
+Der ESP32 sendet die Audiodaten per I2S-Bus an den MAX98357A. Dieser wandelt sie in ein analoges Signal um und verstärkt es direkt für den angeschlossenen Lautsprecher (Class-D-Verstärker, effizient, wenig Wärmeentwicklung). Kein zusätzliches DAC-Modul und kein externer Verstärker nötig.
+
+## 15–18. Verworfene Idee: Soundcore-2-Integration und Akku-Automatik
+
+> **Hinweis:** Diese vier Abschnitte stammen aus der ursprünglichen Planung, als der Soundcore 2 noch als Hauptlautsprecher vorgesehen war (siehe Entscheidung in Punkt 13). Wir verfolgen das nicht mehr weiter, da der Mini-Lautsprecher-Ansatz einfacher, günstiger und ohne Akku-Sicherheitsrisiko auskommt. Bleibt als Referenz erhalten, falls das Projekt später doch auf einen Bluetooth-Lautsprecher umgestellt werden soll.
 
 ## 15. Soundcore-Akku
 
@@ -374,7 +385,7 @@ Eine Diagnose-Seite soll zeigen:
 - Gebetszeiten: Aktuell
 - Audio: Bereit
 - SD-Karte: OK
-- Soundcore: verbunden bzw. Audioausgang aktiv
+- Lautsprecher: Audioausgang aktiv
 - Letzte Synchronisation: Datum/Uhrzeit
 
 ## 28. Internetausfall
@@ -400,19 +411,12 @@ Das Setup-WLAN soll nur für die Ersteinrichtung bzw. Wiederherstellung aktiv se
 - Welche Diyanet-ID für einen ausgewählten Ort gespeichert werden muss.
 - Wie oft Gebetszeiten sinnvoll aktualisiert werden.
 - Welcher NTP-Zeitdienst verwendet wird.
-- Welcher ESP32 genau verwendet werden soll.
-- Welcher I²S-DAC am besten geeignet ist.
-- Wie die MP3-Dateien abgespielt werden.
-- Ob MP3-Decodierung direkt auf dem ESP32 oder über zusätzliche Hardware erfolgen soll.
-- Welche microSD-Karte bzw. Speicherlösung verwendet wird.
-- Wie der Soundcore 2 über AUX angeschlossen wird.
-- Wie der Soundcore 2 automatisch eingeschaltet bzw. im Betrieb gehalten werden kann.
-- Ob der Soundcore 2 automatisch in Standby geht.
-- Ob sein USB-A-Anschluss als Stromausgang funktioniert.
-- Ob der Akku-Ladezustand ausgelesen werden kann.
-- Ob eine Ladeautomatik sinnvoll und sicher integriert werden kann.
-- Ob ein eigener ESP32-Akku notwendig ist.
-- Wie die Lautstärke am zuverlässigsten geregelt wird.
+- Welcher ESP32 genau verwendet werden soll. *(→ Standard-ESP32-WROOM, siehe Phase 1)*
+- Wie die MP3-Dateien abgespielt werden. *(→ ESP32-audioI2S-Bibliothek)*
+- Ob MP3-Decodierung direkt auf dem ESP32 oder über zusätzliche Hardware erfolgen soll. *(→ direkt auf dem ESP32, Software-Decoding)*
+- Welche microSD-Karte bzw. Speicherlösung verwendet wird. *(→ einfaches SPI-microSD-Modul reicht)*
+- Wie die Lautstärke am zuverlässigsten geregelt wird — vermutlich per Software (Lautstärke-Skalierung vor dem I2S-Ausgang), zu verifizieren beim Testen.
+- Ob der MAX98357A-Mute-Pin fest beschaltet werden muss oder per Default schon aktiv ist (beim ersten Test prüfen).
 
 ## 32. Geplanter Entwicklungsweg
 
@@ -425,22 +429,22 @@ Das Projekt soll nicht alles auf einmal gebaut werden. Empfohlene Reihenfolge:
 | 3 | Diyanet-Standortauswahl |
 | 4 | Diyanet-Gebetszeiten abrufen und lokal speichern |
 | 5 | Zeitplan und automatische Auslösung |
-| 6 | Audioausgabe über ESP32 + DAC + AUX |
-| 7 | Soundcore 2 integrieren |
-| 8 | Audio-Dateiverwaltung |
-| 9 | Verzögerungen und Lautstärke |
-| 10 | Fallback bei Internetausfall |
-| 11 | Status-/Diagnoseseite |
-| 12 | Soundcore-2-Akku und Ladeautomatik untersuchen |
-| 13 | Gehäuse und endgültige Installation |
+| 6 | Audioausgabe über ESP32 + MAX98357A + Lautsprecher |
+| 7 | Audio-Dateiverwaltung |
+| 8 | Verzögerungen und Lautstärke |
+| 9 | Fallback bei Internetausfall |
+| 10 | Status-/Diagnoseseite |
+| 11 | Gehäuse und endgültige Installation |
+
+*(Phasen „Soundcore 2 integrieren" und „Soundcore-Akku/Ladeautomatik" entfallen durch die Entscheidung in Punkt 13.)*
 
 ## 33. Ziel
 
 Am Ende soll ein eigenständiges Gerät entstehen, das nach der Einrichtung praktisch selbstständig arbeitet. Die Einrichtung erfolgt über Handy/Browser. Der Benutzer wählt beispielsweise: Deutschland → Baden-Württemberg → Stuttgart. Danach holt der ESP32 die entsprechenden Diyanet-Daten, synchronisiert seine Uhrzeit über das Internet und speichert die benötigten Daten lokal.
 
-Zu jeder Gebetszeit wird automatisch die zugehörige Ezan-Aufnahme über den Soundcore 2 abgespielt. Eigene Verzögerungen, Lautstärke und Audio-Dateien können jederzeit über die Weboberfläche verändert werden. Das Gerät soll auch bei einem vorübergehenden Internetausfall weiter funktionieren.
+Zu jeder Gebetszeit wird automatisch die zugehörige Ezan-Aufnahme über den fest angeschlossenen Lautsprecher (MAX98357A) abgespielt. Eigene Verzögerungen, Lautstärke und Audio-Dateien können jederzeit über die Weboberfläche verändert werden. Das Gerät soll auch bei einem vorübergehenden Internetausfall weiter funktionieren.
 
-Der Soundcore 2 soll möglichst nicht dauerhaft am Ladegerät hängen müssen. Eine spätere automatische Lade-/Akku-Lösung soll nach Untersuchung seiner Elektronik entwickelt werden. Wichtig ist dabei, die vorhandene Lade- und Schutzschaltung des Lithium-Akkus nicht unsachgemäß zu umgehen oder direkt mit einer selbstgebauten Ladeschaltung zu verbinden.
+Der Soundcore 2 bleibt vom Projekt unberührt und steht weiterhin für seinen ursprünglichen Zweck (Bluetooth-Musik) zur Verfügung.
 
 ---
 
@@ -448,9 +452,18 @@ Der Soundcore 2 soll möglichst nicht dauerhaft am Ladegerät hängen müssen. E
 
 - Projektbeschreibung/Planung abgeschlossen.
 - Diyanet-Datenquelle geklärt: `ezanvakti.emushaf.net` (frei, ohne Registrierung) statt offizieller API mit Formular/Rate-Limit — siehe Abschnitt 6.
+- Audio-Ausgabe geklärt: eigener Mini-Lautsprecher über MAX98357A-I2S-Verstärker statt Soundcore 2 + AUX — siehe Abschnitt 13.
 - Phase 1 (ESP32 + WLAN-Ersteinrichtung + einfache Weboberfläche) wird im Unterordner `firmware/` umgesetzt.
 
-**Nächste Schritte für dich (Hardware/Zugang):**
-1. Hardware besorgen: ESP32-Board, microSD-Modul + Karte, I2S-DAC (z.B. PCM5102A), Klinkenkabel für AUX.
+**Einkaufsliste (aktuell):**
+- ESP32-Board
+- MAX98357A I2S-Verstärkermodul (~5 €)
+- Kleiner Lautsprecher, 3 W, 4–8 Ω (~3–5 €)
+- microSD-Kartenmodul (SPI) + microSD-Karte (~8–10 €)
+- Jumperkabel (Female-Female) + Breadboard zum Prototypen
+- 5V-USB-Netzteil für den späteren Dauerbetrieb
+
+**Nächste Schritte für dich:**
+1. Teile aus der Liste oben bestellen.
 2. PlatformIO installieren (VS-Code-Extension oder CLI) zum Flashen.
 3. Firmware aus `firmware/` auf den ESP32 flashen und Setup-WLAN testen.
