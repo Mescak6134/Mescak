@@ -226,23 +226,27 @@ Ursprünglich war geplant, den vorhandenen **Anker Soundcore 2 Bluetooth-Lautspr
 
 ### Entscheidung (Stand 28.09.2026): eigener Mini-Lautsprecher statt Soundcore 2
 
-Da für den Ezan keine Hi-Fi-Qualität nötig ist, sondern nur gute Hörbarkeit, verwenden wir stattdessen einen **eigenen kleinen Lautsprecher**, direkt am ESP32 über einen **I2S-Verstärker (MAX98357A)** angeschlossen:
+Da für den Ezan keine Hi-Fi-Qualität nötig ist, sondern nur gute Hörbarkeit, verwenden wir stattdessen **zwei eigene kleine Lautsprecher**, direkt am ESP32 über zwei **I2S-Verstärker (MAX98357A)** angeschlossen (für bessere Raumabdeckung/Lautstärke):
 
 ```
-ESP32 (I2S) → MAX98357A-Verstärkermodul → kleiner Lautsprecher (3 W, 4–8 Ω)
+                        ┌─→ MAX98357A #1 → Lautsprecher 1 (8 Ω)
+ESP32 (I2S, geteilter Bus) ─┤
+                        └─→ MAX98357A #2 → Lautsprecher 2 (8 Ω)
 ```
 
-Der MAX98357A enthält DAC und Class-D-Verstärker in einem und treibt den Lautsprecher direkt an – kein separates DAC-Modul, kein AUX-Kabel, kein Bluetooth-Pairing nötig.
+Beide Verstärkermodule hängen an denselben drei I2S-Leitungen (BCLK, LRCLK, DIN), brauchen also keine zusätzlichen GPIOs – der SD-Pin bleibt in der Standardeinstellung (Mono-Mix), wodurch beide automatisch dasselbe Signal wiedergeben. Jedes Modul bekommt nur seine eigene VIN/GND-Versorgung und seinen eigenen Lautsprecher.
+
+Der MAX98357A enthält DAC und Class-D-Verstärker in einem und treibt die Lautsprecher direkt an – kein separates DAC-Modul, kein AUX-Kabel, kein Bluetooth-Pairing nötig.
 
 **Vorteile gegenüber Soundcore-Lösung:**
 - Deutlich weniger Bauteile und Verkabelung.
 - Kein Akku-/Ladethema mehr (das größte Sicherheitsrisiko im ganzen Projekt entfällt komplett) — siehe Punkt 15–18, die dadurch obsolet sind.
-- Günstiger (~8–10 € für Verstärker + Lautsprecher zusammen).
+- Günstiger (~15–20 € für 2× Verstärker + 2× Lautsprecher zusammen).
 - Der Soundcore 2 bleibt frei für seinen ursprünglichen Zweck (Bluetooth-Musik).
 
-**Trade-off:** Weniger Lautstärke/Bass als der Soundcore 2 — für eine gesprochene Rufstimme in einem Zimmer aber ausreichend.
+**Trade-off:** Weniger Lautstärke/Bass als der Soundcore 2 — für eine gesprochene Rufstimme in einem Zimmer (mit zwei Lautsprechern) aber gut ausreichend.
 
-Stromversorgung: ESP32 und Verstärker+Lautsprecher laufen gemeinsam an einem normalen 5V-USB-Netzteil (kein eigener Akku nötig, siehe Punkt 19).
+Stromversorgung: ESP32 und beide Verstärker+Lautsprecher laufen gemeinsam an einem 5V/3A-Netzteil, eingespeist über den VIN-Pin des ESP32 (kein eigener Akku nötig, siehe Punkt 19).
 
 ## 14. Audio-Verstärker (MAX98357A)
 
@@ -466,22 +470,23 @@ Der Soundcore 2 bleibt vom Projekt unberührt und steht weiterhin für seinen ur
 - Diyanet-Datenquelle geklärt: `ezanvakti.emushaf.net` (frei, ohne Registrierung) statt offizieller API — **bestätigt durch offizielles Antragsformular + technisches Handbuch von Diyanet** (Kimlik-Nummer + Unterschrift nötig, Rate-Limit nur 5 Requests/Endpoint/Tag) — siehe Abschnitt 6.
 - Audio-Ausgabe geklärt: eigener nackter Lautsprecher über MAX98357A-I2S-Verstärker statt Soundcore 2 + AUX — siehe Abschnitt 13.
 - Stromversorgung final geklärt: **kein Akku** — Gerät läuft ausschließlich am 5V-USB-Netzteil, ohne Backup — siehe Abschnitt 19.
-- Verkabelung: Terminal-Adapter-Board (Schraubklemmen statt Löten/Jumperkabel) geplant — Pin-Anzahl (30 vs. 38 Pin) muss anhand eines Fotos des eigenen ESP32-Boards noch bestätigt werden.
+- Verkabelung: **Pin-Anzahl bestätigt** — eigenes ESP32-Board anhand Foto identifiziert als klassisches 30-Pin-„DOIT DevKit V1" (WROOM-32D, 4MB Flash). Die bereits bestellten 30-Pin-Terminal-Adapter passen. Alle benötigten Pins (I2S: D25/D26/D22, SPI: D5/D18/D19/D23, VIN/GND/3V3) sind vorhanden.
+- Audio final: **2× MAX98357A + 2× nackter 8Ω-Lautsprecher** (beide an denselben I2S-Leitungen parallel, siehe Abschnitt 13) statt nur 1 Lautsprecher.
+- Stromversorgung final: 5V/3A-Netzteil mit Hohlstecker, eingespeist über den **VIN-Pin** des ESP32 (nicht über USB) — versorgt ESP32 und beide Verstärker gemeinsam aus einer Quelle.
 - Gehäuse: wird vom Nutzer selbst konstruiert und 3D-gedruckt (siehe Phase 11) — kein Teil der Firmware-Planung.
 - Phase 1 (ESP32 + WLAN-Ersteinrichtung + einfache Weboberfläche) wird im Unterordner `firmware/` umgesetzt.
 
-**Einkaufsliste (final, ohne Akku):**
-- ESP32-Board (vorhanden)
-- ESP32-Terminal-Adapter-Board mit Schraubklemmen — **erst Pin-Anzahl (30/38) am eigenen Board prüfen, dann passenden kaufen** (~7 €)
-- MAX98357A I2S-Verstärkermodul — treibt den Lautsprecher direkt, kein AUX nötig (~5 €)
-- Nackter Lautsprecher, 3 W, 4–8 Ω, ohne eigenen Verstärker (~3–5 €)
-- microSD-Kartenmodul (SPI) + microSD-Karte, für die Ezan-Dateien (~8–10 €)
-- 5V-USB-Netzteil + USB-Kabel (~5 €)
-- Jumperkabel (Female-Female) + Breadboard zum ersten Testen, vor dem Festverkabeln auf dem Terminal-Adapter (~7 €)
-
-**Macht zusammen ca. 35–40 €.**
+**Einkaufsliste (final, ohne Akku, bereits größtenteils bestellt):**
+- ESP32-Board, 30-Pin-DOIT-DevKit (vorhanden)
+- ESP32-Terminal-Adapter-Board, 30-Pin, mit Schraubklemmen — bestellt ✅
+- 2× MAX98357A I2S-Verstärkermodul — bestellt ✅
+- 2× nackter Lautsprecher, 3W, 8Ω (JST-Anschluss egal, wird abisoliert/verschraubt) — bestellt ✅
+- microSD-Kartenmodul (SPI) — bestellt ✅; microSD-Karte 4GB bereits vorhanden (reicht locker)
+- 5V/3A-Netzteil mit Hohlstecker (5,5×2,1mm) — bestellt ✅
+- **Noch zu besorgen:** DC-Hohlbuchsen-Adapter (Hohlstecker → offene Drähte, ~1–2€) für den Anschluss ans Terminal-Board — *oder* Stecker abschneiden und Kabel abisolieren
+- Jumperkabel (Female-Female) für erste Tests — bestellt ✅
 
 **Nächste Schritte für dich:**
-1. Teile aus der Liste oben bestellen.
+1. Noch fehlenden DC-Hohlbuchsen-Adapter bestellen (oder Kabel-Enden abisolieren).
 2. PlatformIO installieren (VS-Code-Extension oder CLI) zum Flashen.
 3. Firmware aus `firmware/` auf den ESP32 flashen und Setup-WLAN testen.
