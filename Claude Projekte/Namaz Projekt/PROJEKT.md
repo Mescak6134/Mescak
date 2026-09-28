@@ -298,15 +298,32 @@ Eine feste Ladezeit wie beispielsweise fünf Stunden wurde als Idee genannt, sol
 
 Der ESP32 selbst soll möglichst dauerhaft mit Strom versorgt werden, da er Uhrzeit verwalten, WLAN-Verbindung halten, Gebetszeiten verwalten, Webserver bereitstellen und Zeitpläne überwachen muss. Der ESP32 benötigt dabei relativ wenig Leistung.
 
-### Entscheidung (Stand 28.09.2026): LiPo-Akku als Backup + Status-LED
+### Entscheidung (Stand 28.09.2026, aktualisiert): 4×AA-NiMH-Akku mit selbstgebauter, ESP32-gesteuerter Ladeschaltung
 
-Da das Gerät dauerhaft laufen muss, ist ein Akku **nicht als alleinige Stromquelle** sinnvoll (wäre zu schnell leer), sondern als **Backup bei Stromausfall**:
+Da das Gerät dauerhaft laufen muss, ist ein Akku **nicht als alleinige Stromquelle** sinnvoll (wäre zu schnell leer), sondern als **Backup bei Stromausfall**.
 
-- **Normalbetrieb:** Gerät hängt an einem 5V-USB-Netzteil.
-- **Akku:** LiPo-Akku (3,7 V, 2000 mAh) wird über ein Lade-/Boost-Modul (TP4056 + Boost auf 5 V) automatisch mitgeladen und übernimmt nahtlos bei Stromausfall.
-- **Akku-leer-Anzeige:** Der ESP32 misst die Akkuspannung selbst über einen Spannungsteiler an einem ADC-Pin (GPIO 34) und schaltet bei kritischem Ladezustand eine LED (GPIO 27). Zusätzlich soll der ungefähre Ladezustand in der Weboberfläche angezeigt werden (siehe Punkt 20).
+**Ursprünglich geplant war ein LiPo-Akku mit Lade-/Boost-Modul (TP4056).** Stattdessen nutzen wir **4× vorhandene AA-NiMH-Akkus** (1,2 V/Zelle, in Reihe 4,8 V nominal, bis ~5,6 V frisch geladen) – das liegt bereits im Spannungsbereich, den ESP32 (über VIN) und MAX98357A brauchen, **ein Boost-Konverter ist damit nicht mehr nötig**.
 
-**Bauteile:** LiPo-Akku 3,7V/2000mAh (JST-Stecker), Lade-/Boost-Kombimodul, 1 LED + 220Ω-Widerstand, 2× 100kΩ-Widerstand für den Spannungsteiler.
+Für „intelligentes" Laden (voll laden, dann stoppen) gibt es bei NiMH – anders als bei LiPo (TP4056) – **keine einfachen fertigen Hobby-Module**. Deshalb bauen wir die Ladesteuerung **selbst, per Software im ESP32**:
+
+```
+5V (Netzteil) → LM317-Konstantstromquelle (~200 mA, C/10-sicher) → MOSFET (vom ESP32 geschaltet) → Akkupack (4×AA)
+```
+
+**Ablauf:**
+1. ESP32 erkennt über einen Spannungsteiler (GPIO 35), ob das Netzteil angeschlossen ist.
+2. Wenn ja und Akkuspannung unter Schwellwert (~5,6–5,7 V) → MOSFET (GPIO 32) einschalten → laden.
+3. ESP32 misst laufend weiter (GPIO 34, Akkuspannung) und schaltet den MOSFET aus, sobald der Schwellwert erreicht ist.
+4. Danach gelegentliche Nachlade-Kontrolle (Selbstentladung ausgleichen).
+5. Ohne Netzteil übernimmt der Akku automatisch über eine Dioden-ODER-Schaltung (Schottky-Diode), kein Rückfluss in den Akku.
+6. Zusätzlich ein mechanischer Kippschalter für komplettes Ein/Aus.
+7. **Akku-leer-Anzeige:** LED an GPIO 27, schaltet bei kritischem Ladezustand. Ladezustand soll zusätzlich in der Weboberfläche angezeigt werden (siehe Punkt 20).
+
+**Bauteile:** 4×AA-NiMH-Akkus (vorhanden) + Batteriehalter, LM317 + ~6,8Ω/1W-Widerstand (Konstantstromquelle), N-Kanal-Logic-Level-MOSFET (z.B. IRLZ44N), Schottky-Diode, Kippschalter, 1 LED + 220Ω-Widerstand, 2× 100kΩ-Widerstand (Spannungsteiler Akku) + 2× 100kΩ-Widerstand (Spannungsteiler Netzteil-Erkennung).
+
+**GPIO-Zuordnung:** GPIO 34 = Akkuspannung messen, GPIO 35 = Netzteil-Erkennung, GPIO 32 = Lade-MOSFET, GPIO 27 = Akku-leer-LED. *(Kollidiert nicht mit I2S: 25/26/22, oder SPI-SD: 5/18/23/19.)*
+
+**Hinweis:** Die Software-Vollladungserkennung ist eine einfache Spannungsschwelle, kein präzises -ΔV-Verfahren wie bei teuren Ladegeräten – für NiMH bei niedrigem Ladestrom (C/10) unkritisch und ausreichend sicher.
 
 ## 20. Weboberfläche
 
@@ -463,21 +480,26 @@ Der Soundcore 2 bleibt vom Projekt unberührt und steht weiterhin für seinen ur
 - Projektbeschreibung/Planung abgeschlossen.
 - Diyanet-Datenquelle geklärt: `ezanvakti.emushaf.net` (frei, ohne Registrierung) statt offizieller API — **bestätigt durch offizielles Antragsformular + technisches Handbuch von Diyanet** (Kimlik-Nummer + Unterschrift nötig, Rate-Limit nur 5 Requests/Endpoint/Tag) — siehe Abschnitt 6.
 - Audio-Ausgabe geklärt: eigener Mini-Lautsprecher über MAX98357A-I2S-Verstärker statt Soundcore 2 + AUX — siehe Abschnitt 13.
-- Stromversorgung geklärt: Netzteil im Normalbetrieb + LiPo-Akku als Backup bei Stromausfall, mit Akku-leer-LED — siehe Abschnitt 19.
+- Stromversorgung geklärt: Netzteil im Normalbetrieb + vorhandene 4×AA-NiMH-Akkus als Backup, mit selbstgebauter ESP32-gesteuerter Ladeschaltung (LM317 + MOSFET) und Akku-leer-LED — siehe Abschnitt 19.
+- Verkabelung: Terminal-Adapter-Board (Schraubklemmen statt Löten/Jumperkabel) geplant — Pin-Anzahl (30 vs. 38 Pin) muss anhand eines Fotos des eigenen ESP32-Boards noch bestätigt werden.
 - Gehäuse: wird vom Nutzer selbst konstruiert und 3D-gedruckt (siehe Phase 11) — kein Teil der Firmware-Planung.
 - Phase 1 (ESP32 + WLAN-Ersteinrichtung + einfache Weboberfläche) wird im Unterordner `firmware/` umgesetzt.
 
 **Einkaufsliste (aktuell):**
-- ESP32-Board
+- ESP32-Board (vorhanden)
+- ESP32-Terminal-Adapter-Board mit Schraubklemmen — **erst Pin-Anzahl (30/38) am eigenen Board prüfen, dann passenden kaufen** (~7 €)
 - MAX98357A I2S-Verstärkermodul (~5 €)
 - Kleiner Lautsprecher, 3 W, 4–8 Ω (~3–5 €)
 - microSD-Kartenmodul (SPI) + microSD-Karte (~8–10 €)
-- LiPo-Akku 3,7V/2000mAh mit JST-Stecker (~8–10 €)
-- Lade-/Boost-Kombimodul (TP4056 + Boost auf 5V) (~3–4 €)
+- 4×AA-Batteriehalter (Akkus selbst vorhanden) (~2 €)
+- LM317-Spannungsregler + 6,8Ω/1W-Widerstand (Ladestrom-Konstantquelle) (~2 €)
+- N-Kanal-Logic-Level-MOSFET, z.B. IRLZ44N (Lade-Schalter) (~1–2 €)
+- Schottky-Diode (Netz/Akku-Umschaltung) (~1 €)
+- Kippschalter (Haupt-Ein/Aus) (~2 €)
 - 1× LED (rot) + 220Ω-Widerstand (Akku-leer-Anzeige)
-- 2× 100kΩ-Widerstand (Spannungsteiler zur Akkumessung)
+- 4× 100kΩ-Widerstand (2× Spannungsteiler Akku, 2× Spannungsteiler Netzteil-Erkennung)
 - 5V-USB-Netzteil für den Normalbetrieb (~5 €)
-- Jumperkabel (Female-Female) + Breadboard zum Prototypen
+- Jumperkabel (Female-Female) + Breadboard zum Prototypen (vor dem Festverkabeln auf dem Terminal-Adapter)
 
 **Nächste Schritte für dich:**
 1. Teile aus der Liste oben bestellen.
