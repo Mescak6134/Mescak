@@ -108,10 +108,10 @@ Dadurch müssen nicht selbst sämtliche Städte und Gebetszeiten berechnet oder 
 Es gibt zwei mögliche Datenquellen:
 
 **A) Offizielle API `awqatsalah.diyanet.gov.tr`**
-- Erfordert Registrierung + ein offizielles Antrags-/Verpflichtungsformular ("İstek ve Taahhüt Formu").
-- Login per JWT (Access Token ~30–45 Min. gültig, Refresh Token ~7–15 Tage).
-- Rate-Limit: nur ca. 5–10 Requests pro Endpoint (in den ersten 15 Tagen nach Account-Erstellung mehr).
-- Unklar/ungeprüft, ob Registrierung für Privatpersonen im Ausland problemlos möglich ist.
+- **Bestätigt (offizielles Antragsformular + Handbuch von Diyanet geprüft, Stand 28.09.2026):** Erfordert ein unterschriebenes „İstek ve Taahhüt Formu" mit Name, **Kimlik-Numarası (türkische Ausweis-/Staatsbürgerschaftsnummer)**, Adresse und Telefonnummer, das per E-Mail an `dinisleriyk@diyanet.gov.tr` geschickt werden muss – keine Selbstregistrierung, klar auf türkische Staatsbürger ausgelegt.
+- Login per JWT (Access Token 30 Min. gültig, Refresh Token +15 Min. danach).
+- Rate-Limit laut offiziellem Handbuch: „Developer"-Rolle 100 Requests/Tag (nur befristet nach Anmeldung), danach „Standard"-Rolle nur noch **5 Requests pro Endpoint und Tag**.
+- **Damit klar: nicht frei nutzbar ohne Antrag, und für unseren Anwendungsfall ohnehin zu restriktiv.**
 
 **B) Freier Spiegel `ezanvakti.emushaf.net`** (Nachfolger von `ezanvakti.herokuapp.com`)
 - Spiegelt dieselben offiziellen Diyanet-Daten, **ohne Registrierung, Formular oder API-Key**.
@@ -296,7 +296,17 @@ Eine feste Ladezeit wie beispielsweise fünf Stunden wurde als Idee genannt, sol
 
 ## 19. Stromversorgung des ESP32
 
-Der ESP32 selbst soll möglichst dauerhaft mit Strom versorgt werden, da er Uhrzeit verwalten, WLAN-Verbindung halten, Gebetszeiten verwalten, Webserver bereitstellen und Zeitpläne überwachen muss. Der ESP32 benötigt dabei relativ wenig Leistung. Eine spätere Akkuversion für den ESP32 wäre ebenfalls möglich.
+Der ESP32 selbst soll möglichst dauerhaft mit Strom versorgt werden, da er Uhrzeit verwalten, WLAN-Verbindung halten, Gebetszeiten verwalten, Webserver bereitstellen und Zeitpläne überwachen muss. Der ESP32 benötigt dabei relativ wenig Leistung.
+
+### Entscheidung (Stand 28.09.2026): LiPo-Akku als Backup + Status-LED
+
+Da das Gerät dauerhaft laufen muss, ist ein Akku **nicht als alleinige Stromquelle** sinnvoll (wäre zu schnell leer), sondern als **Backup bei Stromausfall**:
+
+- **Normalbetrieb:** Gerät hängt an einem 5V-USB-Netzteil.
+- **Akku:** LiPo-Akku (3,7 V, 2000 mAh) wird über ein Lade-/Boost-Modul (TP4056 + Boost auf 5 V) automatisch mitgeladen und übernimmt nahtlos bei Stromausfall.
+- **Akku-leer-Anzeige:** Der ESP32 misst die Akkuspannung selbst über einen Spannungsteiler an einem ADC-Pin (GPIO 34) und schaltet bei kritischem Ladezustand eine LED (GPIO 27). Zusätzlich soll der ungefähre Ladezustand in der Weboberfläche angezeigt werden (siehe Punkt 20).
+
+**Bauteile:** LiPo-Akku 3,7V/2000mAh (JST-Stecker), Lade-/Boost-Kombimodul, 1 LED + 220Ω-Widerstand, 2× 100kΩ-Widerstand für den Spannungsteiler.
 
 ## 20. Weboberfläche
 
@@ -451,8 +461,10 @@ Der Soundcore 2 bleibt vom Projekt unberührt und steht weiterhin für seinen ur
 ## Status
 
 - Projektbeschreibung/Planung abgeschlossen.
-- Diyanet-Datenquelle geklärt: `ezanvakti.emushaf.net` (frei, ohne Registrierung) statt offizieller API mit Formular/Rate-Limit — siehe Abschnitt 6.
+- Diyanet-Datenquelle geklärt: `ezanvakti.emushaf.net` (frei, ohne Registrierung) statt offizieller API — **bestätigt durch offizielles Antragsformular + technisches Handbuch von Diyanet** (Kimlik-Nummer + Unterschrift nötig, Rate-Limit nur 5 Requests/Endpoint/Tag) — siehe Abschnitt 6.
 - Audio-Ausgabe geklärt: eigener Mini-Lautsprecher über MAX98357A-I2S-Verstärker statt Soundcore 2 + AUX — siehe Abschnitt 13.
+- Stromversorgung geklärt: Netzteil im Normalbetrieb + LiPo-Akku als Backup bei Stromausfall, mit Akku-leer-LED — siehe Abschnitt 19.
+- Gehäuse: wird vom Nutzer selbst konstruiert und 3D-gedruckt (siehe Phase 11) — kein Teil der Firmware-Planung.
 - Phase 1 (ESP32 + WLAN-Ersteinrichtung + einfache Weboberfläche) wird im Unterordner `firmware/` umgesetzt.
 
 **Einkaufsliste (aktuell):**
@@ -460,8 +472,12 @@ Der Soundcore 2 bleibt vom Projekt unberührt und steht weiterhin für seinen ur
 - MAX98357A I2S-Verstärkermodul (~5 €)
 - Kleiner Lautsprecher, 3 W, 4–8 Ω (~3–5 €)
 - microSD-Kartenmodul (SPI) + microSD-Karte (~8–10 €)
+- LiPo-Akku 3,7V/2000mAh mit JST-Stecker (~8–10 €)
+- Lade-/Boost-Kombimodul (TP4056 + Boost auf 5V) (~3–4 €)
+- 1× LED (rot) + 220Ω-Widerstand (Akku-leer-Anzeige)
+- 2× 100kΩ-Widerstand (Spannungsteiler zur Akkumessung)
+- 5V-USB-Netzteil für den Normalbetrieb (~5 €)
 - Jumperkabel (Female-Female) + Breadboard zum Prototypen
-- 5V-USB-Netzteil für den späteren Dauerbetrieb
 
 **Nächste Schritte für dich:**
 1. Teile aus der Liste oben bestellen.
