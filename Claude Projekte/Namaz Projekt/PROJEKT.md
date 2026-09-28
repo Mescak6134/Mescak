@@ -104,7 +104,30 @@ Land → Region/State → Stadt → Diyanet-Ort/ID
 
 Dadurch müssen nicht selbst sämtliche Städte und Gebetszeiten berechnet oder gepflegt werden. Die konkrete API-Nutzung muss beim Programmieren anhand der aktuellen Diyanet-Dokumentation geprüft werden, weil sich Schnittstellen ändern können.
 
-**Risiko:** Der Service ist nicht öffentlich stabil versioniert. Ein Fallback (z.B. lokale Berechnung nach einer Standardmethode) sollte eingeplant werden, falls die API dauerhaft ausfällt.
+### Entscheidung (Stand 28.09.2026): offizielle API vs. freier Spiegel
+
+Es gibt zwei mögliche Datenquellen:
+
+**A) Offizielle API `awqatsalah.diyanet.gov.tr`**
+- Erfordert Registrierung + ein offizielles Antrags-/Verpflichtungsformular ("İstek ve Taahhüt Formu").
+- Login per JWT (Access Token ~30–45 Min. gültig, Refresh Token ~7–15 Tage).
+- Rate-Limit: nur ca. 5–10 Requests pro Endpoint (in den ersten 15 Tagen nach Account-Erstellung mehr).
+- Unklar/ungeprüft, ob Registrierung für Privatpersonen im Ausland problemlos möglich ist.
+
+**B) Freier Spiegel `ezanvakti.emushaf.net`** (Nachfolger von `ezanvakti.herokuapp.com`)
+- Spiegelt dieselben offiziellen Diyanet-Daten, **ohne Registrierung, Formular oder API-Key**.
+- Wird von zahlreichen bekannten Ezan-Apps produktiv genutzt, läuft seit Jahren stabil.
+- Endpunkte passen praktisch 1:1 auf unsere geplante Struktur:
+  ```
+  GET /ulkeler                  → Länderliste
+  GET /sehirler/{ULKE_KODU}     → Städte/Regionen eines Landes
+  GET /ilceler/{SEHIR_KODU}     → Bezirke/Orte einer Stadt
+  GET /vakitler/{ILCE_KODU}     → Gebetszeiten für einen Ort
+  ```
+
+**Entscheidung:** Wir nutzen **Variante B (`ezanvakti.emushaf.net`)** als primäre Datenquelle. Das spart Bürokratie, Token-Refresh-Logik und Rate-Limit-Sorgen. Die offizielle API (Variante A) bleibt als mögliches späteres Upgrade im Hinterkopf, ist aber kein Blocker.
+
+**Risiko:** Der Spiegel-Dienst ist inoffiziell und könnte theoretisch eingestellt werden. Deshalb bleibt der lokale Fallback (siehe Punkt 11) wichtig – auch unabhängig von der Quelle.
 
 ## 7. Standort
 
@@ -423,4 +446,11 @@ Der Soundcore 2 soll möglichst nicht dauerhaft am Ladegerät hängen müssen. E
 
 ## Status
 
-Aktueller Stand: Projektbeschreibung/Planung abgeschlossen. Noch kein Code vorhanden. Nächster Schritt: Phase 1 (ESP32 + WLAN + einfache Weboberfläche) im Unterordner `firmware/` umsetzen, sobald gewünscht.
+- Projektbeschreibung/Planung abgeschlossen.
+- Diyanet-Datenquelle geklärt: `ezanvakti.emushaf.net` (frei, ohne Registrierung) statt offizieller API mit Formular/Rate-Limit — siehe Abschnitt 6.
+- Phase 1 (ESP32 + WLAN-Ersteinrichtung + einfache Weboberfläche) wird im Unterordner `firmware/` umgesetzt.
+
+**Nächste Schritte für dich (Hardware/Zugang):**
+1. Hardware besorgen: ESP32-Board, microSD-Modul + Karte, I2S-DAC (z.B. PCM5102A), Klinkenkabel für AUX.
+2. PlatformIO installieren (VS-Code-Extension oder CLI) zum Flashen.
+3. Firmware aus `firmware/` auf den ESP32 flashen und Setup-WLAN testen.
