@@ -2,179 +2,413 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DOMÄNE VERGEBEN</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="robots" content="noindex">
+  <title>DOMÄNE VERGEBEN · mescak.de</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%2300ff41'%3E%3E_%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- JetBrains Mono: enthält auch ğ ş ı İ für Türkisch -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --green: #00ff41;
+      --green-dim: #00aa2a;
+      --pink: #ff0055;
+      --cyan: #00ffff;
+      --yellow: #ffcc00;
+      --bg: #000;
+      --panel: rgba(0, 10, 2, 0.88);
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      background: #000;
-      font-family: 'Share Tech Mono', monospace;
-      color: #00ff41;
-      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+      color: var(--green);
+      min-height: 100svh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Scanlines + Vignette */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,255,65,0.035) 2px 4px);
+      pointer-events: none; z-index: 50;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.9) 100%);
+      pointer-events: none; z-index: 49;
+    }
+    #particles { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+    /* Sprachumschalter */
+    .lang {
+      position: fixed;
+      top: max(14px, env(safe-area-inset-top));
+      right: max(14px, env(safe-area-inset-right));
+      z-index: 60;
+      display: flex;
+      border: 1px solid var(--green);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 0 14px rgba(0,255,65,0.25);
+      background: rgba(0,0,0,0.75);
+    }
+    .lang button {
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--green-dim);
+      background: transparent;
+      border: 0;
+      padding: 0.45rem 0.8rem;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .lang button + button { border-left: 1px solid var(--green); }
+    .lang button:hover { color: var(--green); }
+    .lang button[aria-pressed="true"] { background: var(--green); color: #000; }
+    .lang button:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+
+    main {
+      position: relative;
+      z-index: 10;
+      min-height: 100svh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      position: relative;
+      padding: 4.5rem 16px 2rem;
+      text-align: center;
     }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.03) 2px, rgba(0,255,65,0.03) 4px);
-      pointer-events: none;
-      z-index: 50;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.85) 100%);
-      pointer-events: none;
-      z-index: 49;
-    }
-    #particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
 
+    /* Video */
     .video-wrap {
       position: relative;
-      width: min(360px, 75vw);
-      height: min(360px, 75vw);
-      z-index: 10;
+      width: min(320px, 68vw);
+      aspect-ratio: 1;
       border-radius: 50%;
       overflow: hidden;
-      box-shadow: 0 0 0 3px #ff0055, 0 0 40px #ff0055, 0 0 80px rgba(255,0,85,0.3);
+      background: #0a0a0a;
       animation: ringPulse 2s ease-in-out infinite;
     }
+    .video-wrap::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      box-shadow: inset 0 0 40px rgba(255,0,85,0.35);
+      pointer-events: none;
+    }
     @keyframes ringPulse {
-      0%,100% { box-shadow: 0 0 0 3px #ff0055, 0 0 40px #ff0055, 0 0 80px rgba(255,0,85,0.3); }
-      50%      { box-shadow: 0 0 0 3px #ff0055, 0 0 70px #ff0055, 0 0 140px rgba(255,0,85,0.5); }
+      0%,100% { box-shadow: 0 0 0 3px var(--pink), 0 0 40px var(--pink), 0 0 80px rgba(255,0,85,0.3); }
+      50%     { box-shadow: 0 0 0 3px var(--pink), 0 0 70px var(--pink), 0 0 140px rgba(255,0,85,0.5); }
     }
     video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+    /* Titel mit RGB-Glitch */
     .title {
-      font-size: clamp(1.8rem, 5vw, 3rem);
-      font-weight: bold;
-      letter-spacing: 0.15em;
-      color: #00ff41;
-      text-shadow: 0 0 10px #00ff41, 0 0 30px rgba(0,255,65,0.4);
-      margin-top: 1.5rem;
-      z-index: 10;
-      animation: glitch 3s infinite;
+      position: relative;
+      font-size: clamp(1.6rem, 7vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      line-height: 1.15;
+      margin-top: 1.6rem;
+      color: var(--green);
+      text-shadow: 0 0 10px var(--green), 0 0 30px rgba(0,255,65,0.4);
+      animation: glitch 3.2s infinite;
     }
+    .title::before, .title::after {
+      content: attr(data-text);
+      position: absolute; inset: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .title::before { color: var(--pink); animation: slice 3.2s infinite; }
+    .title::after  { color: var(--cyan); animation: slice 3.2s infinite reverse; }
     @keyframes glitch {
-      0%,89%,100% { transform: none; text-shadow: 0 0 10px #00ff41, 0 0 30px rgba(0,255,65,0.4); }
-      90% { transform: skew(-2deg); text-shadow: -3px 0 #ff0055, 3px 0 #00ffff; }
-      92% { transform: skew(1deg); text-shadow: 3px 0 #ff0055, -3px 0 #00ffff; }
-      94% { transform: none; }
+      0%,88%,100% { transform: none; }
+      89% { transform: skew(-3deg) translateX(-2px); }
+      91% { transform: skew(2deg) translateX(2px); }
+      93% { transform: none; }
+    }
+    @keyframes slice {
+      0%,88%,94%,100% { opacity: 0; clip-path: inset(0 0 0 0); transform: none; }
+      89% { opacity: .8; clip-path: inset(10% 0 55% 0); transform: translateX(-4px); }
+      91% { opacity: .8; clip-path: inset(60% 0 8% 0);  transform: translateX(4px); }
+      93% { opacity: .6; clip-path: inset(35% 0 40% 0); transform: translateX(-2px); }
     }
 
     .insult {
-      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-      color: #ff0055;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px #ff0055;
-      margin-top: 0.4rem;
+      font-size: clamp(0.95rem, 3.6vw, 1.15rem);
+      font-weight: 700;
+      color: var(--pink);
+      letter-spacing: 0.18em;
+      text-shadow: 0 0 10px var(--pink);
+      margin-top: 0.5rem;
       min-height: 1.6em;
-      transition: opacity 0.3s;
-      z-index: 10;
+      transition: opacity .3s, transform .3s;
     }
+    .insult.out { opacity: 0; transform: translateY(-4px); }
     .blink { animation: bl 1s step-end infinite; }
     @keyframes bl { 50% { opacity: 0; } }
 
+    /* Terminal-Fenster */
     .terminal {
-      margin-top: 1.2rem;
-      background: rgba(0,8,0,0.9);
-      border: 1px solid #00ff41;
-      border-radius: 4px;
-      padding: 0.9rem 1.4rem;
+      margin-top: 1.6rem;
+      width: min(540px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      box-shadow: 0 0 28px rgba(0,255,65,0.14), inset 0 0 30px rgba(0,255,65,0.04);
       text-align: left;
-      width: min(500px, 90vw);
-      box-shadow: 0 0 25px rgba(0,255,65,0.12);
-      z-index: 10;
+      overflow: hidden;
     }
-    .tline { font-size: 0.8rem; line-height: 2; opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
-    .ok   { color: #00ff41; }
-    .err  { color: #ff0055; }
-    .warn { color: #ffcc00; }
-    .cyan { color: #00ffff; }
-    .tline .p { color: #00ff41; }
-    .tline .r { color: #ff0055; }
-    .tline .y { color: #ffcc00; }
-    .tline .c { color: #00ffff; }
+    .bar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 0.5rem 0.8rem;
+      border-bottom: 1px solid rgba(0,255,65,0.35);
+      background: rgba(0,255,65,0.06);
+      font-size: 0.7rem;
+      color: var(--green-dim);
+    }
+    .bar i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .bar i:nth-child(1) { background: var(--pink); }
+    .bar i:nth-child(2) { background: var(--yellow); }
+    .bar i:nth-child(3) { background: var(--green); }
+    .bar span { margin-left: auto; letter-spacing: 0.08em; }
+    .lines { padding: 0.9rem 1.1rem 1rem; min-height: 11.6rem; }
+    .tline {
+      font-size: clamp(0.72rem, 2.9vw, 0.84rem);
+      line-height: 1.75;
+      overflow-wrap: anywhere;
+    }
+    .ok   { color: var(--green); }
+    .err  { color: var(--pink); }
+    .warn { color: var(--yellow); }
+    .cyan { color: var(--cyan); }
+    .r { color: var(--pink); }
+    .y { color: var(--yellow); }
+    .c { color: var(--cyan); }
+    .cursor {
+      display: inline-block; width: 0.55em; height: 1em;
+      background: var(--green); vertical-align: -0.15em; margin-left: 2px;
+      animation: bl 1s step-end infinite;
+    }
 
     .ai-row {
-      display: flex; gap: 6px; margin-top: 0.8rem;
+      display: flex; flex-wrap: wrap; gap: 6px;
       align-items: center; justify-content: center;
-      font-size: 0.72rem; color: #00aa2a; letter-spacing: 0.1em; z-index: 10;
+      margin-top: 1rem;
+      font-size: 0.7rem; color: var(--green-dim); letter-spacing: 0.1em;
     }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: #00ff41; animation: dp 1.2s ease-in-out infinite; }
-    .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
-    @keyframes dp { 0%,100%{transform:scale(1);opacity:.25} 50%{transform:scale(1.7);opacity:1} }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: dp 1.2s ease-in-out infinite; }
+    .dot:nth-child(2) { animation-delay: .2s; }
+    .dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes dp { 0%,100% { transform: scale(1); opacity: .25; } 50% { transform: scale(1.7); opacity: 1; } }
+
+    footer {
+      margin-top: 1.6rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: rgba(0,255,65,0.35);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .video-wrap { box-shadow: 0 0 0 3px var(--pink), 0 0 40px var(--pink); }
+    }
   </style>
 </head>
 <body>
-<canvas id="particles"></canvas>
+<canvas id="particles" aria-hidden="true"></canvas>
 
-<div class="video-wrap">
-  <video autoplay loop muted playsinline>
-    <source src="finger.mp4" type="video/mp4">
-  </video>
+<div class="lang" role="group" aria-label="Sprache / Dil">
+  <button type="button" data-lang="de" aria-pressed="true">DE</button>
+  <button type="button" data-lang="tr" aria-pressed="false">TR</button>
 </div>
 
-<div class="title">DOMÄNE&nbsp;VERGEBEN</div>
-<div class="insult" id="ins">VERPISS DICH. <span class="blink">_</span></div>
+<main>
+  <div class="video-wrap">
+    <video autoplay loop muted playsinline preload="auto" aria-hidden="true">
+      <source src="finger.mp4" type="video/mp4">
+    </video>
+  </div>
 
-<div class="terminal">
-  <div class="tline ok"   id="t0"><span class="p">&gt;</span> KI-ANALYSE GESTARTET...</div>
-  <div class="tline err"  id="t1"><span class="r">[ERR 666]</span> Nutzer: <span class="r">KOMPLETT PLANLOS</span></div>
-  <div class="tline warn" id="t2"><span class="y">[WARN]</span> Dreistigkeit: <span class="y">LEVEL 9000</span> — ÜBERSCHRITTEN</div>
-  <div class="tline cyan" id="t3"><span class="c">[KI]</span> Empfehlung: <span class="r">HAU BLOS AB.</span></div>
-  <div class="tline ok"   id="t4"><span class="p">&gt;</span> Dein-Status: <span class="r">NICHT FÜR DICH.</span></div>
-  <div class="tline warn" id="t5"><span class="y">[SYS]</span> Nächster Schritt: <span class="r">G0 HOME.</span></div>
-  <div class="tline cyan" id="t6"><span class="c">[KI]</span> Auf Wiedersehen, Loser. <span class="blink">_</span></div>
-</div>
+  <h1 class="title" id="title" data-text="DOMÄNE VERGEBEN">DOMÄNE VERGEBEN</h1>
+  <div class="insult" id="ins" aria-live="off"></div>
 
-<div class="ai-row">
-  <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-  &nbsp;KI-MODUL AKTIVE &nbsp;|&nbsp; DREISTIGKEIT: MAX
-</div>
+  <section class="terminal" aria-label="Terminal">
+    <div class="bar"><i></i><i></i><i></i><span>root@mescak.de:~</span></div>
+    <div class="lines" id="lines"></div>
+  </section>
+
+  <div class="ai-row">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    &nbsp;<span id="status"></span>
+  </div>
+
+  <footer>MESCAK.DE · © <span id="year">2026</span></footer>
+</main>
 
 <script>
+  /* ---------- Texte ---------- */
+  const TEXT = {
+    de: {
+      title: 'DOMÄNE VERGEBEN',
+      status: 'KI-MODUL AKTIV  |  DREISTIGKEIT: MAX',
+      insults: [
+        'VERPISS DICH.', 'HAU BLOSS AB.', 'NIX FÜR DICH HIER.', 'ALTER, GEH HEIM.',
+        'BYE BYE, LOSER.', '404: CHANCE WEG.', 'DAS IST NICHT DEINES.', 'TRÄUM WEITER.'
+      ],
+      lines: [
+        ['ok',   '<span class="ok">&gt;</span> KI-ANALYSE GESTARTET...'],
+        ['err',  '<span class="r">[ERR 666]</span> Nutzer: <span class="r">KOMPLETT PLANLOS</span>'],
+        ['warn', '<span class="y">[WARN]</span> Dreistigkeit: <span class="y">LEVEL 9000</span> — ÜBERSCHRITTEN'],
+        ['cyan', '<span class="c">[KI]</span> Empfehlung: <span class="r">HAU BLOSS AB.</span>'],
+        ['ok',   '<span class="ok">&gt;</span> Dein Status: <span class="r">NICHT FÜR DICH.</span>'],
+        ['warn', '<span class="y">[SYS]</span> Nächster Schritt: <span class="r">GO HOME.</span>'],
+        ['cyan', '<span class="c">[KI]</span> Auf Wiedersehen, Loser.']
+      ]
+    },
+    tr: {
+      title: 'ALAN ADI ALINMIŞ',
+      status: 'YZ MODÜLÜ AKTİF  |  KÜSTAHLIK: MAKS',
+      insults: [
+        'DEFOL GİT.', 'HADİ YALLAH.', 'BURADA SANA BİR ŞEY YOK.', 'KARDEŞİM, EVİNE GİT.',
+        'BAY BAY, EZİK.', '404: ŞANS BİTTİ.', 'BU SENİN DEĞİL.', 'RÜYANDA GÖRÜRSÜN.'
+      ],
+      lines: [
+        ['ok',   '<span class="ok">&gt;</span> YAPAY ZEKÂ ANALİZİ BAŞLADI...'],
+        ['err',  '<span class="r">[HATA 666]</span> Kullanıcı: <span class="r">TAMAMEN PLANSIZ</span>'],
+        ['warn', '<span class="y">[UYARI]</span> Küstahlık: <span class="y">SEVİYE 9000</span> — AŞILDI'],
+        ['cyan', '<span class="c">[YZ]</span> Öneri: <span class="r">HEMEN KAYBOL.</span>'],
+        ['ok',   '<span class="ok">&gt;</span> Durumun: <span class="r">SANA GÖRE DEĞİL.</span>'],
+        ['warn', '<span class="y">[SİS]</span> Sonraki adım: <span class="r">EVİNE DÖN.</span>'],
+        ['cyan', '<span class="c">[YZ]</span> Güle güle, ezik.']
+      ]
+    }
+  };
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ---------- Sprache wählen: ?lang= > gespeichert > Browser > Deutsch ---------- */
+  function pickLang() {
+    const q = new URLSearchParams(location.search).get('lang');
+    if (q && TEXT[q]) return q;
+    try { const s = localStorage.getItem('lang'); if (s && TEXT[s]) return s; } catch (e) {}
+    const nav = (navigator.languages || [navigator.language || '']).join(',').toLowerCase();
+    return /(^|,)tr/.test(nav) ? 'tr' : 'de';
+  }
+
+  /* ---------- Terminal mit Tipp-Effekt ---------- */
+  let runId = 0;
+  function typeLines(lines) {
+    const id = ++runId;
+    const box = document.getElementById('lines');
+    box.innerHTML = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+
+    if (reduce) {
+      lines.forEach(([cls, html]) => {
+        const d = document.createElement('div');
+        d.className = 'tline ' + cls; d.innerHTML = html; box.appendChild(d);
+      });
+      box.lastChild.appendChild(cursor);
+      return;
+    }
+
+    let li = 0;
+    function nextLine() {
+      if (id !== runId) return;
+      if (li >= lines.length) { box.lastChild.appendChild(cursor); return; }
+      const [cls, html] = lines[li++];
+      const d = document.createElement('div');
+      d.className = 'tline ' + cls;
+      box.appendChild(d);
+      // HTML in Tags und Zeichen zerlegen, Zeichen einzeln tippen
+      const tokens = html.match(/<[^>]+>|&[a-z]+;|[\s\S]/g);
+      let ti = 0, built = '';
+      (function step() {
+        if (id !== runId) return;
+        while (ti < tokens.length && tokens[ti][0] === '<') built += tokens[ti++];
+        if (ti < tokens.length) built += tokens[ti++];
+        d.innerHTML = built;
+        d.appendChild(cursor);
+        if (ti < tokens.length) setTimeout(step, 14 + Math.random() * 22);
+        else setTimeout(nextLine, 260);
+      })();
+    }
+    setTimeout(nextLine, 400);
+  }
+
+  /* ---------- Wechselnde Sprüche ---------- */
+  let insults = [], ii = 0;
+  const insEl = document.getElementById('ins');
+  function showInsult() {
+    insEl.innerHTML = insults[ii] + ' <span class="blink">_</span>';
+  }
+  setInterval(() => {
+    if (reduce) { ii = (ii + 1) % insults.length; showInsult(); return; }
+    insEl.classList.add('out');
+    setTimeout(() => { ii = (ii + 1) % insults.length; showInsult(); insEl.classList.remove('out'); }, 300);
+  }, 2800);
+
+  /* ---------- Sprache anwenden ---------- */
+  function setLang(lang, save) {
+    const t = TEXT[lang];
+    document.documentElement.lang = lang;
+    document.title = t.title + ' · mescak.de';
+    const title = document.getElementById('title');
+    title.textContent = t.title;
+    title.dataset.text = t.title;
+    document.getElementById('status').textContent = t.status;
+    insults = t.insults; ii = 0; showInsult();
+    typeLines(t.lines);
+    document.querySelectorAll('.lang button').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+    if (save) { try { localStorage.setItem('lang', lang); } catch (e) {} }
+  }
+  document.querySelectorAll('.lang button').forEach(b =>
+    b.addEventListener('click', () => setLang(b.dataset.lang, true)));
+  setLang(pickLang(), false);
+
+  /* ---------- Partikel ---------- */
   const cv = document.getElementById('particles');
   const ctx = cv.getContext('2d');
-  function resize(){ cv.width=innerWidth; cv.height=innerHeight; }
-  resize(); window.addEventListener('resize', resize);
-  const pts = Array.from({length:70},()=>({
-    x:Math.random()*innerWidth, y:Math.random()*innerHeight,
-    s:Math.random()*1.4+0.3, v:Math.random()*0.5+0.15,
-    c:['#00ff41','#ff0055','#00ffff','#ffcc00'][Math.floor(Math.random()*4)],
-    o:Math.random()*0.35+0.08
+  let W = 0, H = 0;
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize(); addEventListener('resize', resize);
+  const colors = ['#00ff41', '#ff0055', '#00ffff', '#ffcc00'];
+  const pts = Array.from({ length: 70 }, () => ({
+    x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+    s: Math.random() * 1.4 + 0.3, v: Math.random() * 0.5 + 0.15,
+    c: colors[Math.floor(Math.random() * 4)], o: Math.random() * 0.35 + 0.08
   }));
-  (function loop(){
-    ctx.clearRect(0,0,cv.width,cv.height);
-    pts.forEach(p=>{
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.s,0,Math.PI*2);
-      ctx.fillStyle=p.c; ctx.globalAlpha=p.o; ctx.fill();
-      p.y-=p.v; if(p.y<0){p.y=cv.height;p.x=Math.random()*cv.width;}
-    });
-    ctx.globalAlpha=1; requestAnimationFrame(loop);
-  })();
-
-  document.querySelectorAll('[id^="t"]').forEach((l,i)=>{
-    setTimeout(()=>{ l.style.opacity='1'; }, 500+i*450);
-  });
-
-  const insults=['VERPISS DICH.','HAU BLOSS AB.','NIX FÜR DICH HIER.','ALTER G0 HOMM.','BYE BYE LOSER.','404: CHANCE WEG.','DAS IST NICH DEINES.','TÄUME WEITER.'];
-  let ii=0;
-  setInterval(()=>{
-    const el=document.getElementById('ins');
-    el.style.opacity=0;
-    ii=(ii+1)%insults.length;
-    setTimeout(()=>{ el.innerHTML=insults[ii]+' <span class="blink">_</span>'; el.style.opacity=1; },300);
-  },2800);
+  function draw(move) {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of pts) {
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+      ctx.fillStyle = p.c; ctx.globalAlpha = p.o; ctx.fill();
+      if (move) { p.y -= p.v; if (p.y < 0) { p.y = H; p.x = Math.random() * W; } }
+    }
+    ctx.globalAlpha = 1;
+  }
+  if (reduce) draw(false);
+  else (function loop() { if (!document.hidden) draw(true); requestAnimationFrame(loop); })();
 </script>
 </body>
 </html>
