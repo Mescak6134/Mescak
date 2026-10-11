@@ -65,6 +65,29 @@
     #rain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: .5; transition: opacity .6s; }
     body.matrix #rain { opacity: .85; }
 
+    /* ---------- Startbildschirm (ein Tipp schaltet Ton, Video, Sensor frei) ---------- */
+    #gate {
+      position: fixed; inset: 0; z-index: 82;
+      background: #000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.6rem;
+      padding: 24px 16px; text-align: center;
+    }
+    #gate.gone { animation: crtOff .4s ease-in forwards; pointer-events: none; }
+    #gate .brand { font-size: .72rem; letter-spacing: .3em; color: var(--green-dim); }
+    #gate .warn-txt { font-size: clamp(.8rem, 3.4vw, 1rem); letter-spacing: .14em; color: var(--pink); text-shadow: 0 0 10px var(--pink); }
+    #go {
+      font: inherit; font-size: clamp(1rem, 5vw, 1.35rem); font-weight: 800; letter-spacing: .16em;
+      color: #000; background: var(--green);
+      border: 0; border-radius: 6px;
+      padding: 1.05rem 1.8rem; min-height: 56px; cursor: pointer;
+      box-shadow: 0 0 0 2px var(--green), 0 0 30px var(--green), 0 0 70px rgba(0,255,65,.4);
+      animation: goPulse 1.4s ease-in-out infinite;
+    }
+    #go:focus-visible { outline: 3px solid var(--cyan); outline-offset: 4px; }
+    @keyframes goPulse { 50% { box-shadow: 0 0 0 2px var(--green), 0 0 50px var(--green), 0 0 110px rgba(0,255,65,.6); transform: scale(1.03); } }
+    #gate .seg { box-shadow: none; }
+    #gate .snd-note { font-size: .66rem; letter-spacing: .14em; color: rgba(0,255,65,.5); }
+
     /* ---------- Boot-Sequenz ---------- */
     #boot {
       position: fixed; inset: 0; z-index: 80;
@@ -73,6 +96,7 @@
       padding: max(24px, env(safe-area-inset-top)) 16px 24px;
       cursor: pointer;
     }
+    #boot[hidden] { display: none; }
     #boot.gone { animation: crtOff .45s ease-in forwards; pointer-events: none; }
     @keyframes crtOff {
       0%   { transform: scale(1, 1); filter: brightness(1); }
@@ -334,7 +358,19 @@
 <canvas id="rain" aria-hidden="true"></canvas>
 <div id="bars" aria-hidden="true"></div>
 
-<div id="boot" role="presentation">
+<div id="gate">
+  <div class="brand">MESCAK SYSTEMS · ROOT@MESCAK.DE</div>
+  <div class="warn-txt" id="gateWarn"></div>
+  <button type="button" id="go"></button>
+  <div class="seg" role="group" aria-label="Sprache / Dil / Language">
+    <button type="button" data-lang="de" aria-pressed="true">DE</button>
+    <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+    <button type="button" data-lang="en" aria-pressed="false">EN</button>
+  </div>
+  <div class="snd-note" id="gateNote"></div>
+</div>
+
+<div id="boot" role="presentation" hidden>
   <div id="bootlog"></div>
   <div class="bootbar"><i id="bootfill"></i></div>
   <div class="skip" id="skip"></div>
@@ -393,6 +429,7 @@ const TEXT = {
     status: 'KI-MODUL AKTIV  |  DREISTIGKEIT: MAX',
     hint: 'TIPPE <b>help</b> INS TERMINAL · SCHÜTTEL DEIN HANDY',
     skip: '[ TIPPEN ZUM ÜBERSPRINGEN ]',
+    go: '▶ ZUGRIFF STARTEN', gateWarn: 'BETRETEN AUF EIGENE GEFAHR', gateNote: '🔊 MIT TON – AUSSCHALTEN GEHT OBEN LINKS',
     soundOn: 'TON AN', soundOff: 'TON AUS',
     placeholder: 'help',
     insults: ['VERPISS DICH.', 'HAU BLOSS AB.', 'NIX FÜR DICH HIER.', 'ALTER, GEH HEIM.',
@@ -466,6 +503,7 @@ const TEXT = {
     status: 'YZ MODÜLÜ AKTİF  |  KÜSTAHLIK: MAKS',
     hint: 'TERMİNALE <b>help</b> YAZ · TELEFONUNU SALLA',
     skip: '[ GEÇMEK İÇİN DOKUN ]',
+    go: '▶ ERİŞİMİ BAŞLAT', gateWarn: 'GİRİŞ KENDİ SORUMLULUĞUNDA', gateNote: '🔊 SESLİ – SOL ÜSTTEN KAPATILABİLİR',
     soundOn: 'SES AÇIK', soundOff: 'SES KAPALI',
     placeholder: 'help',
     insults: ['DEFOL GİT.', 'HADİ YALLAH.', 'BURADA SANA BİR ŞEY YOK.', 'KARDEŞİM, EVİNE GİT.',
@@ -539,6 +577,7 @@ const TEXT = {
     status: 'AI MODULE ACTIVE  |  AUDACITY: MAX',
     hint: 'TYPE <b>help</b> IN THE TERMINAL · SHAKE YOUR PHONE',
     skip: '[ TAP TO SKIP ]',
+    go: '▶ START ACCESS', gateWarn: 'ENTER AT YOUR OWN RISK', gateNote: '🔊 WITH SOUND – MUTE TOP LEFT',
     soundOn: 'SOUND ON', soundOff: 'SOUND OFF',
     placeholder: 'help',
     insults: ['GET LOST.', 'BEAT IT.', 'NOTHING FOR YOU HERE.', 'GO HOME, BRO.',
@@ -625,12 +664,9 @@ $('#year').textContent = new Date().getFullYear();
 function pickLang() {
   const q = new URLSearchParams(location.search).get('lang');
   if (q && TEXT[q]) return q;
-  const s = store.get('lang'); if (s && TEXT[s]) return s;
-  for (const l of (navigator.languages || [navigator.language || ''])) {
-    const p = (l || '').slice(0, 2).toLowerCase();
-    if (TEXT[p]) return p;
-  }
-  return 'de';
+  // Gerätesprache: Deutsch → de, Türkisch → tr, alles andere → en
+  const dev = ((navigator.languages && navigator.languages[0]) || navigator.language || '').slice(0, 2).toLowerCase();
+  return dev === 'de' || dev === 'tr' ? dev : 'en';
 }
 let lang = pickLang();
 let T = TEXT[lang];
@@ -638,7 +674,7 @@ let T = TEXT[lang];
 /* =====================================================================
    TON  (wird live im Browser erzeugt, keine Dateien)
    ===================================================================== */
-let actx = null, soundOn = store.get('sound') === '1';
+let actx = null, soundOn = store.get('sound') !== '0';   // Standard: Ton AN
 function audio() {
   if (!actx) {
     const C = window.AudioContext || window.webkitAudioContext;
@@ -860,7 +896,7 @@ async function runIntro() {
 }
 
 /* --- Befehle --- */
-const history = []; let hIdx = 0;
+const cmdHistory = []; let hIdx = 0;
 async function runCmd(raw) {
   const C = T.cmd, input = raw.trim(), low = input.toLocaleLowerCase('tr').replace(/İ/g, 'i');
   const [w0, ...rest] = low.split(/\s+/); const arg = rest.join(' ');
@@ -933,12 +969,12 @@ async function runCmd(raw) {
 promptEl.addEventListener('submit', e => {
   e.preventDefault();
   const v = cmdEl.value; cmdEl.value = '';
-  if (v.trim()) { history.push(v); hIdx = history.length; }
+  if (v.trim()) { cmdHistory.push(v); hIdx = cmdHistory.length; }
   runCmd(v);
 });
 cmdEl.addEventListener('keydown', e => {
-  if (e.key === 'ArrowUp' && history.length) { hIdx = Math.max(0, hIdx - 1); cmdEl.value = history[hIdx]; e.preventDefault(); }
-  else if (e.key === 'ArrowDown') { hIdx = Math.min(history.length, hIdx + 1); cmdEl.value = history[hIdx] || ''; e.preventDefault(); }
+  if (e.key === 'ArrowUp' && cmdHistory.length) { hIdx = Math.max(0, hIdx - 1); cmdEl.value = cmdHistory[hIdx]; e.preventDefault(); }
+  else if (e.key === 'ArrowDown') { hIdx = Math.min(cmdHistory.length, hIdx + 1); cmdEl.value = cmdHistory[hIdx] || ''; e.preventDefault(); }
   else if (e.key.length === 1) sfx.key();
 });
 $('#term').addEventListener('click', () => { if (!promptEl.hidden && !getSelection().toString()) cmdEl.focus({ preventScroll: true }); });
@@ -1078,39 +1114,61 @@ function setLang(l, save) {
   $('#status').textContent = T.status;
   $('#hint').innerHTML = T.hint;
   $('#skip').textContent = T.skip;
+  if ($('#gate')) {
+    $('#go').textContent = T.go;
+    $('#gateWarn').textContent = T.gateWarn;
+    $('#gateNote').textContent = T.gateNote;
+  }
   if (!buyDead) buy.textContent = T.buy[flees % T.buy.length];
   ii = 0; showInsult();
   renderSound();
   document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === l)));
-  if (save) store.set('lang', l);
-  if (booted) runIntro();
+  // Wahl in die Adresse schreiben, damit Neuladen/Teilen die Sprache behält
+  if (save) { try { const u = new URL(location.href); u.searchParams.set('lang', l); history.replaceState(null, '', u); } catch (e) {} }
 }
-document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { if (lang !== b.dataset.lang) { setLang(b.dataset.lang, true); glitch(250); } }));
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
+  if (lang === b.dataset.lang) return;
+  setLang(b.dataset.lang, true);
+  if (started) restart();          // nach dem Start: alles von vorne in der neuen Sprache
+  else sfx.beep();
+}));
 
 /* =====================================================================
    BOOT-SEQUENZ
    ===================================================================== */
-let booted = false;
-const boot = $('#boot');
+let booted = false, started = false, bootRun = 0;
+const boot = $('#boot'), gate = $('#gate');
+
+// Finger-Video: sofort starten und bei jeder Gelegenheit wieder anschubsen
+// (iPhone im Stromsparmodus / Hintergrund hält Autoplay sonst an)
+const vid = document.querySelector('video');
+function playVideo() { if (vid.paused) { const p = vid.play(); if (p) p.catch(() => {}); } }
+playVideo();
+vid.addEventListener('canplay', playVideo);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) playVideo(); });
+['pointerdown', 'touchstart', 'keydown'].forEach(ev => addEventListener(ev, playVideo, { passive: true }));
+
 function finishBoot() {
   if (booted) return;
-  booted = true;
+  booted = true; bootRun++;
   boot.classList.add('gone');
+  document.body.classList.remove('on'); void document.body.offsetWidth;
   document.body.classList.add('on');
-  setTimeout(() => boot.remove(), 500);
+  setTimeout(() => { if (booted) boot.hidden = true; }, 500);
   playVideo();
   runIntro();
 }
-// manche Browser halten Autoplay an (Stromsparen, Hintergrund) → wieder anschubsen
-const vid = document.querySelector('video');
-function playVideo() { if (vid.paused) { const p = vid.play(); if (p) p.catch(() => {}); } }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) playVideo(); });
-addEventListener('pointerup', playVideo);
 async function runBoot() {
-  if (reduce || new URLSearchParams(location.search).has('skip')) { boot.remove(); booted = true; runIntro(); return; }
+  const id = ++bootRun;
+  booted = false;
+  runId++;                                   // laufendes Terminal abbrechen
+  out.innerHTML = ''; promptEl.hidden = true;
+  if (reduce) { finishBoot(); return; }
   const log = $('#bootlog'), bar = $('#bootfill');
+  log.innerHTML = ''; bar.style.width = '0';
+  boot.classList.remove('gone'); boot.hidden = false;
   for (let i = 0; i < T.boot.length; i++) {
-    if (booted) return;
+    if (id !== bootRun) return;
     const line = document.createElement('div');
     line.innerHTML = T.boot[i];
     log.appendChild(line);
@@ -1120,13 +1178,38 @@ async function runBoot() {
     await sleep(i === 0 ? 450 : i === T.boot.length - 2 ? 520 : 330);
   }
   await sleep(900);
-  finishBoot();
+  if (id === bootRun) finishBoot();
 }
 boot.addEventListener('pointerdown', finishBoot);
-addEventListener('keydown', e => { if (!booted && e.key !== 'Tab') finishBoot(); });
+addEventListener('keydown', e => { if (started && !booted && e.key !== 'Tab') finishBoot(); });
+
+// Sprache gewechselt → alles von vorne
+function restart() {
+  document.body.classList.remove('matrix', 'glitch', 'soft');
+  buy.classList.remove('free', 'boom'); buy.style.left = buy.style.top = ''; slot.style.width = '';
+  flees = 0; buyDead = false; buy.textContent = T.buy[0];
+  glitch(300);
+  runBoot();
+}
+
+// Start-Knopf: der eine Tipp schaltet Ton, Video und Schüttel-Sensor frei
+function start() {
+  if (started) return;
+  started = true;
+  if (soundOn) { audio(); sfx.ok(); }
+  enableMotion();
+  playVideo();
+  gate.classList.add('gone');
+  setTimeout(() => gate.remove(), 450);
+  runBoot();
+}
+$('#go').addEventListener('click', start);
+addEventListener('keydown', e => { if (!started && e.key === 'Enter' && document.activeElement?.dataset?.lang == null) { e.preventDefault(); start(); } });
 
 setLang(lang, false);
-runBoot();
+if (new URLSearchParams(location.search).has('skip')) {   // nur zum Testen: ohne Startbildschirm und Boot
+  started = true; gate.remove(); finishBoot();
+} else $('#go').focus({ preventScroll: true });
 </script>
 </body>
 </html>
