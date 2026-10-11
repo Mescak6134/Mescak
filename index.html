@@ -348,6 +348,128 @@
       100% { transform: translate(2px, 1px); }
     }
 
+    /* ---------- Rechtsklick-Menü ---------- */
+    #ctx {
+      position: fixed; z-index: 86; min-width: 220px;
+      background: rgba(0,8,2,.96); border: 1px solid var(--green); border-radius: 6px;
+      box-shadow: 0 0 30px rgba(0,255,65,.3); padding: .35rem; display: none;
+    }
+    #ctx.open { display: block; animation: ctxIn .12s ease-out; }
+    @keyframes ctxIn { from { transform: scale(.95); opacity: 0; } }
+    #ctx button {
+      display: block; width: 100%; text-align: left;
+      font: inherit; font-size: .8rem; color: var(--green); background: transparent; border: 0;
+      padding: .55rem .7rem; border-radius: 4px; cursor: pointer; letter-spacing: .04em;
+    }
+    #ctx button:hover, #ctx button:focus-visible { background: var(--green); color: #000; outline: 0; }
+    #ctx hr { border: 0; border-top: 1px solid rgba(0,255,65,.25); margin: .3rem .2rem; }
+
+    /* ---------- Bluescreen ---------- */
+    #bsod {
+      position: fixed; inset: 0; z-index: 95; background: #0078d7; color: #fff;
+      font-family: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+      padding: max(9vh, env(safe-area-inset-top)) 8vw 6vh; overflow: hidden; cursor: none;
+    }
+    #bsod .sad { font-size: clamp(5rem, 22vw, 10rem); line-height: 1; margin-bottom: 1.6rem; font-weight: 300; }
+    #bsod p { font-size: clamp(1.05rem, 4.2vw, 1.6rem); line-height: 1.45; max-width: 46rem; font-weight: 300; }
+    #bsod .pct { margin-top: 1.6rem; }
+    #bsod .foot { display: flex; gap: 1.2rem; align-items: center; margin-top: 2.4rem; font-size: clamp(.75rem, 2.8vw, .95rem); line-height: 1.5; }
+    #bsod .qr {
+      width: 92px; height: 92px; flex: none; background:
+        repeating-conic-gradient(#fff 0 25%, #0078d7 0 50%) 0 0 / 23px 23px,
+        #fff;
+      outline: 6px solid #fff;
+    }
+
+    /* ---------- Selbstzerstörung ---------- */
+    #cd {
+      position: fixed; inset: 0; z-index: 87; pointer-events: none;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+      background-color: rgba(0,0,0,.72);
+      background-image: radial-gradient(ellipse at center, rgba(255,0,85,.06) 30%, rgba(255,0,85,.5) 100%);
+      animation: cdPulse 1s ease-in-out infinite;
+    }
+    @keyframes cdPulse { 50% { background-color: rgba(40,0,10,.8); } }
+    #cd .lbl { font-size: clamp(.9rem, 4vw, 1.3rem); font-weight: 800; letter-spacing: .2em; color: #fff; text-shadow: 0 0 12px var(--pink); background: rgba(0,0,0,.6); padding: .3rem .8rem; }
+    #cd .num { font-size: clamp(6rem, 34vw, 14rem); font-weight: 800; line-height: 1; color: var(--pink); text-shadow: 0 0 30px var(--pink), 0 0 80px var(--pink); }
+    #cd .num.tick { animation: tick .3s ease-out; }
+    @keyframes tick { from { transform: scale(1.35); } }
+    #cd button {
+      pointer-events: auto; font: inherit; font-weight: 800; letter-spacing: .14em; font-size: .9rem;
+      color: #fff; background: #000; border: 2px solid #fff; border-radius: 4px; padding: .8rem 1.4rem; cursor: pointer;
+    }
+    body.crumble main { animation: crumble 1.1s cubic-bezier(.5,0,.9,.4) forwards; }
+    @keyframes crumble {
+      0%   { transform: none; filter: none; }
+      15%  { transform: translate(-8px, 4px) rotate(-1deg); filter: brightness(2.5) contrast(2); }
+      30%  { transform: translate(6px, -3px) rotate(1deg); }
+      100% { transform: translateY(110vh) rotate(14deg) scale(.6); filter: blur(6px); opacity: 0; }
+    }
+    #flash { position: fixed; inset: 0; z-index: 96; background: #fff; pointer-events: none; animation: flash .6s ease-out forwards; }
+    @keyframes flash { to { opacity: 0; } }
+
+    /* ---------- Kamera-Scan ---------- */
+    #cam { position: fixed; inset: 0; z-index: 88; background: #000; overflow: hidden; }
+    #cam video {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      transform: scaleX(-1);
+      filter: grayscale(1) sepia(1) hue-rotate(68deg) saturate(5) contrast(1.35) brightness(.95);
+    }
+    #cam .grid {
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(0deg, rgba(0,255,65,.12) 0 1px, transparent 1px 40px),
+        repeating-linear-gradient(90deg, rgba(0,255,65,.12) 0 1px, transparent 1px 40px);
+    }
+    #cam .sweep { position: absolute; left: 0; right: 0; height: 3px; background: var(--green); box-shadow: 0 0 20px var(--green); animation: sweep 2.2s linear infinite; }
+    @keyframes sweep { from { top: 0; } to { top: 100%; } }
+    #cam .ret {
+      position: absolute; left: 50%; top: 42%; width: min(62vmin, 340px); aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+      animation: retLock 1.6s ease-out forwards, retPulse 1s 1.6s ease-in-out infinite;
+    }
+    #cam .ret i { position: absolute; width: 22%; height: 22%; border: 3px solid var(--green); box-shadow: 0 0 10px var(--green); }
+    #cam .ret i:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+    #cam .ret i:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; }
+    #cam .ret i:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; }
+    #cam .ret i:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+    #cam .ret::after { content: '+'; position: absolute; inset: 0; display: grid; place-items: center; font-size: 2rem; color: var(--green); }
+    #cam.locked .ret i { border-color: var(--pink); box-shadow: 0 0 14px var(--pink); }
+    #cam.locked .ret::after { color: var(--pink); }
+    @keyframes retLock { from { transform: translate(-50%, -50%) scale(1.8) rotate(25deg); opacity: 0; } }
+    @keyframes retPulse { 50% { transform: translate(-50%, -50%) scale(1.04); } }
+    #cam .log {
+      position: absolute; left: 16px; right: 16px; bottom: max(84px, calc(env(safe-area-inset-bottom) + 70px));
+      font-size: clamp(.75rem, 3.2vw, .95rem); line-height: 1.7; color: var(--green);
+      text-shadow: 0 0 6px #000, 0 0 2px #000;
+    }
+    #cam .log div { background: rgba(0,0,0,.55); display: inline-block; padding: 0 .4rem; margin: 1px 0; }
+    #cam .verdict {
+      position: absolute; left: 0; right: 0; top: 12%; text-align: center; padding: 0 16px;
+      font-size: clamp(1.2rem, 6.5vw, 2.4rem); font-weight: 800; letter-spacing: .1em;
+      color: var(--pink); text-shadow: 0 0 16px var(--pink), 0 0 2px #000;
+      animation: bl .5s step-end infinite;
+    }
+    #cam .note { position: absolute; left: 16px; right: 16px; top: max(16px, env(safe-area-inset-top)); font-size: .64rem; color: rgba(255,255,255,.75); text-shadow: 0 0 3px #000; padding-right: 7rem; }
+    #cam .x {
+      position: absolute; right: 16px; top: max(14px, env(safe-area-inset-top));
+      font: inherit; font-weight: 800; font-size: .78rem; letter-spacing: .12em;
+      color: #000; background: var(--green); border: 0; border-radius: 4px; padding: .55rem .8rem; cursor: pointer;
+    }
+
+    /* ---------- Snake ---------- */
+    .gamebox { text-align: center; }
+    .gamebox .score { font-size: .78rem; color: var(--yellow); letter-spacing: .1em; margin-bottom: .5rem; display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+    .gamebox canvas { display: block; margin: 0 auto; border: 1px solid var(--green-dim); touch-action: none; max-width: 100%; }
+    .gamebox .pad { display: none; margin: .7rem auto 0; width: 156px; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .gamebox .pad button {
+      font: inherit; font-size: 1.1rem; color: var(--green); background: rgba(0,255,65,.08);
+      border: 1px solid var(--green-dim); border-radius: 6px; height: 46px; cursor: pointer; touch-action: manipulation;
+    }
+    .gamebox .pad button:active { background: var(--green); color: #000; }
+    .gamebox .pad .q { color: var(--pink); border-color: var(--pink); font-size: .8rem; }
+    @media (pointer: coarse) { .gamebox .pad { display: grid; } }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
       .video-wrap { box-shadow: 0 0 0 3px var(--pink), 0 0 40px var(--pink); }
@@ -417,6 +539,8 @@
   <footer>MESCAK.DE · © <span id="year">2026</span></footer>
 </main>
 
+<div id="ctx" role="menu"></div>
+
 <noscript><p style="position:fixed;inset:auto 0 40%;text-align:center;color:#ff0055;z-index:99">VERPISS DICH. · DEFOL GİT. · GET LOST.</p></noscript>
 
 <script>
@@ -427,7 +551,9 @@ const TEXT = {
   de: {
     title: 'DOMÄNE VERGEBEN',
     status: 'KI-MODUL AKTIV  |  DREISTIGKEIT: MAX',
-    hint: 'TIPPE <b>help</b> INS TERMINAL · SCHÜTTEL DEIN HANDY',
+    hints: ['TIPPE <b>help</b> INS TERMINAL', 'PROBIER MAL: <b>hack</b>', 'PROBIER MAL: <b>scan</b>', 'PROBIER MAL: <b>game</b>',
+            'PROBIER MAL: <b>witz</b>', 'PROBIER MAL: <b>orakel</b>', 'PROBIER MAL: <b>link Ali</b>', 'PROBIER MAL: <b>virus</b>',
+            'SCHÜTTEL DEIN HANDY', 'PROBIER MAL: <b>zerstören</b>', 'ES GIBT GEHEIME BEFEHLE …'],
     skip: '[ TIPPEN ZUM ÜBERSPRINGEN ]',
     go: '▶ ZUGRIFF STARTEN', gateWarn: 'BETRETEN AUF EIGENE GEFAHR', gateNote: '🔊 MIT TON – AUSSCHALTEN GEHT OBEN LINKS',
     soundOn: 'TON AN', soundOff: 'TON AUS',
@@ -443,6 +569,7 @@ const TEXT = {
       '<span class="r">WARNUNG: unerwünschter Besucher erkannt.</span>',
       '<span class="r big">ZUGRIFF VERWEIGERT</span>'
     ],
+    bootName: 'Ziel identifiziert ....... <span class="r">{n}</span>',
     lines: [
       ['ok',   '<span class="ok">&gt;</span> KI-ANALYSE GESTARTET...'],
       ['err',  '<span class="r">[ERR 666]</span> Nutzer: <span class="r">KOMPLETT PLANLOS</span>'],
@@ -452,56 +579,114 @@ const TEXT = {
       ['warn', '<span class="y">[SYS]</span> Nächster Schritt: <span class="r">GO HOME.</span>']
     ],
     scan: { tag: '[SCAN]', device: 'Gerät', browser: 'Browser', time: 'Uhrzeit', screen: 'Bildschirm',
-            battery: 'Akku', charging: 'lädt', net: 'Netz', lang: 'Sprache',
+            battery: 'Akku', charging: 'lädt', lang: 'Sprache', target: 'Ziel', identified: 'identifiziert',
             done: '<span class="c">[KI]</span> Profil gespeichert. <span class="r">Wir wissen Bescheid.</span>',
-            bye:  '<span class="c">[KI]</span> Auf Wiedersehen, Loser.' },
+            bye:  '<span class="c">[KI]</span> Auf Wiedersehen, Loser.',
+            tip:  '<span class="dim">Tipp: <span class="c">help</span> eingeben. Oder Rechtsklick. Oder einfach gehen.</span>' },
+    daytime: {
+      night:   'Es ist {t}. Was machst du um diese Zeit hier? Geh schlafen.',
+      morning: 'Guten Morgen. Schon so früh unerwünscht?',
+      day:     'Mitten am Tag nichts Besseres zu tun?',
+      evening: 'Feierabend und du landest ausgerechnet hier? Traurig.'
+    },
+    voice: {
+      deny: 'Zugriff verweigert{n}.', bye: 'Auf Wiedersehen{n}. Du Loser.', buy: 'Nein. Niemals.',
+      boom: 'Kaufversuch abgewehrt.', hack: 'Hack fehlgeschlagen. Du übrigens auch.', sudo: 'Netter Versuch.',
+      back: 'Ach, da bist du ja wieder{n}.', count: 'Selbstzerstörung eingeleitet.',
+      bsod: 'Kritischer Fehler. Benutzer ist zu neugierig.', scan: 'Ziel erfasst. Gesicht unerwünscht.',
+      over: 'Game over. Wie dein Leben.', swear: 'Pass auf, was du sagst.'
+    },
+    away: ['👀 KOMM ZURÜCK, FEIGLING', '⚠ WIR SEHEN DICH'],
+    back: '<span class="y">[SYS]</span> Ach, wieder da? Wir haben dich vermisst. <span class="r">Nicht.</span>',
+    copy: 'Ich bin ein Loser und habe versucht, was von mescak.de zu klauen.',
+    copyLine: '<span class="y">[SYS]</span> Kopieren erkannt. Schau mal in deine Zwischenablage. 😏',
     buy: ['DOMAIN KAUFEN', 'ZU LANGSAM', 'NÖ', 'FAST!', 'HAHA', 'NIE IM LEBEN', 'GIB AUF'],
     buyDone: '<span class="r">[SYS]</span> Kaufversuch Nr. {n} abgewehrt. <span class="r">Preis: unbezahlbar.</span>',
     konami: '<span class="y">[CHEAT]</span> Konami-Code erkannt. Belohnung: <span class="r">immer noch nichts.</span>',
     shake: '<span class="y">[SENSOR]</span> Erschütterung erkannt. Beruhig dich.',
+    menu: { hack: '🔓 Seite hacken', buy: '💸 Domain kaufen', scan: '📸 Gesichtsscan', game: '🐍 Snake spielen',
+            destruct: '💥 Selbstzerstörung', crash: '🟦 Absturz', link: '🔗 Link für Freund', leave: '🚪 Verpissen' },
+    cd: { lbl: 'SELBSTZERSTÖRUNG IN', abort: 'ABBRECHEN', late: 'ZU SPÄT 😈' },
+    bsod: { text: 'Dein Gerät ist auf ein Problem gestoßen und muss neu gestartet werden. Wir sammeln nur ein paar peinliche Informationen über dich, dann starten wir neu.',
+            pct: '{p} % abgeschlossen', more: 'Weitere Informationen gibt es nicht. Du hast sie nicht verdient.',
+            code: 'Stoppcode: BENUTZER_ZU_NEUGIERIG' },
+    cam: { lines: ['GESICHT ERKANNT', 'ALTER: egal, trotzdem nein', 'IQ: wird berechnet … FEHLER', 'SYMPATHIE: 0 %', 'DATENBANK: 0 Treffer für „cool“'],
+           verdict: 'ZIEL ERFASST – UNERWÜNSCHT', close: 'SCHLIESSEN',
+           denied: 'Kamera verweigert. Feigling. 🐔', none: 'Keine Kamera gefunden. Glück gehabt.',
+           note: 'Nur auf deinem Gerät – nichts wird aufgenommen oder verschickt.',
+           done: '<span class="r">[SCAN]</span> Gesicht gespeichert unter: <span class="w">unerwünscht_{d}.jpg</span> (nein, nicht wirklich)' },
+    game: { start: 'SNAKE · Pfeile/WASD oder wischen · Q = Ende · Friss die €', score: 'PUNKTE', best: 'REKORD',
+            over: 'GAME OVER. Punkte: {s} · Rekord: {h}. Wie dein Leben: kurz.', high: '<span class="y">NEUER REKORD!</span> Trotzdem nichts für dich.' },
     cmd: {
       help: [
-        'Befehle:',
-        '  <span class="c">help</span>      diese Liste',
-        '  <span class="c">whoami</span>    wer bist du überhaupt?',
-        '  <span class="c">kaufen</span>    Domain kaufen (viel Glück)',
-        '  <span class="c">ls</span> / <span class="c">cat</span>  Dateien ansehen',
-        '  <span class="c">hack</span>      versuch es ruhig',
-        '  <span class="c">sudo</span>      Admin spielen',
-        '  <span class="c">matrix</span>    rote Pille, blaue Pille',
-        '  <span class="c">glitch</span>    kaputt machen',
-        '  <span class="c">ping</span> · <span class="c">date</span> · <span class="c">echo</span> · <span class="c">clear</span>',
-        '  <span class="c">sound</span>     Ton an/aus',
-        '  <span class="c">lang</span> de|tr|en   Sprache',
-        '  <span class="c">privacy</span>   was wir über dich wissen',
-        '  <span class="c">exit</span>      die beste Idee heute'
+        '<span class="y">GRUNDLAGEN</span>  <span class="c">help</span> · <span class="c">whoami</span> · <span class="c">ls</span> · <span class="c">cat</span> · <span class="c">clear</span> · <span class="c">history</span> · <span class="c">date</span> · <span class="c">lang</span> de|tr|en · <span class="c">sound</span>',
+        '<span class="y">FIES</span>        <span class="c">hack</span> · <span class="c">sudo</span> · <span class="c">rm -rf /</span> · <span class="c">virus</span> · <span class="c">bsod</span> · <span class="c">zerstören</span> · <span class="c">kaufen</span>',
+        '<span class="y">SPASS</span>       <span class="c">witz</span> · <span class="c">orakel</span> · <span class="c">wetter</span> · <span class="c">beleidige</span> · <span class="c">sag</span> &lt;text&gt; · <span class="c">ip</span> · <span class="c">geld</span> · <span class="c">kaffee</span>',
+        '<span class="y">KRASS</span>       <span class="c">scan</span> (Kamera) · <span class="c">game</span> (Snake) · <span class="c">matrix</span> · <span class="c">glitch</span> · <span class="c">link</span> &lt;Name&gt;',
+        '<span class="dim">… und ein paar geheime Befehle. Viel Spaß beim Suchen.</span>'
       ],
       whoami: 'Ein Niemand mit {device}. Nächste Frage.',
+      whoamiName: '{name}. Laut unserer Datenbank: ein Niemand mit {device}.',
       buy: ['<span class="r">NEIN.</span>', 'Preis: unbezahlbar. Wartezeit: für immer.'],
       ls: '<span class="c">geheim.txt</span>  <span class="c">passwörter.txt</span>  <span class="c">nix_für_dich/</span>',
+      lsA: '<span class="c">.</span>  <span class="c">..</span>  <span class="y">.versteckt</span>  <span class="c">geheim.txt</span>  <span class="c">passwörter.txt</span>  <span class="c">nix_für_dich/</span>',
       secret: 'Ätsch. Hier steht nichts. Hast du echt geglaubt …?',
+      hidden: 'Psst … ↑ ↑ ↓ ↓ ← → ← → B A. Und tipp mal <span class="c">game</span>.',
       pw: 'hunter2  ·  passwort123  ·  <span class="r">war nur Spaß, Loser.</span>',
       nofile: 'cat: {f}: Datei nicht gefunden. Wie dein Plan.',
       cd: 'cd: Zugriff verweigert. Du bleibst draußen.',
       sudo: '<span class="r">{u} ist nicht in der sudoers-Datei. Dieser Vorfall wird gemeldet.</span>',
-      rm: '<span class="r">SELBSTZERSTÖRUNG …</span> abgebrochen. Netter Versuch.',
-      hack: ['Starte Hack …', 'Knacke Passwort … [##########] 100%', 'Umgehe Firewall …', '<span class="r">HACK FEHLGESCHLAGEN.</span> Du übrigens auch.'],
+      hack: ['Starte Hack …', 'Knacke Passwort … [##########] 100%', 'Umgehe Firewall …', 'Lade Admin-Rechte …', '<span class="r">HACK FEHLGESCHLAGEN.</span> Du übrigens auch.'],
+      virus: ['Lade virus.exe herunter … [####------] 40 %', 'Lade virus.exe herunter … [##########] 100 %', 'Installiere auf {device} …', 'Lösche Fotos … Lösche Kontakte …', '<span class="r">SPASS.</span> Aber dein Gesicht gerade war es wert.'],
       matrix: 'Folge dem weißen Kaninchen …',
       glitch: 'Upsi.',
       ping: 'pong. Und jetzt geh.',
-      hello: 'Nein.',
+      hello: ['Nein.', 'Hallo. Tschüss.', 'Wer hat dich reingelassen?', 'Oh. Du schon wieder.'],
       exit: 'Gute Idee. Den Tab musst du aber selbst zumachen.',
       privacy: 'Keine Panik: alles läuft nur in deinem Browser. Nichts wird gespeichert oder verschickt. Bisschen Angst gehabt? 😏',
       soundOn: 'Ton an. 🔊', soundOff: 'Ton aus. 🔇',
       lang: 'Sprache: lang de | tr | en',
-      unknown: 'Befehl nicht gefunden: <span class="r">{c}</span>. Versuch <span class="c">help</span>. Oder geh.'
+      weather: 'Wetter bei dir: 100 % Chance auf Abfuhr, später vereinzelt Tränen. 🌧',
+      jokes: ['Warum ist diese Domain nicht zu verkaufen? Weil du sie willst.',
+              'Ein Loser kommt auf eine Website. Das war’s. Das ist der Witz.',
+              'Klopf, klopf. – Wer ist da? – Nicht du. Du kommst hier nicht rein.',
+              'Was ist der Unterschied zwischen dir und dieser Domain? Die Domain hat einen Besitzer, der weiß, was er tut.',
+              'Wie viele Besucher braucht man, um diese Domain zu kaufen? Mehr, als es Menschen gibt.'],
+      love: 'Error 404: Liebe nicht gefunden. Versuch es bei jemand anderem. 💔',
+      money: 'Dein Kontostand laut Scan: <span class="r">-3,50 €</span>. Die Domain kostet: mehr.',
+      ip: 'Deine IP: <span class="w">127.0.0.1</span>. Ja, du bist zu Hause. Bleib da.',
+      coffee: '418: Ich bin eine Teekanne. Kein Kaffee für dich. ☕',
+      please: 'Nein. Auch nicht mit „bitte“. Aber schön, dass du gefragt hast.',
+      fortune: ['🔮 Das Orakel sagt: Du wirst diese Seite gleich verlassen. Gute Entscheidung.',
+                '🔮 Das Orakel sagt: In deiner Zukunft sehe ich … nichts. Wie auf dieser Domain für dich.',
+                '🔮 Das Orakel sagt: Heute ist nicht dein Tag. Morgen auch nicht.',
+                '🔮 Das Orakel sagt: Du wirst gleich <span class="c">hack</span> eintippen. Es wird nicht klappen.',
+                '🔮 Das Orakel sagt: Jemand denkt gerade an dich. Er lacht.'],
+      whois: 'mescak.de · Besitzer: jemand, der nicht du ist · Status: <span class="r">VERGEBEN</span> · Verkauf: <span class="r">NIEMALS</span>',
+      mescak: 'MESCAK: der Chef hier. Du: nicht. 👑',
+      life: '42. Aber die Frage ist nicht für dich.',
+      howru: 'Mir geht’s super. Ich bin ja nicht du.',
+      who: 'Ich bin die KI von mescak.de. Und du bist hier falsch.',
+      historyHead: 'Deine Befehle bisher:', historyEmpty: 'Noch nichts. Wie dein Lebenslauf.',
+      sayUsage: 'So geht’s: <span class="c">sag</span> Hallo Welt',
+      linkUsage: 'So geht’s: <span class="c">link Ali</span> → eigener Link nur für Ali.',
+      linkDone: 'Link für <span class="w">{n}</span>: <span class="c">{u}</span> <span class="ok">(kopiert ✔)</span>',
+      linkNoCopy: 'Link für <span class="w">{n}</span>: <span class="c">{u}</span>',
+      swear: ['Böse Wörter erkannt. Deine Mama wurde informiert. (Nein, nicht wirklich.)', 'Wow. Mit dem Mund isst du?', 'Gespeichert. Für später. 📁', 'Selber.'],
+      busy: 'Moment, hier läuft gerade schon was. Geduld, Loser.',
+      unknown: ['Befehl nicht gefunden: <span class="r">{c}</span>. Versuch <span class="c">help</span>. Oder geh.',
+                '„<span class="r">{c}</span>“? Ernsthaft? Tipp <span class="c">help</span>.',
+                '<span class="r">{c}</span> … hab ich mir angeschaut. Nein.',
+                'Kenn ich nicht. Wie dich. Tipp <span class="c">help</span>.']
     }
   },
 
   tr: {
     title: 'ALAN ADI ALINMIŞ',
     status: 'YZ MODÜLÜ AKTİF  |  KÜSTAHLIK: MAKS',
-    hint: 'TERMİNALE <b>help</b> YAZ · TELEFONUNU SALLA',
+    hints: ['TERMİNALE <b>help</b> YAZ', 'BUNU DENE: <b>hack</b>', 'BUNU DENE: <b>scan</b>', 'BUNU DENE: <b>game</b>',
+            'BUNU DENE: <b>şaka</b>', 'BUNU DENE: <b>fal</b>', 'BUNU DENE: <b>link Ali</b>', 'BUNU DENE: <b>virus</b>',
+            'TELEFONUNU SALLA', 'BUNU DENE: <b>imha</b>', 'GİZLİ KOMUTLAR DA VAR …'],
     skip: '[ GEÇMEK İÇİN DOKUN ]',
     go: '▶ ERİŞİMİ BAŞLAT', gateWarn: 'GİRİŞ KENDİ SORUMLULUĞUNDA', gateNote: '🔊 SESLİ – SOL ÜSTTEN KAPATILABİLİR',
     soundOn: 'SES AÇIK', soundOff: 'SES KAPALI',
@@ -517,6 +702,7 @@ const TEXT = {
       '<span class="r">UYARI: istenmeyen ziyaretçi tespit edildi.</span>',
       '<span class="r big">ERİŞİM REDDEDİLDİ</span>'
     ],
+    bootName: 'Hedef tespit edildi ...... <span class="r">{n}</span>',
     lines: [
       ['ok',   '<span class="ok">&gt;</span> YAPAY ZEKÂ ANALİZİ BAŞLADI...'],
       ['err',  '<span class="r">[HATA 666]</span> Kullanıcı: <span class="r">TAMAMEN PLANSIZ</span>'],
@@ -526,56 +712,114 @@ const TEXT = {
       ['warn', '<span class="y">[SİS]</span> Sonraki adım: <span class="r">EVİNE DÖN.</span>']
     ],
     scan: { tag: '[TARAMA]', device: 'Cihaz', browser: 'Tarayıcı', time: 'Saat', screen: 'Ekran',
-            battery: 'Pil', charging: 'şarj oluyor', net: 'Ağ', lang: 'Dil',
+            battery: 'Pil', charging: 'şarj oluyor', lang: 'Dil', target: 'Hedef', identified: 'tespit edildi',
             done: '<span class="c">[YZ]</span> Profil kaydedildi. <span class="r">Her şeyi biliyoruz.</span>',
-            bye:  '<span class="c">[YZ]</span> Güle güle, ezik.' },
+            bye:  '<span class="c">[YZ]</span> Güle güle, ezik.',
+            tip:  '<span class="dim">İpucu: <span class="c">help</span> yaz. Ya da sağ tıkla. Ya da git.</span>' },
+    daytime: {
+      night:   'Saat {t}. Bu saatte burada ne arıyorsun? Git yat.',
+      morning: 'Günaydın. Sabah sabah istenmiyorsun.',
+      day:     'Gün ortasında yapacak daha iyi bir işin yok mu?',
+      evening: 'İş çıkışı gelip gelip buraya mı düştün? Üzücü.'
+    },
+    voice: {
+      deny: 'Erişim reddedildi{n}.', bye: 'Güle güle{n}. Ezik.', buy: 'Hayır. Asla.',
+      boom: 'Satın alma denemesi engellendi.', hack: 'Hack başarısız. Sen de öylesin.', sudo: 'İyi denemeydi.',
+      back: 'Aa, geri mi döndün{n}?', count: 'Kendini imha başlatıldı.',
+      bsod: 'Kritik hata. Kullanıcı çok meraklı.', scan: 'Hedef kilitlendi. Yüz istenmiyor.',
+      over: 'Oyun bitti. Hayatın gibi.', swear: 'Ağzına dikkat et.'
+    },
+    away: ['👀 GERİ GEL, KORKAK', '⚠ SENİ GÖRÜYORUZ'],
+    back: '<span class="y">[SİS]</span> Geri mi döndün? Seni özledik. <span class="r">Yok, özlemedik.</span>',
+    copy: 'Ben bir eziğim ve mescak.de’den bir şey çalmaya çalıştım.',
+    copyLine: '<span class="y">[SİS]</span> Kopyalama algılandı. Panona bir bak. 😏',
     buy: ['ALAN ADINI SATIN AL', 'ÇOK YAVAŞ', 'YOK', 'AZ KALDI!', 'HAHA', 'ASLA', 'VAZGEÇ'],
     buyDone: '<span class="r">[SİS]</span> {n}. satın alma denemesi engellendi. <span class="r">Fiyat: paha biçilemez.</span>',
     konami: '<span class="y">[HİLE]</span> Konami kodu algılandı. Ödül: <span class="r">yine hiçbir şey.</span>',
     shake: '<span class="y">[SENSÖR]</span> Sarsıntı algılandı. Sakin ol.',
+    menu: { hack: '🔓 Siteyi hackle', buy: '💸 Alan adını satın al', scan: '📸 Yüz taraması', game: '🐍 Yılan oyna',
+            destruct: '💥 Kendini imha', crash: '🟦 Çökme', link: '🔗 Arkadaşa link', leave: '🚪 Defol' },
+    cd: { lbl: 'KENDİNİ İMHA', abort: 'İPTAL ET', late: 'ÇOK GEÇ 😈' },
+    bsod: { text: 'Cihazın bir sorunla karşılaştı ve yeniden başlatılması gerekiyor. Senin hakkında birkaç utanç verici bilgi topluyoruz, sonra yeniden başlatacağız.',
+            pct: '%{p} tamamlandı', more: 'Daha fazla bilgi yok. Hak etmiyorsun.',
+            code: 'Durdurma kodu: KULLANICI_ÇOK_MERAKLI' },
+    cam: { lines: ['YÜZ ALGILANDI', 'YAŞ: fark etmez, yine de hayır', 'IQ: hesaplanıyor … HATA', 'SEMPATİ: %0', 'VERİTABANI: „havalı“ için 0 sonuç'],
+           verdict: 'HEDEF KİLİTLENDİ – İSTENMİYOR', close: 'KAPAT',
+           denied: 'Kamera reddedildi. Korkak. 🐔', none: 'Kamera bulunamadı. Şanslısın.',
+           note: 'Sadece cihazında – hiçbir şey kaydedilmiyor ya da gönderilmiyor.',
+           done: '<span class="r">[TARAMA]</span> Yüz şu adla kaydedildi: <span class="w">istenmeyen_{d}.jpg</span> (yok, gerçekten değil)' },
+    game: { start: 'YILAN · Oklar/WASD ya da kaydır · Q = çık · €’ları ye', score: 'PUAN', best: 'REKOR',
+            over: 'OYUN BİTTİ. Puan: {s} · Rekor: {h}. Hayatın gibi: kısa.', high: '<span class="y">YENİ REKOR!</span> Yine de sana göre değil.' },
     cmd: {
       help: [
-        'Komutlar:',
-        '  <span class="c">help</span>      bu liste',
-        '  <span class="c">whoami</span>    sen kimsin ki?',
-        '  <span class="c">satın al</span>  alan adını al (bol şans)',
-        '  <span class="c">ls</span> / <span class="c">cat</span>  dosyalara bak',
-        '  <span class="c">hack</span>      dene bakalım',
-        '  <span class="c">sudo</span>      admin taklidi yap',
-        '  <span class="c">matrix</span>    kırmızı hap, mavi hap',
-        '  <span class="c">glitch</span>    boz',
-        '  <span class="c">ping</span> · <span class="c">date</span> · <span class="c">echo</span> · <span class="c">clear</span>',
-        '  <span class="c">sound</span>     ses aç/kapat',
-        '  <span class="c">lang</span> de|tr|en   dil',
-        '  <span class="c">privacy</span>   hakkında ne biliyoruz',
-        '  <span class="c">exit</span>      bugünün en iyi fikri'
+        '<span class="y">TEMEL</span>       <span class="c">help</span> · <span class="c">whoami</span> · <span class="c">ls</span> · <span class="c">cat</span> · <span class="c">clear</span> · <span class="c">history</span> · <span class="c">date</span> · <span class="c">lang</span> de|tr|en · <span class="c">sound</span>',
+        '<span class="y">KÖTÜ</span>        <span class="c">hack</span> · <span class="c">sudo</span> · <span class="c">rm -rf /</span> · <span class="c">virus</span> · <span class="c">bsod</span> · <span class="c">imha</span> · <span class="c">satın al</span>',
+        '<span class="y">EĞLENCE</span>     <span class="c">şaka</span> · <span class="c">fal</span> · <span class="c">hava</span> · <span class="c">hakaret</span> · <span class="c">söyle</span> &lt;metin&gt; · <span class="c">ip</span> · <span class="c">para</span> · <span class="c">kahve</span>',
+        '<span class="y">EFSANE</span>      <span class="c">scan</span> (kamera) · <span class="c">game</span> (yılan) · <span class="c">matrix</span> · <span class="c">glitch</span> · <span class="c">link</span> &lt;isim&gt;',
+        '<span class="dim">… ve birkaç gizli komut. Bulmaya çalış.</span>'
       ],
       whoami: '{device} kullanan bir hiç. Sıradaki soru.',
+      whoamiName: '{name}. Veritabanımıza göre: {device} kullanan bir hiç.',
       buy: ['<span class="r">HAYIR.</span>', 'Fiyat: paha biçilemez. Bekleme süresi: sonsuza dek.'],
       ls: '<span class="c">gizli.txt</span>  <span class="c">şifreler.txt</span>  <span class="c">sana_değil/</span>',
+      lsA: '<span class="c">.</span>  <span class="c">..</span>  <span class="y">.saklı</span>  <span class="c">gizli.txt</span>  <span class="c">şifreler.txt</span>  <span class="c">sana_değil/</span>',
       secret: 'Oh olsun. Burada hiçbir şey yok. Gerçekten inandın mı …?',
+      hidden: 'Pışşt … ↑ ↑ ↓ ↓ ← → ← → B A. Bir de <span class="c">game</span> yaz.',
       pw: 'hunter2  ·  sifre123  ·  <span class="r">şakaydı, ezik.</span>',
       nofile: 'cat: {f}: dosya bulunamadı. Tıpkı planın gibi.',
       cd: 'cd: erişim reddedildi. Dışarıda kalıyorsun.',
       sudo: '<span class="r">{u} sudoers dosyasında yok. Bu olay bildirilecek.</span>',
-      rm: '<span class="r">KENDİNİ İMHA …</span> iptal edildi. İyi denemeydi.',
-      hack: ['Hack başlatılıyor …', 'Şifre kırılıyor … [##########] %100', 'Güvenlik duvarı aşılıyor …', '<span class="r">HACK BAŞARISIZ.</span> Sen de öylesin.'],
+      hack: ['Hack başlatılıyor …', 'Şifre kırılıyor … [##########] %100', 'Güvenlik duvarı aşılıyor …', 'Admin yetkisi alınıyor …', '<span class="r">HACK BAŞARISIZ.</span> Sen de öylesin.'],
+      virus: ['virus.exe indiriliyor … [####------] %40', 'virus.exe indiriliyor … [##########] %100', '{device} cihazına kuruluyor …', 'Fotoğraflar siliniyor … Rehber siliniyor …', '<span class="r">ŞAKA.</span> Ama az önceki yüz ifaden buna değdi.'],
       matrix: 'Beyaz tavşanı takip et …',
       glitch: 'Hoppala.',
       ping: 'pong. Şimdi git.',
-      hello: 'Hayır.',
+      hello: ['Hayır.', 'Merhaba. Güle güle.', 'Seni kim içeri aldı?', 'Ah. Yine sen.'],
       exit: 'İyi fikir. Ama sekmeyi kendin kapatacaksın.',
       privacy: 'Panik yok: her şey sadece senin tarayıcında çalışıyor. Hiçbir şey kaydedilmiyor ya da gönderilmiyor. Biraz korktun mu? 😏',
       soundOn: 'Ses açık. 🔊', soundOff: 'Ses kapalı. 🔇',
       lang: 'Dil: lang de | tr | en',
-      unknown: 'Komut bulunamadı: <span class="r">{c}</span>. <span class="c">help</span> yaz. Ya da git.'
+      weather: 'Senin oraya hava durumu: %100 ret ihtimali, sonra yer yer gözyaşı. 🌧',
+      jokes: ['Bu alan adı neden satılık değil? Çünkü sen istiyorsun.',
+              'Bir ezik bir siteye girer. Bu kadar. Fıkra bu.',
+              'Tık tık. – Kim o? – Sen değilsin. Giremezsin.',
+              'Senle bu alan adı arasındaki fark ne? Alan adının, ne yaptığını bilen bir sahibi var.',
+              'Bu alan adını almak için kaç ziyaretçi lazım? Dünyadaki insanlardan fazla.'],
+      love: 'Hata 404: Aşk bulunamadı. Başka birinde dene. 💔',
+      money: 'Taramaya göre bakiyen: <span class="r">-3,50 €</span>. Alan adının fiyatı: daha fazla.',
+      ip: 'IP adresin: <span class="w">127.0.0.1</span>. Evet, evdesin. Orada kal.',
+      coffee: '418: Ben bir çaydanlığım. Sana kahve yok. Çay da yok. ☕',
+      please: 'Hayır. „Lütfen“ desen de hayır. Ama sorman güzeldi.',
+      fortune: ['🔮 Kâhin diyor ki: Birazdan bu siteden çıkacaksın. İyi karar.',
+                '🔮 Kâhin diyor ki: Geleceğinde … hiçbir şey görüyorum. Bu alan adında senin için olduğu gibi.',
+                '🔮 Kâhin diyor ki: Bugün senin günün değil. Yarın da değil.',
+                '🔮 Kâhin diyor ki: Birazdan <span class="c">hack</span> yazacaksın. İşe yaramayacak.',
+                '🔮 Kâhin diyor ki: Şu an biri seni düşünüyor. Gülüyor.'],
+      whois: 'mescak.de · Sahibi: sen olmayan biri · Durum: <span class="r">ALINMIŞ</span> · Satış: <span class="r">ASLA</span>',
+      mescak: 'MESCAK: buranın patronu. Sen: değil. 👑',
+      life: '42. Ama soru sana göre değil.',
+      howru: 'Harikayım. Sonuçta sen değilim.',
+      who: 'Ben mescak.de’nin yapay zekâsıyım. Sen ise yanlış yerdesin.',
+      historyHead: 'Şimdiye kadarki komutların:', historyEmpty: 'Henüz hiçbir şey. Özgeçmişin gibi.',
+      sayUsage: 'Şöyle: <span class="c">söyle</span> Merhaba dünya',
+      linkUsage: 'Şöyle: <span class="c">link Ali</span> → sadece Ali’ye özel link.',
+      linkDone: '<span class="w">{n}</span> için link: <span class="c">{u}</span> <span class="ok">(kopyalandı ✔)</span>',
+      linkNoCopy: '<span class="w">{n}</span> için link: <span class="c">{u}</span>',
+      swear: ['Kötü kelimeler algılandı. Annene haber verildi. (Yok, gerçekten değil.)', 'Vay. O ağızla yemek mi yiyorsun?', 'Kaydedildi. Sonra için. 📁', 'Sensin.'],
+      busy: 'Dur, zaten bir şey çalışıyor. Sabır, ezik.',
+      unknown: ['Komut bulunamadı: <span class="r">{c}</span>. <span class="c">help</span> yaz. Ya da git.',
+                '„<span class="r">{c}</span>“ mı? Ciddi misin? <span class="c">help</span> yaz.',
+                '<span class="r">{c}</span> … baktım. Hayır.',
+                'Tanımıyorum. Seni de. <span class="c">help</span> yaz.']
     }
   },
 
   en: {
     title: 'DOMAIN TAKEN',
     status: 'AI MODULE ACTIVE  |  AUDACITY: MAX',
-    hint: 'TYPE <b>help</b> IN THE TERMINAL · SHAKE YOUR PHONE',
+    hints: ['TYPE <b>help</b> IN THE TERMINAL', 'TRY: <b>hack</b>', 'TRY: <b>scan</b>', 'TRY: <b>game</b>',
+            'TRY: <b>joke</b>', 'TRY: <b>fortune</b>', 'TRY: <b>link Ali</b>', 'TRY: <b>virus</b>',
+            'SHAKE YOUR PHONE', 'TRY: <b>destruct</b>', 'THERE ARE SECRET COMMANDS …'],
     skip: '[ TAP TO SKIP ]',
     go: '▶ START ACCESS', gateWarn: 'ENTER AT YOUR OWN RISK', gateNote: '🔊 WITH SOUND – MUTE TOP LEFT',
     soundOn: 'SOUND ON', soundOff: 'SOUND OFF',
@@ -591,6 +835,7 @@ const TEXT = {
       '<span class="r">WARNING: unwanted visitor detected.</span>',
       '<span class="r big">ACCESS DENIED</span>'
     ],
+    bootName: 'Target identified ........ <span class="r">{n}</span>',
     lines: [
       ['ok',   '<span class="ok">&gt;</span> AI ANALYSIS STARTED...'],
       ['err',  '<span class="r">[ERR 666]</span> User: <span class="r">TOTALLY CLUELESS</span>'],
@@ -600,49 +845,105 @@ const TEXT = {
       ['warn', '<span class="y">[SYS]</span> Next step: <span class="r">GO HOME.</span>']
     ],
     scan: { tag: '[SCAN]', device: 'Device', browser: 'Browser', time: 'Time', screen: 'Screen',
-            battery: 'Battery', charging: 'charging', net: 'Network', lang: 'Language',
+            battery: 'Battery', charging: 'charging', lang: 'Language', target: 'Target', identified: 'identified',
             done: '<span class="c">[AI]</span> Profile saved. <span class="r">We know everything.</span>',
-            bye:  '<span class="c">[AI]</span> Goodbye, loser.' },
+            bye:  '<span class="c">[AI]</span> Goodbye, loser.',
+            tip:  '<span class="dim">Tip: type <span class="c">help</span>. Or right-click. Or just leave.</span>' },
+    daytime: {
+      night:   'It’s {t}. What are you doing here at this hour? Go to sleep.',
+      morning: 'Good morning. Unwanted this early already?',
+      day:     'Nothing better to do in the middle of the day?',
+      evening: 'Done with work and you end up here of all places? Sad.'
+    },
+    voice: {
+      deny: 'Access denied{n}.', bye: 'Goodbye{n}. Loser.', buy: 'No. Never.',
+      boom: 'Purchase attempt blocked.', hack: 'Hack failed. So did you.', sudo: 'Nice try.',
+      back: 'Oh, there you are again{n}.', count: 'Self-destruct initiated.',
+      bsod: 'Critical error. User is too curious.', scan: 'Target locked. Face unwanted.',
+      over: 'Game over. Like your life.', swear: 'Watch your mouth.'
+    },
+    away: ['👀 COME BACK, COWARD', '⚠ WE SEE YOU'],
+    back: '<span class="y">[SYS]</span> Oh, back again? We missed you. <span class="r">Not.</span>',
+    copy: 'I am a loser and tried to steal something from mescak.de.',
+    copyLine: '<span class="y">[SYS]</span> Copy detected. Check your clipboard. 😏',
     buy: ['BUY THIS DOMAIN', 'TOO SLOW', 'NOPE', 'ALMOST!', 'HAHA', 'NEVER EVER', 'GIVE UP'],
     buyDone: '<span class="r">[SYS]</span> Purchase attempt #{n} blocked. <span class="r">Price: priceless.</span>',
     konami: '<span class="y">[CHEAT]</span> Konami code detected. Reward: <span class="r">still nothing.</span>',
     shake: '<span class="y">[SENSOR]</span> Shaking detected. Calm down.',
+    menu: { hack: '🔓 Hack the site', buy: '💸 Buy the domain', scan: '📸 Face scan', game: '🐍 Play snake',
+            destruct: '💥 Self-destruct', crash: '🟦 Crash', link: '🔗 Link for a friend', leave: '🚪 Get lost' },
+    cd: { lbl: 'SELF-DESTRUCT IN', abort: 'ABORT', late: 'TOO LATE 😈' },
+    bsod: { text: 'Your device ran into a problem and needs to restart. We’re just collecting some embarrassing info about you, and then we’ll restart for you.',
+            pct: '{p}% complete', more: 'There is no more information. You don’t deserve it.',
+            code: 'Stop code: USER_TOO_CURIOUS' },
+    cam: { lines: ['FACE DETECTED', 'AGE: irrelevant, still no', 'IQ: calculating … ERROR', 'LIKEABILITY: 0 %', 'DATABASE: 0 hits for “cool”'],
+           verdict: 'TARGET LOCKED – UNWANTED', close: 'CLOSE',
+           denied: 'Camera denied. Coward. 🐔', none: 'No camera found. Lucky you.',
+           note: 'Only on your device – nothing is recorded or sent.',
+           done: '<span class="r">[SCAN]</span> Face saved as: <span class="w">unwanted_{d}.jpg</span> (no, not really)' },
+    game: { start: 'SNAKE · arrows/WASD or swipe · Q = quit · eat the €', score: 'SCORE', best: 'BEST',
+            over: 'GAME OVER. Score: {s} · Best: {h}. Like your life: short.', high: '<span class="y">NEW HIGH SCORE!</span> Still nothing for you.' },
     cmd: {
       help: [
-        'Commands:',
-        '  <span class="c">help</span>      this list',
-        '  <span class="c">whoami</span>    who even are you?',
-        '  <span class="c">buy</span>       buy the domain (good luck)',
-        '  <span class="c">ls</span> / <span class="c">cat</span>  look at files',
-        '  <span class="c">hack</span>      go on, try it',
-        '  <span class="c">sudo</span>      play admin',
-        '  <span class="c">matrix</span>    red pill, blue pill',
-        '  <span class="c">glitch</span>    break stuff',
-        '  <span class="c">ping</span> · <span class="c">date</span> · <span class="c">echo</span> · <span class="c">clear</span>',
-        '  <span class="c">sound</span>     sound on/off',
-        '  <span class="c">lang</span> de|tr|en   language',
-        '  <span class="c">privacy</span>   what we know about you',
-        '  <span class="c">exit</span>      best idea today'
+        '<span class="y">BASICS</span>      <span class="c">help</span> · <span class="c">whoami</span> · <span class="c">ls</span> · <span class="c">cat</span> · <span class="c">clear</span> · <span class="c">history</span> · <span class="c">date</span> · <span class="c">lang</span> de|tr|en · <span class="c">sound</span>',
+        '<span class="y">EVIL</span>        <span class="c">hack</span> · <span class="c">sudo</span> · <span class="c">rm -rf /</span> · <span class="c">virus</span> · <span class="c">bsod</span> · <span class="c">destruct</span> · <span class="c">buy</span>',
+        '<span class="y">FUN</span>         <span class="c">joke</span> · <span class="c">fortune</span> · <span class="c">weather</span> · <span class="c">insult</span> · <span class="c">say</span> &lt;text&gt; · <span class="c">ip</span> · <span class="c">money</span> · <span class="c">coffee</span>',
+        '<span class="y">INSANE</span>      <span class="c">scan</span> (camera) · <span class="c">game</span> (snake) · <span class="c">matrix</span> · <span class="c">glitch</span> · <span class="c">link</span> &lt;name&gt;',
+        '<span class="dim">… and a few secret commands. Happy hunting.</span>'
       ],
       whoami: 'A nobody on {device}. Next question.',
+      whoamiName: '{name}. According to our database: a nobody on {device}.',
       buy: ['<span class="r">NO.</span>', 'Price: priceless. Waiting time: forever.'],
       ls: '<span class="c">secret.txt</span>  <span class="c">passwords.txt</span>  <span class="c">not_for_you/</span>',
+      lsA: '<span class="c">.</span>  <span class="c">..</span>  <span class="y">.hidden</span>  <span class="c">secret.txt</span>  <span class="c">passwords.txt</span>  <span class="c">not_for_you/</span>',
       secret: 'Ha. Nothing here. Did you really think …?',
+      hidden: 'Psst … ↑ ↑ ↓ ↓ ← → ← → B A. And try <span class="c">game</span>.',
       pw: 'hunter2  ·  password123  ·  <span class="r">just kidding, loser.</span>',
       nofile: 'cat: {f}: no such file. Just like your plan.',
       cd: 'cd: permission denied. You stay outside.',
       sudo: '<span class="r">{u} is not in the sudoers file. This incident will be reported.</span>',
-      rm: '<span class="r">SELF-DESTRUCT …</span> aborted. Nice try.',
-      hack: ['Starting hack …', 'Cracking password … [##########] 100%', 'Bypassing firewall …', '<span class="r">HACK FAILED.</span> So did you.'],
+      hack: ['Starting hack …', 'Cracking password … [##########] 100%', 'Bypassing firewall …', 'Acquiring admin rights …', '<span class="r">HACK FAILED.</span> So did you.'],
+      virus: ['Downloading virus.exe … [####------] 40 %', 'Downloading virus.exe … [##########] 100 %', 'Installing on {device} …', 'Deleting photos … Deleting contacts …', '<span class="r">JUST KIDDING.</span> But your face just now was worth it.'],
       matrix: 'Follow the white rabbit …',
       glitch: 'Oops.',
       ping: 'pong. Now leave.',
-      hello: 'No.',
+      hello: ['No.', 'Hello. Goodbye.', 'Who let you in?', 'Oh. You again.'],
       exit: 'Good idea. You have to close the tab yourself, though.',
       privacy: 'Relax: everything runs only in your browser. Nothing is stored or sent. Got a little scared? 😏',
       soundOn: 'Sound on. 🔊', soundOff: 'Sound off. 🔇',
       lang: 'Language: lang de | tr | en',
-      unknown: 'Command not found: <span class="r">{c}</span>. Try <span class="c">help</span>. Or leave.'
+      weather: 'Weather at your place: 100 % chance of rejection, scattered tears later. 🌧',
+      jokes: ['Why isn’t this domain for sale? Because you want it.',
+              'A loser walks into a website. That’s it. That’s the joke.',
+              'Knock knock. – Who’s there? – Not you. You’re not getting in.',
+              'What’s the difference between you and this domain? The domain has an owner who knows what he’s doing.',
+              'How many visitors does it take to buy this domain? More than there are people.'],
+      love: 'Error 404: love not found. Try someone else. 💔',
+      money: 'Your balance according to scan: <span class="r">-€3.50</span>. The domain costs: more.',
+      ip: 'Your IP: <span class="w">127.0.0.1</span>. Yes, you’re home. Stay there.',
+      coffee: '418: I’m a teapot. No coffee for you. ☕',
+      please: 'No. Not even with “please”. But nice of you to ask.',
+      fortune: ['🔮 The oracle says: you’re about to leave this page. Good decision.',
+                '🔮 The oracle says: in your future I see … nothing. Like on this domain for you.',
+                '🔮 The oracle says: today is not your day. Tomorrow isn’t either.',
+                '🔮 The oracle says: you’re about to type <span class="c">hack</span>. It won’t work.',
+                '🔮 The oracle says: someone is thinking of you right now. He’s laughing.'],
+      whois: 'mescak.de · Owner: someone who isn’t you · Status: <span class="r">TAKEN</span> · For sale: <span class="r">NEVER</span>',
+      mescak: 'MESCAK: the boss here. You: not. 👑',
+      life: '42. But the question isn’t for you.',
+      howru: 'I’m great. After all, I’m not you.',
+      who: 'I’m the AI of mescak.de. And you’re in the wrong place.',
+      historyHead: 'Your commands so far:', historyEmpty: 'Nothing yet. Like your résumé.',
+      sayUsage: 'Like this: <span class="c">say</span> hello world',
+      linkUsage: 'Like this: <span class="c">link Ali</span> → a personal link just for Ali.',
+      linkDone: 'Link for <span class="w">{n}</span>: <span class="c">{u}</span> <span class="ok">(copied ✔)</span>',
+      linkNoCopy: 'Link for <span class="w">{n}</span>: <span class="c">{u}</span>',
+      swear: ['Bad words detected. Your mom has been informed. (Not really.)', 'Wow. You eat with that mouth?', 'Saved. For later. 📁', 'You too.'],
+      busy: 'Hold on, something is already running. Patience, loser.',
+      unknown: ['Command not found: <span class="r">{c}</span>. Try <span class="c">help</span>. Or leave.',
+                '“<span class="r">{c}</span>”? Seriously? Type <span class="c">help</span>.',
+                '<span class="r">{c}</span> … I looked at it. No.',
+                'Never heard of it. Or of you. Type <span class="c">help</span>.']
     }
   }
 };
@@ -652,17 +953,20 @@ const TEXT = {
    ===================================================================== */
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const pick = a => a[Math.floor(Math.random() * a.length)];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const params = new URLSearchParams(location.search);
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 };
 const fill = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k] ?? '');
-const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const strip = s => s.replace(/<[^>]+>/g, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
 $('#year').textContent = new Date().getFullYear();
 
 function pickLang() {
-  const q = new URLSearchParams(location.search).get('lang');
+  const q = params.get('lang');
   if (q && TEXT[q]) return q;
   // Gerätesprache: Deutsch → de, Türkisch → tr, alles andere → en
   const dev = ((navigator.languages && navigator.languages[0]) || navigator.language || '').slice(0, 2).toLowerCase();
@@ -670,6 +974,11 @@ function pickLang() {
 }
 let lang = pickLang();
 let T = TEXT[lang];
+
+// Persönlicher Link: mescak.de/?name=Ali
+const NAME = (params.get('name') || '').replace(/[^\p{L}\p{N} .'-]/gu, '').trim().slice(0, 16);
+const up = s => s.toLocaleUpperCase(lang === 'tr' ? 'tr' : undefined);
+const nameVoice = () => NAME ? ', ' + NAME : '';
 
 /* =====================================================================
    TON  (wird live im Browser erzeugt, keine Dateien)
@@ -685,7 +994,7 @@ function audio() {
   return actx;
 }
 function tone(f, d = .06, type = 'square', vol = .04, slide) {
-  if (!soundOn) return;
+  if (!soundOn || !actx) return;
   const a = audio(); if (!a) return;
   const t = a.currentTime, o = a.createOscillator(), g = a.createGain();
   o.type = type; o.frequency.setValueAtTime(f, t);
@@ -694,7 +1003,7 @@ function tone(f, d = .06, type = 'square', vol = .04, slide) {
   o.connect(g).connect(a.destination); o.start(t); o.stop(t + d + .02);
 }
 function noise(d = .25, vol = .1, freq = 1200, toFreq) {
-  if (!soundOn) return;
+  if (!soundOn || !actx) return;
   const a = audio(); if (!a) return;
   const t = a.currentTime, len = Math.floor(a.sampleRate * d);
   const buf = a.createBuffer(1, len, a.sampleRate), ch = buf.getChannelData(0);
@@ -714,8 +1023,48 @@ const sfx = {
   glitch: () => { noise(.35, .14, 600, 4000); tone(55, .3, 'sawtooth', .06, 30); },
   whoosh: () => noise(.18, .07, 3000, 500),
   boom:   () => { noise(.7, .25, 400, 60); tone(110, .6, 'sine', .2, 25); },
-  deny:   () => { tone(220, .14, 'sawtooth', .06); setTimeout(() => tone(165, .3, 'sawtooth', .06), 150); }
+  deny:   () => { tone(220, .14, 'sawtooth', .06); setTimeout(() => tone(165, .3, 'sawtooth', .06), 150); },
+  eat:    () => { tone(520, .05, 'square', .04); setTimeout(() => tone(1040, .07, 'square', .04), 50); },
+  alarm:  () => { tone(1200, .12, 'square', .05, 700); },
+  bsod:   () => { tone(330, .4, 'sine', .08); setTimeout(() => tone(247, .6, 'sine', .08), 200); }
 };
+
+/* Die KI spricht (Sprachausgabe des Geräts) */
+const canSpeak = 'speechSynthesis' in window;
+let voices = [];
+if (canSpeak) {
+  const load = () => { voices = speechSynthesis.getVoices(); };
+  load(); speechSynthesis.addEventListener?.('voiceschanged', load);
+}
+// Nur eine Stimme nehmen, die die Sprache wirklich spricht – sonst lieber schweigen
+// (vorher hat z. B. eine deutsche Stimme Türkisch vorgelesen und das klang furchtbar)
+const VOICE_BEST = { tr: /yelda|emel|ahmet|filiz|cem|tolga/i, de: /conrad|killian|florian|katja|amala|markus|yannick|anna|petra|helena/i, en: /ryan|thomas|arthur|daniel|oliver|guy|davis|aaron/i };
+const VOICE_JUNK = /bad news|bahh|bells|boing|bubbles|cellos|wobble|good news|jester|organ|superstar|trinoids|whisper|zarvox|albert|fred|junior|ralph|kathy|grandma|grandpa|rocko|eddy|flo\b|reed|sandy|shelley/i;
+function voiceFor(l) {
+  if (!voices.length) voices = speechSynthesis.getVoices();
+  let best = null, bestScore = -1;
+  for (const v of voices) {
+    if (v.lang.replace('_', '-').toLowerCase().split('-')[0] !== l || VOICE_JUNK.test(v.name)) continue;
+    let s = 0;
+    if (/natural|neural|online|premium|enhanced|erweitert|gelişmiş/i.test(v.name)) s += 4;
+    if (VOICE_BEST[l].test(v.name)) s += 2;
+    if (/google/i.test(v.name)) s += 1;
+    if (s > bestScore) { best = v; bestScore = s; }
+  }
+  return best;
+}
+function speak(text) {
+  if (!soundOn || !canSpeak || !text) return;
+  try {
+    const v = voiceFor(lang);
+    if (!v) return;
+    const u = new SpeechSynthesisUtterance(strip(text).replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu, ''));
+    u.voice = v; u.lang = v.lang;
+    u.pitch = .8; u.rate = .95; u.volume = 1;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
 
 const SPK_ON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.8 5.8a9 9 0 0 1 0 12.4"/></svg>';
 const SPK_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
@@ -726,7 +1075,7 @@ function renderSound() {
 }
 function setSound(on) {
   soundOn = on; store.set('sound', on ? '1' : '0');
-  if (on) { audio(); sfx.ok(); }
+  if (on) { audio(); sfx.ok(); } else if (canSpeak) speechSynthesis.cancel();
   renderSound();
 }
 $('#snd').addEventListener('click', () => setSound(!soundOn));
@@ -735,21 +1084,34 @@ $('#snd').addEventListener('click', () => setSound(!soundOn));
    GLITCH-ANFALL  (+ Vibration)
    ===================================================================== */
 let glitchTimer = 0;
+const buzz = p => { if (navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} };
 function glitch(ms = 650, soft = false) {
   if (reduce) return;
   document.body.classList.add('glitch');
   document.body.classList.toggle('soft', soft);
-  if (!soft) {
-    sfx.glitch();
-    if (navigator.vibrate) navigator.vibrate([40, 30, 80, 30, 40]);
-  }
+  if (!soft) { sfx.glitch(); buzz([40, 30, 80, 30, 40]); }
   clearTimeout(glitchTimer);
   glitchTimer = setTimeout(() => document.body.classList.remove('glitch', 'soft'), ms);
 }
-// gelegentlich ein kleiner Zucker von selbst
 (function randomGlitch() {
-  setTimeout(() => { if (!document.hidden) glitch(180, true); randomGlitch(); }, 7000 + Math.random() * 9000);
+  setTimeout(() => { if (!document.hidden && !busy) glitch(180, true); randomGlitch(); }, 7000 + Math.random() * 9000);
 })();
+
+function spawnShards(cx, cy, n = 26, spread = 220) {
+  if (reduce) return;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('i'); s.className = 'shard';
+    const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * spread;
+    s.style.left = cx + 'px'; s.style.top = cy + 'px';
+    s.style.setProperty('--dx', Math.cos(a) * d + 'px');
+    s.style.setProperty('--dy', Math.sin(a) * d + 'px');
+    s.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+    if (i % 3 === 0) s.style.background = 'var(--cyan)';
+    else if (i % 5 === 0) s.style.background = 'var(--green)';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+}
 
 /* =====================================================================
    MATRIX-REGEN
@@ -825,21 +1187,26 @@ let battery = null;
 const batteryReady = (navigator.getBattery
   ? Promise.race([navigator.getBattery().then(b => { battery = b; }).catch(() => {}), sleep(900)])
   : Promise.resolve());
+const locale = () => lang === 'en' ? 'en-GB' : lang;
 
 function scanLines() {
   const s = T.scan, tag = '<span class="c">' + s.tag + '</span> ';
-  const now = new Date();
-  const time = now.toLocaleTimeString(lang === 'en' ? 'en-GB' : lang, { hour: '2-digit', minute: '2-digit' });
+  const now = new Date(), h = now.getHours();
+  const time = now.toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
   let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
-  const L = [
+  const L = [];
+  if (NAME) L.push(['err', tag + s.target + ': <span class="r">' + esc(up(NAME)) + '</span> · <span class="w">' + s.identified + ' ✔</span>']);
+  L.push(
     ['cyan', tag + s.device + ': <span class="w">' + esc(DEVICE) + '</span> · ' + s.browser + ': <span class="w">' + esc(BROWSER) + '</span>'],
     ['cyan', tag + s.time + ': <span class="w">' + time + '</span>' + (tz ? ' <span class="dim">(' + esc(tz) + ')</span>' : '')],
     ['cyan', tag + s.screen + ': <span class="w">' + screen.width + '×' + screen.height + '</span> · ' + s.lang + ': <span class="w">' + esc(navigator.language || '?') + '</span>']
-  ];
+  );
   if (battery) {
     L.push(['cyan', tag + s.battery + ': <span class="' + (battery.level < .2 ? 'r' : 'w') + '">' + Math.round(battery.level * 100) + ' %</span>' + (battery.charging ? ' (' + s.charging + ')' : '')]);
   }
-  L.push(['cyan', s.done], ['cyan', s.bye]);
+  const dt = T.daytime, key = h < 5 ? 'night' : h < 11 ? 'morning' : h < 18 ? 'day' : 'evening';
+  L.push(['warn', '<span class="y">[' + { de: 'KI', tr: 'YZ', en: 'AI' }[lang] + ']</span> ' + fill(dt[key], { t: time })]);
+  L.push(['cyan', s.done], ['cyan', s.bye], ['dim', s.tip]);
   return L;
 }
 
@@ -848,7 +1215,7 @@ function scanLines() {
    ===================================================================== */
 const out = $('#out'), screenEl = $('#screen'), promptEl = $('#prompt'), cmdEl = $('#cmd');
 const cursor = document.createElement('span'); cursor.className = 'cursor';
-let runId = 0;
+let runId = 0, busy = null;
 const toBottom = () => { screenEl.scrollTop = screenEl.scrollHeight; };
 
 function addLine(cls, html) {
@@ -883,9 +1250,11 @@ async function runIntro() {
     await sleep(200);
   }
   await batteryReady;
-  for (const [cls, html] of scanLines()) {
+  const scan = scanLines();
+  for (let i = 0; i < scan.length; i++) {
     if (id !== runId) return;
-    if (!await typeLine(cls, html, id, 1.6)) return;
+    if (!await typeLine(scan[i][0], scan[i][1], id, 1.6)) return;
+    if (scan[i][1] === T.scan.bye) speak(fill(T.voice.bye, { n: nameVoice() }));
     await sleep(140);
   }
   if (id !== runId) return;
@@ -894,78 +1263,154 @@ async function runIntro() {
   cmdEl.placeholder = T.placeholder;
   toBottom();
 }
+function showPrompt() { if (!busy) { promptEl.hidden = false; toBottom(); } }
 
 /* --- Befehle --- */
 const cmdHistory = []; let hIdx = 0;
+const SWEAR = /\b(fick|ficken|hurens|wichser|arschloch|missgeburt|spast|bastard|siktir|amk|aq|orospu|yarak|fuck|bitch|asshole|shit|dick|motherf)/i;
+
 async function runCmd(raw) {
-  const C = T.cmd, input = raw.trim(), low = input.toLocaleLowerCase('tr').replace(/İ/g, 'i');
-  const [w0, ...rest] = low.split(/\s+/); const arg = rest.join(' ');
-  addLine('dim', '<span class="c">root@mescak.de:~$</span> ' + esc(input));
-  if (!input) return;
+  const C = T.cmd, input = raw.trim();
+  const low = input.replace(/İ/g, 'i').replace(/I/g, 'i').toLowerCase();
+  // ohne Akzente/Sonderzeichen zum Vergleichen: yardım → yardim, zerstören → zerstoren
+  const flat = low.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i').replace(/ß/g, 'ss');
+  const [w0 = '', ...rest] = flat.split(/\s+/);
+  const argRaw = input.split(/\s+/).slice(1).join(' ');
+  const arg = rest.join(' ');
+  const is = (...a) => a.includes(w0);
+  const has = (...a) => a.some(p => flat.includes(p));
   const say = (h, cls = 'ok') => addLine(cls, h);
   const id = runId;
 
+  addLine('dim', '<span class="c">root@mescak.de:~$</span> ' + esc(input));
+  if (!input) return;
+
+  // erst ganze Sätze, dann einzelne Befehle
+  if (SWEAR.test(flat)) { glitch(500); sfx.err(); say(pick(C.swear), 'err'); speak(T.voice.swear); return toBottom(); }
+  if (has('ich liebe dich', 'seni seviyorum', 'i love you', 'love you')) { say(C.love, 'err'); speak(strip(C.love)); return toBottom(); }
+  if (has('wie geht', 'nasilsin', 'naber', 'how are you')) { say(C.howru, 'cyan'); speak(C.howru); return toBottom(); }
+  if (has('wer bist du', 'kimsin', 'who are you')) { say(C.who, 'cyan'); speak(C.who); return toBottom(); }
+  if (has('sinn des lebens', 'hayatin anlami', 'meaning of life') || w0 === '42') { say(C.life, 'warn'); return toBottom(); }
+  if (has('rm -rf', 'format c', 'del /', 'shutdown', 'mkfs')) { bsod(); return; }
+  if (/^satin al/.test(flat)) { sfx.deny(); glitch(400); C.buy.forEach(l => say(l, 'err')); speak(T.voice.buy); return toBottom(); }
+
   switch (true) {
-    case ['help', 'hilfe', 'yardım', 'yardim', '?', 'man'].includes(w0):
+    case is('help', 'hilfe', 'yardim', '?', 'man', 'befehle', 'komutlar', 'commands', 'menu'):
       C.help.forEach(l => say(l)); break;
-    case ['whoami', 'kimim', 'wer'].includes(w0):
-      say(fill(C.whoami, { device: '<span class="w">' + esc(DEVICE) + '</span>' })); break;
-    case ['kaufen', 'buy', 'purchase', 'preis', 'price', 'fiyat'].includes(w0) || /^satın|^satin/.test(low):
-      sfx.deny(); glitch(400); C.buy.forEach(l => say(l, 'err')); break;
-    case w0 === 'ls' || w0 === 'dir':
-      say(C.ls); break;
-    case w0 === 'cat' || w0 === 'type' || w0 === 'less' || w0 === 'more':
-      if (/geheim|gizli|secret/.test(arg)) say(C.secret, 'warn');
-      else if (/pass|şifre|sifre/.test(arg)) { say(C.pw, 'warn'); }
-      else { sfx.err(); say(fill(C.nofile, { f: esc(arg || '?') }), 'err'); }
+    case is('whoami', 'kimim', 'ich'):
+      say(fill(NAME ? C.whoamiName : C.whoami, { device: '<span class="w">' + esc(DEVICE) + '</span>', name: '<span class="r">' + esc(up(NAME)) + '</span>' })); break;
+    case is('kaufen', 'buy', 'purchase', 'preis', 'price', 'fiyat', 'satin'):
+      sfx.deny(); glitch(400); C.buy.forEach(l => say(l, 'err')); speak(T.voice.buy); break;
+    case is('ls', 'dir', 'll'):
+      say(/-a|-l/.test(arg) || w0 === 'll' ? C.lsA : C.ls); break;
+    case is('cat', 'type', 'less', 'more', 'open', 'ac'):
+      if (/versteckt|sakli|hidden/.test(arg)) say(C.hidden, 'warn');
+      else if (/geheim|gizli|secret/.test(arg)) say(C.secret, 'warn');
+      else if (/pass|sifre/.test(arg)) say(C.pw, 'warn');
+      else { sfx.err(); say(fill(C.nofile, { f: esc(argRaw || '?') }), 'err'); }
       break;
-    case w0 === 'cd':
+    case is('cd'):
       sfx.err(); say(C.cd, 'err'); break;
-    case w0 === 'sudo' || w0 === 'su' || w0 === 'admin' || w0 === 'root':
-      sfx.err(); glitch(300); say(fill(C.sudo, { u: esc(DEVICE.split(' ')[0].toLowerCase()) }), 'err'); break;
-    case w0 === 'rm' || w0 === 'del' || w0 === 'format':
-      glitch(1200); say(C.rm, 'err'); break;
-    case w0 === 'hack' || w0 === 'hacker' || w0 === 'nmap' || w0 === 'ssh':
-      promptEl.hidden = true;
-      for (let i = 0; i < C.hack.length; i++) {
-        await sleep(i ? 650 : 150);
-        if (id !== runId) return;
-        if (i === C.hack.length - 1) { glitch(700); sfx.err(); }
-        else sfx.beep();
-        say(C.hack[i], i === C.hack.length - 1 ? 'err' : 'warn');
-      }
-      promptEl.hidden = false; cmdEl.focus({ preventScroll: true });
-      break;
-    case w0 === 'matrix' || w0 === 'neo':
+    case is('sudo', 'su', 'admin', 'root', 'chmod'):
+      sfx.err(); glitch(300); say(fill(C.sudo, { u: esc(DEVICE.split(' ')[0].toLowerCase()) }), 'err'); speak(T.voice.sudo); break;
+    case is('rm', 'del', 'format', 'bsod', 'crash', 'absturz', 'cokme', 'bluescreen'):
+      bsod(); return;
+    case is('hack', 'hacker', 'nmap', 'ssh', 'hackle'):
+      await sequence(C.hack, id, () => { glitch(700); sfx.err(); speak(T.voice.hack); }); return;
+    case is('virus', 'download', 'indir', 'malware', 'trojan'):
+      await sequence(C.virus.map(l => fill(l, { device: esc(DEVICE) })), id, () => { glitch(500); }); return;
+    case is('matrix', 'neo'):
       document.body.classList.add('matrix'); sfx.whoosh();
-      say(C.matrix, 'ok');
+      say(C.matrix, 'ok'); speak(C.matrix);
       setTimeout(() => document.body.classList.remove('matrix'), 9000); break;
-    case w0 === 'glitch' || w0 === 'bug':
+    case is('glitch', 'bug'):
       glitch(1000); say(C.glitch, 'err'); break;
-    case w0 === 'ping':
+    case is('ping'):
       say(C.ping); break;
-    case ['date', 'datum', 'tarih', 'time', 'zeit', 'saat'].includes(w0):
-      say(new Date().toLocaleString(lang === 'en' ? 'en-GB' : lang)); break;
-    case w0 === 'echo':
+    case is('date', 'datum', 'tarih', 'time', 'zeit', 'saat', 'uhr'):
+      say(new Date().toLocaleString(locale())); break;
+    case is('echo'):
       say(esc(input.slice(5)) || '…'); break;
-    case ['clear', 'cls', 'temizle'].includes(w0):
+    case is('clear', 'cls', 'temizle', 'leeren'):
       out.innerHTML = ''; break;
-    case ['sound', 'ton', 'ses', 'mute'].includes(w0):
-      setSound(w0 === 'mute' ? false : !soundOn); say(soundOn ? C.soundOn : C.soundOff); break;
-    case ['lang', 'sprache', 'dil', 'language'].includes(w0):
-      if (TEXT[arg]) { setLang(arg, true); return; }
+    case is('history', 'verlauf', 'gecmis'):
+      if (cmdHistory.length < 2) say(C.historyEmpty, 'dim');
+      else { say(C.historyHead, 'y'); cmdHistory.slice(0, -1).forEach((h, i) => say('  ' + (i + 1) + '  ' + esc(h), 'dim')); }
+      break;
+    case is('sound', 'ton', 'ses', 'mute', 'laut', 'sessiz'):
+      setSound(w0 === 'mute' || w0 === 'sessiz' ? false : !soundOn); say(soundOn ? C.soundOn : C.soundOff); break;
+    case is('lang', 'sprache', 'dil', 'language'):
+      if (TEXT[arg]) { switchLang(arg); return; }
       say(C.lang, 'warn'); break;
-    case ['privacy', 'datenschutz', 'gizlilik'].includes(w0):
+    case is('privacy', 'datenschutz', 'gizlilik'):
       say(C.privacy, 'cyan'); break;
-    case ['exit', 'quit', 'logout', 'bye', 'tschüss', 'çıkış', 'cikis'].includes(w0):
-      say(C.exit, 'warn'); break;
-    case ['hallo', 'hello', 'hi', 'hey', 'merhaba', 'selam', 'moin', 'servus'].includes(w0):
-      say(C.hello, 'err'); break;
+    case is('exit', 'quit', 'logout', 'bye', 'tschuss', 'tschuess', 'cikis', 'verpissen', 'defol'):
+      say(C.exit, 'warn'); speak(fill(T.voice.bye, { n: nameVoice() })); break;
+    case is('hallo', 'hello', 'hi', 'hey', 'merhaba', 'selam', 'moin', 'servus', 'yo', 'slm'):
+      { const r = pick(C.hello); say(r, 'err'); speak(r); } break;
+    case is('wetter', 'weather', 'hava'):
+      say(C.weather, 'cyan'); speak(C.weather); break;
+    case is('witz', 'joke', 'saka', 'fikra', 'lustig'):
+      { const r = pick(C.jokes); say('😂 ' + r, 'warn'); speak(r); } break;
+    case is('liebe', 'love', 'ask', 'sevgi'):
+      say(C.love, 'err'); speak(strip(C.love)); break;
+    case is('geld', 'money', 'para', 'konto', 'bank'):
+      say(C.money, 'warn'); break;
+    case is('ip', 'ifconfig', 'ipconfig'):
+      say(C.ip, 'cyan'); break;
+    case is('kaffee', 'coffee', 'kahve', 'tee', 'tea', 'cay'):
+      say(C.coffee, 'warn'); break;
+    case is('bitte', 'please', 'pls', 'lutfen', 'plz'):
+      say(C.please, 'cyan'); speak(C.please); break;
+    case is('orakel', 'fortune', 'fal', 'zukunft', 'gelecek', 'future'):
+      { const r = pick(C.fortune); say(r, 'cyan'); speak(r); } break;
+    case is('whois'):
+      say(C.whois, 'cyan'); break;
+    case is('mescak'):
+      say(C.mescak, 'warn'); break;
+    case is('wer', 'who'):
+      say(C.who, 'cyan'); speak(C.who); break;
+    case is('beleidige', 'beleidigung', 'insult', 'hakaret', 'roast'):
+      { const r = (NAME ? up(NAME) + ', ' : '') + pick(T.insults); say('<span class="r">' + esc(r) + '</span>', 'err'); speak(r); glitch(300); } break;
+    case is('sag', 'say', 'soyle', 'sprich', 'speak'):
+      if (!argRaw) say(C.sayUsage, 'dim'); else { say('🔊 ' + esc(argRaw), 'cyan'); speak(argRaw); } break;
+    case is('link', 'name', 'isim'):
+      makeLink(argRaw); break;
+    case is('reboot', 'neustart', 'restart', 'reset', 'yenidenbaslat'):
+      restart(); return;
+    case is('zerstoren', 'zerstoeren', 'selbstzerstorung', 'destruct', 'selfdestruct', 'imha', 'boom', 'kaboom'):
+      selfDestruct(); break;
+    case is('scan', 'kamera', 'camera', 'cam', 'face', 'gesicht', 'yuz', 'selfie'):
+      camScan(); break;
+    case is('game', 'snake', 'spiel', 'oyun', 'yilan', 'play'):
+      startGame(); return;
     default:
-      sfx.err(); say(fill(C.unknown, { c: esc(input.slice(0, 40)) }), 'err');
+      sfx.err(); say(fill(pick(C.unknown), { c: esc(input.slice(0, 40)) }), 'err');
   }
   toBottom();
 }
+// mehrzeilige Show-Einlagen (hack, virus …)
+async function sequence(lines, id, onEnd) {
+  promptEl.hidden = true;
+  for (let i = 0; i < lines.length; i++) {
+    await sleep(i ? 700 : 150);
+    if (id !== runId) return;
+    const lastLine = i === lines.length - 1;
+    if (lastLine) onEnd(); else sfx.beep();
+    addLine(lastLine ? 'err' : 'warn', lines[i]);
+  }
+  showPrompt(); cmdEl.focus({ preventScroll: true });
+}
+async function makeLink(n) {
+  const C = T.cmd, name = (n || '').replace(/[^\p{L}\p{N} .'-]/gu, '').trim().slice(0, 16);
+  if (!name) { addLine('dim', C.linkUsage); return; }
+  const u = 'https://mescak.de/?name=' + encodeURIComponent(name) + '&lang=' + lang;
+  let copied = false;
+  try { await navigator.clipboard.writeText(u); copied = true; } catch (e) {}
+  addLine('ok', fill(copied ? C.linkDone : C.linkNoCopy, { n: esc(name), u: esc(u) }));
+  sfx.ok(); toBottom();
+}
+
 promptEl.addEventListener('submit', e => {
   e.preventDefault();
   const v = cmdEl.value; cmdEl.value = '';
@@ -980,16 +1425,17 @@ cmdEl.addEventListener('keydown', e => {
 $('#term').addEventListener('click', () => { if (!promptEl.hidden && !getSelection().toString()) cmdEl.focus({ preventScroll: true }); });
 
 /* =====================================================================
-   WECHSELNDE SPRÜCHE
+   WECHSELNDE SPRÜCHE  +  TIPPS
    ===================================================================== */
-let ii = 0;
-const insEl = $('#ins');
-const showInsult = () => { insEl.innerHTML = T.insults[ii] + ' <span class="blink">_</span>'; };
+let ii = 0, hi = 0;
+const insEl = $('#ins'), hintEl = $('#hint');
+const showInsult = () => { insEl.innerHTML = esc((NAME ? up(NAME) + ', ' : '') + T.insults[ii]) + ' <span class="blink">_</span>'; };
 setInterval(() => {
   if (reduce) { ii = (ii + 1) % T.insults.length; showInsult(); return; }
   insEl.classList.add('out');
   setTimeout(() => { ii = (ii + 1) % T.insults.length; showInsult(); insEl.classList.remove('out'); }, 300);
 }, 2800);
+setInterval(() => { hi = (hi + 1) % T.hints.length; hintEl.innerHTML = T.hints[hi]; }, 3600);
 
 /* =====================================================================
    WEGLAUFENDER KAUF-KNOPF
@@ -1021,34 +1467,23 @@ function fleeFrom(px, py) {
     tries++;
   } while (tries < 20 && Math.hypot(x + bw / 2 - px, y + bh / 2 - py) < Math.min(260, innerWidth * .45));
   buy.style.left = x + 'px'; buy.style.top = y + 'px';
-  sfx.whoosh();
-  if (navigator.vibrate) navigator.vibrate(15);
+  sfx.whoosh(); buzz(15);
+}
+function resetBuy() {
+  buy.classList.remove('free', 'boom');
+  buy.style.left = buy.style.top = ''; slot.style.width = '';
+  flees = 0; buyDead = false; buy.textContent = T.buy[0];
 }
 function explode() {
   buyDead = true; attempts++;
-  const r = buy.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-  buy.classList.add('boom'); sfx.boom(); glitch(500);
-  if (navigator.vibrate) navigator.vibrate([80, 40, 160]);
-  if (!reduce) for (let i = 0; i < 26; i++) {
-    const s = document.createElement('i'); s.className = 'shard';
-    const a = Math.random() * Math.PI * 2, d = 80 + Math.random() * 220;
-    s.style.left = cx + 'px'; s.style.top = cy + 'px';
-    s.style.setProperty('--dx', Math.cos(a) * d + 'px');
-    s.style.setProperty('--dy', Math.sin(a) * d + 'px');
-    s.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
-    if (i % 3 === 0) s.style.background = 'var(--cyan)';
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 1000);
-  }
-  if (!promptEl.hidden || out.childElementCount) addLine('err', fill(T.buyDone, { n: attempts }));
-  // nach ein paar Sekunden steht er wieder brav an seinem Platz
-  setTimeout(() => {
-    buy.classList.remove('free', 'boom');
-    buy.style.left = buy.style.top = ''; slot.style.width = '';
-    flees = 0; buyDead = false; buy.textContent = T.buy[0];
-  }, 4500);
+  const r = buy.getBoundingClientRect();
+  buy.classList.add('boom'); sfx.boom(); glitch(500); buzz([80, 40, 160]);
+  spawnShards(r.left + r.width / 2, r.top + r.height / 2);
+  if (out.childElementCount) addLine('err', fill(T.buyDone, { n: attempts }));
+  speak(T.voice.boom);
+  if (attempts % 3 === 0) { setTimeout(bsod, 900); return; }   // jeder 3. Versuch: Absturz
+  setTimeout(resetBuy, 4500);
 }
-// Maus kommt zu nah → weg
 document.addEventListener('pointermove', e => {
   if (e.pointerType !== 'mouse' || buyDead) return;
   const r = buy.getBoundingClientRect();
@@ -1056,12 +1491,290 @@ document.addEventListener('pointermove', e => {
   const dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
   if (Math.hypot(dx, dy) < 40) fleeFrom(e.clientX, e.clientY);
 });
-// Finger/Klick/Tastatur → weg
 buy.addEventListener('pointerdown', e => { e.preventDefault(); fleeFrom(e.clientX, e.clientY); });
 buy.addEventListener('click', e => {
   e.preventDefault();
   const r = buy.getBoundingClientRect();
   fleeFrom(r.left + r.width / 2, r.top + r.height / 2);
+});
+
+/* =====================================================================
+   BLUESCREEN
+   ===================================================================== */
+async function bsod() {
+  if (busy === 'bsod') return;
+  closeAll();
+  busy = 'bsod';
+  const B = T.bsod, el = document.createElement('div');
+  el.id = 'bsod';
+  el.innerHTML = '<div class="sad">:(</div><p>' + B.text + '</p><p class="pct"></p>' +
+    '<div class="foot"><div class="qr"></div><div>' + B.more + '<br><br>' + B.code + '</div></div>';
+  document.body.appendChild(el);
+  sfx.bsod(); buzz([200, 100, 200]); speak(T.voice.bsod);
+  const pct = el.querySelector('.pct');
+  let p = 0;
+  while (p < 100 && document.body.contains(el)) {
+    pct.textContent = fill(B.pct, { p });
+    await sleep(250 + Math.random() * 450);
+    p = Math.min(100, p + Math.floor(Math.random() * 18) + 3);
+  }
+  pct.textContent = fill(B.pct, { p: 100 });
+  await sleep(900);
+  el.remove();
+  busy = null;
+  restart();
+}
+
+/* =====================================================================
+   SELBSTZERSTÖRUNG
+   ===================================================================== */
+let cdDone = false, cdTimer = 0;
+async function selfDestruct() {
+  if (busy) { addLine('warn', T.cmd.busy); return; }
+  busy = 'cd'; cdDone = true; clearTimeout(cdTimer);
+  const el = document.createElement('div');
+  el.id = 'cd';
+  el.innerHTML = '<div class="lbl">' + T.cd.lbl + '</div><div class="num">10</div><button type="button">' + T.cd.abort + '</button>';
+  document.body.appendChild(el);
+  const num = el.querySelector('.num'), btn = el.querySelector('button');
+  btn.addEventListener('click', () => { btn.textContent = T.cd.late; btn.disabled = true; sfx.err(); glitch(300); });
+  speak(T.voice.count);
+  for (let n = 10; n >= 0; n--) {
+    if (busy !== 'cd') { el.remove(); return; }
+    num.textContent = n;
+    num.classList.remove('tick'); void num.offsetWidth; num.classList.add('tick');
+    sfx.alarm(); buzz(n <= 3 ? 120 : 40);
+    if (n <= 3) glitch(250, true);
+    await sleep(1000);
+  }
+  el.remove();
+  const f = document.createElement('div'); f.id = 'flash'; document.body.appendChild(f);
+  setTimeout(() => f.remove(), 650);
+  sfx.boom(); buzz([300, 80, 300]);
+  spawnShards(innerWidth / 2, innerHeight / 2, 60, Math.max(innerWidth, innerHeight) * .6);
+  document.body.classList.add('crumble');
+  await sleep(1300);
+  busy = null;
+  restart();
+}
+function scheduleSelfDestruct() {
+  clearTimeout(cdTimer);
+  if (cdDone) return;
+  cdTimer = setTimeout(function tryIt() {
+    if (cdDone) return;
+    if (busy || document.hidden) { cdTimer = setTimeout(tryIt, 15000); return; }
+    selfDestruct();
+  }, 60000);
+}
+
+/* =====================================================================
+   KAMERA-SCAN
+   ===================================================================== */
+let camStream = null;
+function closeCam() {
+  if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+  const el = $('#cam'); if (el) el.remove();
+  if (busy === 'cam') busy = null;
+  showPrompt();
+}
+async function camScan() {
+  if (busy) { addLine('warn', T.cmd.busy); return; }
+  const C = T.cam;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { addLine('err', C.none); return; }
+  busy = 'cam'; promptEl.hidden = true;
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 720 } }, audio: false });
+  } catch (e) {
+    busy = null; showPrompt();
+    const msg = e && e.name === 'NotFoundError' ? C.none : C.denied;
+    addLine('err', msg); sfx.err(); speak(msg); return;
+  }
+  const el = document.createElement('div');
+  el.id = 'cam';
+  el.innerHTML = '<video playsinline muted autoplay></video><div class="grid"></div><div class="sweep"></div>' +
+    '<div class="ret"><i></i><i></i><i></i><i></i></div><div class="note">🔒 ' + C.note + '</div>' +
+    '<button type="button" class="x">✕ ' + C.close + '</button><div class="log"></div>';
+  document.body.appendChild(el);
+  const v = el.querySelector('video'), log = el.querySelector('.log');
+  v.srcObject = camStream; v.play().catch(() => {});
+  el.querySelector('.x').addEventListener('click', closeCam);
+  sfx.whoosh();
+  for (const line of C.lines) {
+    await sleep(800);
+    if (busy !== 'cam') return;
+    const d = document.createElement('div'); d.textContent = '> ' + line; log.appendChild(d);
+    log.appendChild(document.createElement('br'));
+    sfx.beep();
+  }
+  await sleep(700);
+  if (busy !== 'cam') return;
+  el.classList.add('locked');
+  const vd = document.createElement('div'); vd.className = 'verdict'; vd.textContent = C.verdict; el.appendChild(vd);
+  sfx.deny(); buzz([100, 50, 100, 50, 300]); glitch(500); speak(T.voice.scan);
+  await sleep(4200);
+  if (busy !== 'cam') return;
+  closeCam();
+  addLine('err', fill(C.done, { d: Date.now().toString(36).slice(-5) }));
+}
+
+/* =====================================================================
+   SNAKE
+   ===================================================================== */
+let game = null;
+function startGame() {
+  if (busy) { addLine('warn', T.cmd.busy); return; }
+  busy = 'game';
+  const G = T.game, COLS = 18, ROWS = 14;
+  const avail = Math.min(screenEl.clientWidth - 36, 460);
+  const cell = Math.max(12, Math.floor(avail / COLS));
+  const box = document.createElement('div'); box.className = 'gamebox';
+  box.innerHTML = '<div class="score"><span class="s"></span><span class="h"></span></div><canvas></canvas>' +
+    '<div class="pad"><span></span><button data-d="up">▲</button><span></span><button data-d="left">◀</button><button class="q" data-d="quit">Q</button><button data-d="right">▶</button><span></span><button data-d="down">▼</button><span></span></div>';
+  out.hidden = true; promptEl.hidden = true; cmdEl.blur();
+  screenEl.appendChild(box); screenEl.scrollTop = 0;
+  const c = box.querySelector('canvas'), g = c.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = COLS * cell * dpr; c.height = ROWS * cell * dpr;
+  c.style.width = COLS * cell + 'px'; c.style.height = ROWS * cell + 'px';
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const best = () => +(store.get('snakeBest') || 0);
+  const S = { snake: [{ x: 6, y: 7 }, { x: 5, y: 7 }, { x: 4, y: 7 }], dir: { x: 1, y: 0 }, next: { x: 1, y: 0 }, food: null, score: 0, speed: 140, alive: true, timer: 0 };
+  const place = () => {
+    let f; do { f = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) }; }
+    while (S.snake.some(p => p.x === f.x && p.y === f.y));
+    S.food = f;
+  };
+  const hud = () => {
+    box.querySelector('.s').textContent = G.score + ': ' + S.score;
+    box.querySelector('.h').textContent = G.best + ': ' + Math.max(best(), S.score);
+  };
+  const draw = () => {
+    g.fillStyle = '#000a02'; g.fillRect(0, 0, COLS * cell, ROWS * cell);
+    g.strokeStyle = 'rgba(0,255,65,.06)';
+    for (let x = 0; x <= COLS; x++) { g.beginPath(); g.moveTo(x * cell + .5, 0); g.lineTo(x * cell + .5, ROWS * cell); g.stroke(); }
+    for (let y = 0; y <= ROWS; y++) { g.beginPath(); g.moveTo(0, y * cell + .5); g.lineTo(COLS * cell, y * cell + .5); g.stroke(); }
+    g.font = '800 ' + Math.floor(cell * .9) + 'px "JetBrains Mono", monospace';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = '#ff0055'; g.shadowColor = '#ff0055'; g.shadowBlur = 10;
+    g.fillText('€', S.food.x * cell + cell / 2, S.food.y * cell + cell / 2 + 1);
+    S.snake.forEach((p, i) => {
+      g.fillStyle = i === 0 ? '#d6ffe0' : '#00ff41'; g.shadowColor = '#00ff41'; g.shadowBlur = i === 0 ? 12 : 6;
+      g.fillRect(p.x * cell + 1, p.y * cell + 1, cell - 2, cell - 2);
+    });
+    g.shadowBlur = 0;
+  };
+  const turn = d => {
+    const map = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
+    const n = map[d]; if (!n) return;
+    if (n.x === -S.dir.x && n.y === -S.dir.y) return;
+    S.next = n;
+  };
+  const end = (quit) => {
+    if (!S.alive) return;
+    S.alive = false; clearTimeout(S.timer);
+    removeEventListener('keydown', onKey, true);
+    const hiScore = best(), isHigh = S.score > hiScore;
+    if (isHigh) store.set('snakeBest', S.score);
+    setTimeout(() => {
+      box.remove(); out.hidden = false; if (busy === 'game') busy = null; game = null;
+      if (!quit) {
+        addLine('err', fill(G.over, { s: S.score, h: Math.max(hiScore, S.score) }));
+        if (isHigh && S.score > 0) addLine('warn', G.high);
+        speak(T.voice.over);
+      }
+      showPrompt();
+    }, quit ? 0 : 900);
+    if (!quit) { sfx.err(); glitch(400); buzz([100, 60, 200]); }
+  };
+  const step = () => {
+    if (!S.alive) return;
+    S.dir = S.next;
+    const h = { x: S.snake[0].x + S.dir.x, y: S.snake[0].y + S.dir.y };
+    if (h.x < 0 || h.y < 0 || h.x >= COLS || h.y >= ROWS || S.snake.some(p => p.x === h.x && p.y === h.y)) { end(false); return; }
+    S.snake.unshift(h);
+    if (h.x === S.food.x && h.y === S.food.y) {
+      S.score++; S.speed = Math.max(65, S.speed - 5); place(); sfx.eat(); buzz(20); hud();
+    } else S.snake.pop();
+    draw();
+    S.timer = setTimeout(step, S.speed);
+  };
+  const onKey = e => {
+    const k = e.key.toLowerCase();
+    const map = { arrowup: 'up', w: 'up', arrowdown: 'down', s: 'down', arrowleft: 'left', a: 'left', arrowright: 'right', d: 'right' };
+    if (map[k]) { turn(map[k]); e.preventDefault(); e.stopPropagation(); }
+    else if (k === 'q' || k === 'escape') { end(true); e.preventDefault(); }
+  };
+  addEventListener('keydown', onKey, true);
+  let t0 = null;
+  c.addEventListener('touchstart', e => { const t = e.touches[0]; t0 = { x: t.clientX, y: t.clientY }; e.preventDefault(); }, { passive: false });
+  c.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+  c.addEventListener('touchend', e => {
+    if (!t0) return;
+    const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) > 18) turn(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+    t0 = null;
+  });
+  box.querySelectorAll('.pad button').forEach(b => b.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    if (b.dataset.d === 'quit') end(true); else turn(b.dataset.d);
+  }));
+  place(); hud(); draw(); sfx.ok();
+  addLine('warn', G.start);
+  S.timer = setTimeout(step, 600);
+  game = { end };
+}
+
+/* =====================================================================
+   RECHTSKLICK-MENÜ
+   ===================================================================== */
+const ctxEl = $('#ctx');
+function closeMenu() { ctxEl.classList.remove('open'); }
+addEventListener('contextmenu', e => {
+  if (!started || e.target === cmdEl || busy === 'bsod') return;
+  e.preventDefault();
+  const M = T.menu;
+  const items = [['hack', 'hack'], ['buy', 'kaufen'], null, ['scan', 'scan'], ['game', 'game'], null,
+                 ['destruct', 'destruct'], ['crash', 'bsod'], null, ['link', 'link'], ['leave', 'exit']];
+  ctxEl.innerHTML = items.map(it => it ? '<button type="button" role="menuitem" data-c="' + it[1] + '">' + M[it[0]] + '</button>' : '<hr>').join('');
+  ctxEl.classList.add('open');
+  const w = ctxEl.offsetWidth, h = ctxEl.offsetHeight;
+  ctxEl.style.left = Math.min(e.clientX, innerWidth - w - 8) + 'px';
+  ctxEl.style.top = Math.min(e.clientY, innerHeight - h - 8) + 'px';
+  sfx.beep();
+});
+ctxEl.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  closeMenu();
+  const c = b.dataset.c;
+  if (c === 'link') { cmdEl.value = 'link '; promptEl.hidden = false; cmdEl.focus(); runCmd('link'); return; }
+  runCmd(c);
+});
+addEventListener('pointerdown', e => { if (!ctxEl.contains(e.target)) closeMenu(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+addEventListener('scroll', closeMenu, { passive: true });
+
+/* =====================================================================
+   FIESE EXTRAS: Tab-Titel, Kopieren
+   ===================================================================== */
+let awayTimer = 0, wasAway = false;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    let k = 0; wasAway = true;
+    clearInterval(awayTimer);
+    awayTimer = setInterval(() => { document.title = T.away[k++ % 2]; }, 1000);
+    document.title = T.away[0];
+  } else {
+    clearInterval(awayTimer);
+    document.title = T.title + ' · mescak.de';
+    if (wasAway && booted && !busy) { addLine('warn', T.back); speak(fill(T.voice.back, { n: nameVoice() })); glitch(300); }
+    wasAway = false;
+  }
+});
+document.addEventListener('copy', e => {
+  if (e.target === cmdEl || !e.clipboardData) return;
+  e.clipboardData.setData('text/plain', T.copy + ' – https://mescak.de');
+  e.preventDefault();
+  addLine('warn', T.copyLine); sfx.ok();
 });
 
 /* =====================================================================
@@ -1073,7 +1786,7 @@ function onMotion(e) {
   if (prevAcc) {
     const delta = Math.abs(a.x - prevAcc.x) + Math.abs(a.y - prevAcc.y) + Math.abs(a.z - prevAcc.z);
     const now = Date.now();
-    if (delta > 32 && now - lastShake > 1500) {
+    if (delta > 32 && now - lastShake > 1500 && busy !== 'bsod') {
       lastShake = now; glitch(900);
       if (out.childElementCount) addLine('warn', T.shake);
     }
@@ -1089,17 +1802,18 @@ function enableMotion() {
   } else addEventListener('devicemotion', onMotion);
 }
 if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission !== 'function') enableMotion();
-addEventListener('pointerup', () => { enableMotion(); if (soundOn) audio(); }, { once: false });
+addEventListener('pointerup', () => { enableMotion(); if (soundOn && actx) audio(); });
 
 const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
 let kPos = 0;
 addEventListener('keydown', e => {
+  if (busy === 'game') return;
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   kPos = (k === KONAMI[kPos]) ? kPos + 1 : (k === KONAMI[0] ? 1 : 0);
   if (kPos === KONAMI.length) {
     kPos = 0; glitch(1500);
     document.body.classList.add('matrix'); setTimeout(() => document.body.classList.remove('matrix'), 6000);
-    addLine('warn', T.konami);
+    addLine('warn', T.konami); speak(strip(T.konami));
   }
 });
 
@@ -1112,7 +1826,7 @@ function setLang(l, save) {
   document.title = T.title + ' · mescak.de';
   const title = $('#title'); title.textContent = T.title; title.dataset.text = T.title;
   $('#status').textContent = T.status;
-  $('#hint').innerHTML = T.hint;
+  hi = 0; hintEl.innerHTML = T.hints[0];
   $('#skip').textContent = T.skip;
   if ($('#gate')) {
     $('#go').textContent = T.go;
@@ -1126,15 +1840,16 @@ function setLang(l, save) {
   // Wahl in die Adresse schreiben, damit Neuladen/Teilen die Sprache behält
   if (save) { try { const u = new URL(location.href); u.searchParams.set('lang', l); history.replaceState(null, '', u); } catch (e) {} }
 }
-document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
-  if (lang === b.dataset.lang) return;
-  setLang(b.dataset.lang, true);
+function switchLang(l) {
+  if (lang === l) return;
+  setLang(l, true);
   if (started) restart();          // nach dem Start: alles von vorne in der neuen Sprache
   else sfx.beep();
-}));
+}
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => switchLang(b.dataset.lang)));
 
 /* =====================================================================
-   BOOT-SEQUENZ
+   START · BOOT · NEUSTART
    ===================================================================== */
 let booted = false, started = false, bootRun = 0;
 const boot = $('#boot'), gate = $('#gate');
@@ -1152,11 +1867,12 @@ function finishBoot() {
   if (booted) return;
   booted = true; bootRun++;
   boot.classList.add('gone');
-  document.body.classList.remove('on'); void document.body.offsetWidth;
+  document.body.classList.remove('on', 'crumble'); void document.body.offsetWidth;
   document.body.classList.add('on');
   setTimeout(() => { if (booted) boot.hidden = true; }, 500);
   playVideo();
   runIntro();
+  scheduleSelfDestruct();
 }
 async function runBoot() {
   const id = ++bootRun;
@@ -1167,36 +1883,48 @@ async function runBoot() {
   const log = $('#bootlog'), bar = $('#bootfill');
   log.innerHTML = ''; bar.style.width = '0';
   boot.classList.remove('gone'); boot.hidden = false;
-  for (let i = 0; i < T.boot.length; i++) {
+  const lines = T.boot.slice();
+  if (NAME) lines.splice(lines.length - 2, 0, fill(T.bootName, { n: esc(up(NAME)) }));
+  for (let i = 0; i < lines.length; i++) {
     if (id !== bootRun) return;
     const line = document.createElement('div');
-    line.innerHTML = T.boot[i];
+    line.innerHTML = lines[i];
     log.appendChild(line);
-    bar.style.width = Math.round((i + 1) / T.boot.length * 100) + '%';
-    if (i === T.boot.length - 1) { sfx.deny(); if (navigator.vibrate) navigator.vibrate([60, 40, 60]); }
+    bar.style.width = Math.round((i + 1) / lines.length * 100) + '%';
+    if (i === lines.length - 1) { sfx.deny(); buzz([60, 40, 60]); speak(fill(T.voice.deny, { n: nameVoice() })); }
     else sfx.beep();
-    await sleep(i === 0 ? 450 : i === T.boot.length - 2 ? 520 : 330);
+    await sleep(i === 0 ? 450 : i === lines.length - 2 ? 520 : 330);
   }
-  await sleep(900);
+  await sleep(1100);
   if (id === bootRun) finishBoot();
 }
 boot.addEventListener('pointerdown', finishBoot);
 addEventListener('keydown', e => { if (started && !booted && e.key !== 'Tab') finishBoot(); });
 
-// Sprache gewechselt → alles von vorne
+function closeAll() {
+  if (game) game.end(true);
+  if (busy === 'cam') closeCam();
+  const cd = $('#cd'); if (cd) cd.remove();
+  if (busy === 'cd') busy = null;
+  closeMenu();
+}
+// alles von vorne (Sprachwechsel, Neustart, nach Absturz/Zerstörung)
 function restart() {
-  document.body.classList.remove('matrix', 'glitch', 'soft');
-  buy.classList.remove('free', 'boom'); buy.style.left = buy.style.top = ''; slot.style.width = '';
-  flees = 0; buyDead = false; buy.textContent = T.buy[0];
+  closeAll();
+  document.body.classList.remove('matrix', 'glitch', 'soft', 'crumble');
+  resetBuy();
   glitch(300);
   runBoot();
 }
 
-// Start-Knopf: der eine Tipp schaltet Ton, Video und Schüttel-Sensor frei
+// Start-Knopf: der eine Tipp schaltet Ton, Sprache, Video und Schüttel-Sensor frei
 function start() {
   if (started) return;
   started = true;
-  if (soundOn) { audio(); sfx.ok(); }
+  if (soundOn) {
+    audio(); sfx.ok();
+    if (canSpeak) { try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) {} }
+  }
   enableMotion();
   playVideo();
   gate.classList.add('gone');
@@ -1207,7 +1935,7 @@ $('#go').addEventListener('click', start);
 addEventListener('keydown', e => { if (!started && e.key === 'Enter' && document.activeElement?.dataset?.lang == null) { e.preventDefault(); start(); } });
 
 setLang(lang, false);
-if (new URLSearchParams(location.search).has('skip')) {   // nur zum Testen: ohne Startbildschirm und Boot
+if (params.has('skip')) {   // nur zum Testen: ohne Startbildschirm und Boot
   started = true; gate.remove(); finishBoot();
 } else $('#go').focus({ preventScroll: true });
 </script>
