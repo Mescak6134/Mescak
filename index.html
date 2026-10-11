@@ -6,7 +6,23 @@
   <meta name="theme-color" content="#000000">
   <meta name="robots" content="noindex">
   <title>DOMÄNE VERGEBEN · mescak.de</title>
+  <meta name="description" content="Nix für dich hier. · Burada sana bir şey yok. · Nothing for you here.">
+
+  <!-- Link-Vorschau (WhatsApp, Instagram, Telegram, X …) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mescak.de/">
+  <meta property="og:site_name" content="mescak.de">
+  <meta property="og:title" content="DOMÄNE VERGEBEN · mescak.de">
+  <meta property="og:description" content="Nix für dich hier. · Burada sana bir şey yok. · Nothing for you here.">
+  <meta property="og:image" content="https://mescak.de/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="DOMÄNE VERGEBEN – mescak.de">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mescak.de/og.jpg">
+
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%2300ff41'%3E%3E_%3C/text%3E%3C/svg%3E">
+  <link rel="preload" href="finger.mp4" as="video" type="video/mp4">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- JetBrains Mono: enthält auch ğ ş ı İ für Türkisch -->
@@ -19,7 +35,7 @@
       --cyan: #00ffff;
       --yellow: #ffcc00;
       --bg: #000;
-      --panel: rgba(0, 10, 2, 0.88);
+      --panel: rgba(0, 10, 2, 0.9);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; }
@@ -30,6 +46,7 @@
       min-height: 100svh;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* Scanlines + Vignette */
@@ -37,74 +54,107 @@
       content: '';
       position: fixed; inset: 0;
       background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,255,65,0.035) 2px 4px);
-      pointer-events: none; z-index: 50;
+      pointer-events: none; z-index: 90;
     }
     body::after {
       content: '';
       position: fixed; inset: 0;
       background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.9) 100%);
-      pointer-events: none; z-index: 49;
+      pointer-events: none; z-index: 89;
     }
-    #particles { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    #rain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: .5; transition: opacity .6s; }
+    body.matrix #rain { opacity: .85; }
 
-    /* Sprachumschalter */
-    .lang {
-      position: fixed;
+    /* ---------- Boot-Sequenz ---------- */
+    #boot {
+      position: fixed; inset: 0; z-index: 80;
+      background: #000;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: max(24px, env(safe-area-inset-top)) 16px 24px;
+      cursor: pointer;
+    }
+    #boot.gone { animation: crtOff .45s ease-in forwards; pointer-events: none; }
+    @keyframes crtOff {
+      0%   { transform: scale(1, 1); filter: brightness(1); }
+      60%  { transform: scale(1, .004); filter: brightness(4); background: #fff; }
+      100% { transform: scale(0, .004); filter: brightness(8); opacity: 0; }
+    }
+    #bootlog {
+      width: min(620px, 100%); margin: 0 auto;
+      font: inherit; font-size: clamp(0.72rem, 3vw, 0.9rem); line-height: 1.7;
+      white-space: pre-wrap; overflow-wrap: anywhere;
+      text-shadow: 0 0 6px rgba(0,255,65,.6);
+    }
+    #bootlog .r { color: var(--pink); text-shadow: 0 0 8px var(--pink); }
+    #bootlog .big {
+      display: block; margin-top: .6em;
+      font-size: clamp(1.4rem, 7vw, 2.4rem); font-weight: 800; letter-spacing: .1em;
+      animation: deny .25s steps(2) 3;
+    }
+    @keyframes deny { 50% { opacity: 0; } }
+    .bootbar { width: min(620px, 100%); margin: 1rem auto 0; height: 6px; border: 1px solid var(--green-dim); }
+    .bootbar i { display: block; height: 100%; width: 0; background: var(--green); box-shadow: 0 0 10px var(--green); transition: width .25s; }
+    .skip { position: absolute; bottom: max(20px, env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center; font-size: .68rem; letter-spacing: .2em; color: var(--green-dim); opacity: .7; }
+
+    /* ---------- Bedienleiste oben ---------- */
+    .topbar {
+      position: fixed; z-index: 70;
       top: max(14px, env(safe-area-inset-top));
+      left: max(14px, env(safe-area-inset-left));
       right: max(14px, env(safe-area-inset-right));
-      z-index: 60;
+      display: flex; justify-content: space-between; align-items: center;
+      pointer-events: none;
+    }
+    .topbar > * { pointer-events: auto; }
+    .seg {
       display: flex;
       border: 1px solid var(--green);
       border-radius: 4px;
       overflow: hidden;
       box-shadow: 0 0 14px rgba(0,255,65,0.25);
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,0.78);
     }
-    .lang button {
-      font: inherit;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      color: var(--green-dim);
-      background: transparent;
-      border: 0;
-      padding: 0.45rem 0.8rem;
-      cursor: pointer;
+    .seg button {
+      font: inherit; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em;
+      color: var(--green-dim); background: transparent; border: 0;
+      padding: 0.45rem 0.7rem; min-height: 34px; cursor: pointer;
       transition: background .2s, color .2s;
     }
-    .lang button + button { border-left: 1px solid var(--green); }
-    .lang button:hover { color: var(--green); }
-    .lang button[aria-pressed="true"] { background: var(--green); color: #000; }
-    .lang button:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+    .seg button + button { border-left: 1px solid var(--green); }
+    .seg button:hover { color: var(--green); }
+    .seg button[aria-pressed="true"] { background: var(--green); color: #000; }
+    .seg button:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+    #snd { display: flex; align-items: center; gap: .45rem; }
+    #snd svg { width: 16px; height: 16px; flex: none; }
 
+    /* ---------- Inhalt ---------- */
     main {
-      position: relative;
-      z-index: 10;
+      position: relative; z-index: 10;
       min-height: 100svh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 4.5rem 16px 2rem;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 4.6rem 16px 2rem;
       text-align: center;
     }
+    body.on main { animation: crtOn .7s ease-out; }
+    @keyframes crtOn {
+      0%   { transform: scale(1, .004); filter: brightness(6) saturate(0); opacity: .6; }
+      45%  { transform: scale(1, 1.02); filter: brightness(2.2); opacity: 1; }
+      70%  { transform: scale(1, .99);  filter: brightness(1.2); }
+      100% { transform: none; filter: none; }
+    }
 
-    /* Video */
     .video-wrap {
       position: relative;
-      width: min(320px, 68vw);
+      width: min(300px, 64vw);
       aspect-ratio: 1;
       border-radius: 50%;
       overflow: hidden;
-      background: #0a0a0a;
+      background: #1c1c1c;
       animation: ringPulse 2s ease-in-out infinite;
     }
     .video-wrap::after {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: 50%;
-      box-shadow: inset 0 0 40px rgba(255,0,85,0.35);
-      pointer-events: none;
+      content: ''; position: absolute; inset: 0; border-radius: 50%;
+      box-shadow: inset 0 0 40px rgba(255,0,85,0.35); pointer-events: none;
     }
     @keyframes ringPulse {
       0%,100% { box-shadow: 0 0 0 3px var(--pink), 0 0 40px var(--pink), 0 0 80px rgba(255,0,85,0.3); }
@@ -112,27 +162,21 @@
     }
     video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    /* Titel mit RGB-Glitch */
     .title {
       position: relative;
       font-size: clamp(1.6rem, 7vw, 3.2rem);
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      line-height: 1.15;
-      margin-top: 1.6rem;
+      font-weight: 800; letter-spacing: 0.12em; line-height: 1.15;
+      margin-top: 1.5rem;
       color: var(--green);
       text-shadow: 0 0 10px var(--green), 0 0 30px rgba(0,255,65,0.4);
-      animation: glitch 3.2s infinite;
+      animation: glitchT 3.2s infinite;
     }
     .title::before, .title::after {
-      content: attr(data-text);
-      position: absolute; inset: 0;
-      opacity: 0;
-      pointer-events: none;
+      content: attr(data-text); position: absolute; inset: 0; opacity: 0; pointer-events: none;
     }
     .title::before { color: var(--pink); animation: slice 3.2s infinite; }
     .title::after  { color: var(--cyan); animation: slice 3.2s infinite reverse; }
-    @keyframes glitch {
+    @keyframes glitchT {
       0%,88%,100% { transform: none; }
       89% { transform: skew(-3deg) translateX(-2px); }
       91% { transform: skew(2deg) translateX(2px); }
@@ -146,61 +190,105 @@
     }
 
     .insult {
-      font-size: clamp(0.95rem, 3.6vw, 1.15rem);
-      font-weight: 700;
-      color: var(--pink);
-      letter-spacing: 0.18em;
+      font-size: clamp(0.95rem, 3.6vw, 1.15rem); font-weight: 700;
+      color: var(--pink); letter-spacing: 0.18em;
       text-shadow: 0 0 10px var(--pink);
-      margin-top: 0.5rem;
-      min-height: 1.6em;
+      margin-top: 0.5rem; min-height: 1.6em;
       transition: opacity .3s, transform .3s;
     }
     .insult.out { opacity: 0; transform: translateY(-4px); }
     .blink { animation: bl 1s step-end infinite; }
     @keyframes bl { 50% { opacity: 0; } }
 
-    /* Terminal-Fenster */
+    /* ---------- Weglaufender Kauf-Knopf ---------- */
+    .buy-slot { height: 52px; margin-top: 1.1rem; display: flex; align-items: center; justify-content: center; }
+    #buy {
+      font: inherit; font-size: .82rem; font-weight: 800; letter-spacing: .14em;
+      color: #000; background: var(--pink);
+      border: 0; border-radius: 4px;
+      padding: .8rem 1.3rem; min-height: 44px;
+      cursor: pointer; white-space: nowrap;
+      box-shadow: 0 0 0 1px var(--pink), 0 0 24px rgba(255,0,85,.6);
+      touch-action: none; user-select: none; -webkit-user-select: none;
+      z-index: 75;
+    }
+    #buy.free { position: fixed; transition: left .22s cubic-bezier(.2,1.4,.4,1), top .22s cubic-bezier(.2,1.4,.4,1); }
+    #buy.boom { animation: boom .5s ease-out forwards; pointer-events: none; }
+    @keyframes boom {
+      0%   { transform: scale(1); filter: none; }
+      30%  { transform: scale(1.5) rotate(-6deg); filter: brightness(3); }
+      100% { transform: scale(2.4) rotate(10deg); filter: blur(8px); opacity: 0; }
+    }
+    .shard {
+      position: fixed; z-index: 76; width: 8px; height: 8px; pointer-events: none;
+      background: var(--pink); box-shadow: 0 0 8px var(--pink);
+      animation: shard .9s ease-out forwards;
+    }
+    @keyframes shard { to { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; } }
+
+    /* ---------- Terminal ---------- */
     .terminal {
-      margin-top: 1.6rem;
-      width: min(540px, 100%);
+      margin-top: 1.2rem;
+      width: min(560px, 100%);
       background: var(--panel);
       border: 1px solid var(--green);
       border-radius: 6px;
       box-shadow: 0 0 28px rgba(0,255,65,0.14), inset 0 0 30px rgba(0,255,65,0.04);
       text-align: left;
       overflow: hidden;
+      cursor: text;
     }
     .bar {
       display: flex; align-items: center; gap: 6px;
       padding: 0.5rem 0.8rem;
       border-bottom: 1px solid rgba(0,255,65,0.35);
       background: rgba(0,255,65,0.06);
-      font-size: 0.7rem;
-      color: var(--green-dim);
+      font-size: 0.7rem; color: var(--green-dim);
     }
     .bar i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
     .bar i:nth-child(1) { background: var(--pink); }
     .bar i:nth-child(2) { background: var(--yellow); }
     .bar i:nth-child(3) { background: var(--green); }
     .bar span { margin-left: auto; letter-spacing: 0.08em; }
-    .lines { padding: 0.9rem 1.1rem 1rem; min-height: 11.6rem; }
+    .screen {
+      padding: 0.9rem 1.1rem 1rem;
+      min-height: 11.6rem;
+      max-height: min(52vh, 420px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin; scrollbar-color: var(--green-dim) transparent;
+    }
     .tline {
       font-size: clamp(0.72rem, 2.9vw, 0.84rem);
       line-height: 1.75;
       overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
     .ok   { color: var(--green); }
     .err  { color: var(--pink); }
     .warn { color: var(--yellow); }
     .cyan { color: var(--cyan); }
+    .dim  { color: var(--green-dim); }
     .r { color: var(--pink); }
     .y { color: var(--yellow); }
     .c { color: var(--cyan); }
+    .w { color: #eaffef; }
     .cursor {
       display: inline-block; width: 0.55em; height: 1em;
       background: var(--green); vertical-align: -0.15em; margin-left: 2px;
       animation: bl 1s step-end infinite;
     }
+    .prompt { display: flex; align-items: baseline; gap: .5em; margin-top: .2rem; }
+    .prompt[hidden] { display: none; }
+    .prompt label { font-size: clamp(0.72rem, 2.9vw, 0.84rem); color: var(--cyan); white-space: nowrap; }
+    .prompt input {
+      flex: 1; min-width: 0;
+      font: inherit; font-size: 16px; /* 16px: iPhone zoomt sonst rein */
+      color: var(--green); background: transparent; border: 0; outline: 0;
+      caret-color: var(--green);
+      padding: .1rem 0;
+    }
+    .prompt input::placeholder { color: rgba(0,255,65,.35); }
 
     .ai-row {
       display: flex; flex-wrap: wrap; gap: 6px;
@@ -212,12 +300,28 @@
     .dot:nth-child(2) { animation-delay: .2s; }
     .dot:nth-child(3) { animation-delay: .4s; }
     @keyframes dp { 0%,100% { transform: scale(1); opacity: .25; } 50% { transform: scale(1.7); opacity: 1; } }
+    .hint { margin-top: .7rem; font-size: .66rem; letter-spacing: .12em; color: rgba(0,255,65,.5); }
+    .hint b { color: var(--cyan); font-weight: 700; }
 
-    footer {
-      margin-top: 1.6rem;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      color: rgba(0,255,65,0.35);
+    footer { margin-top: 1.4rem; font-size: 0.65rem; letter-spacing: 0.2em; color: rgba(0,255,65,0.35); }
+
+    /* ---------- Glitch-Anfall ---------- */
+    #bars {
+      position: fixed; inset: 0; z-index: 85; pointer-events: none; display: none;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 18px, rgba(255,0,85,.22) 18px 22px, transparent 22px 47px, rgba(0,255,255,.18) 47px 50px);
+      mix-blend-mode: screen;
+    }
+    body.glitch #bars { display: block; animation: barsMove .09s steps(2) infinite; }
+    body.glitch main { animation: jitter .1s steps(2) infinite; filter: contrast(1.5) saturate(2.2) hue-rotate(25deg); }
+    body.glitch .title { text-shadow: -6px 0 var(--pink), 6px 0 var(--cyan); }
+    body.glitch.soft main { filter: none; }
+    body.glitch.soft #bars { opacity: .5; }
+    @keyframes barsMove { 0% { background-position: 0 0; } 100% { background-position: 0 37px; } }
+    @keyframes jitter {
+      0%   { transform: translate(4px, -2px) skewX(5deg); }
+      50%  { transform: translate(-5px, 3px) skewX(-4deg); }
+      100% { transform: translate(2px, 1px); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -227,188 +331,802 @@
   </style>
 </head>
 <body>
-<canvas id="particles" aria-hidden="true"></canvas>
+<canvas id="rain" aria-hidden="true"></canvas>
+<div id="bars" aria-hidden="true"></div>
 
-<div class="lang" role="group" aria-label="Sprache / Dil">
-  <button type="button" data-lang="de" aria-pressed="true">DE</button>
-  <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+<div id="boot" role="presentation">
+  <div id="bootlog"></div>
+  <div class="bootbar"><i id="bootfill"></i></div>
+  <div class="skip" id="skip"></div>
+</div>
+
+<div class="topbar">
+  <div class="seg"><button type="button" id="snd" aria-pressed="false"></button></div>
+  <div class="seg" role="group" aria-label="Sprache / Dil / Language">
+    <button type="button" data-lang="de" aria-pressed="true">DE</button>
+    <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+    <button type="button" data-lang="en" aria-pressed="false">EN</button>
+  </div>
 </div>
 
 <main>
   <div class="video-wrap">
-    <video autoplay loop muted playsinline preload="auto" aria-hidden="true">
+    <video autoplay loop muted playsinline preload="auto" poster="poster.jpg" aria-hidden="true">
       <source src="finger.mp4" type="video/mp4">
     </video>
   </div>
 
   <h1 class="title" id="title" data-text="DOMÄNE VERGEBEN">DOMÄNE VERGEBEN</h1>
-  <div class="insult" id="ins" aria-live="off"></div>
+  <div class="insult" id="ins">VERPISS DICH. <span class="blink">_</span></div>
 
-  <section class="terminal" aria-label="Terminal">
+  <div class="buy-slot"><button type="button" id="buy">DOMAIN KAUFEN</button></div>
+
+  <section class="terminal" id="term" aria-label="Terminal">
     <div class="bar"><i></i><i></i><i></i><span>root@mescak.de:~</span></div>
-    <div class="lines" id="lines"></div>
+    <div class="screen" id="screen">
+      <div id="out" aria-live="polite"></div>
+      <form class="prompt" id="prompt" hidden autocomplete="off">
+        <label for="cmd">root@mescak.de:~$</label>
+        <input id="cmd" type="text" enterkeyhint="send" autocapitalize="off" autocorrect="off" spellcheck="false">
+      </form>
+    </div>
   </section>
 
   <div class="ai-row">
     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
     &nbsp;<span id="status"></span>
   </div>
+  <div class="hint" id="hint"></div>
 
   <footer>MESCAK.DE · © <span id="year">2026</span></footer>
 </main>
 
+<noscript><p style="position:fixed;inset:auto 0 40%;text-align:center;color:#ff0055;z-index:99">VERPISS DICH. · DEFOL GİT. · GET LOST.</p></noscript>
+
 <script>
-  /* ---------- Texte ---------- */
-  const TEXT = {
-    de: {
-      title: 'DOMÄNE VERGEBEN',
-      status: 'KI-MODUL AKTIV  |  DREISTIGKEIT: MAX',
-      insults: [
-        'VERPISS DICH.', 'HAU BLOSS AB.', 'NIX FÜR DICH HIER.', 'ALTER, GEH HEIM.',
-        'BYE BYE, LOSER.', '404: CHANCE WEG.', 'DAS IST NICHT DEINES.', 'TRÄUM WEITER.'
+/* =====================================================================
+   TEXTE  (de / tr / en)
+   ===================================================================== */
+const TEXT = {
+  de: {
+    title: 'DOMÄNE VERGEBEN',
+    status: 'KI-MODUL AKTIV  |  DREISTIGKEIT: MAX',
+    hint: 'TIPPE <b>help</b> INS TERMINAL · SCHÜTTEL DEIN HANDY',
+    skip: '[ TIPPEN ZUM ÜBERSPRINGEN ]',
+    soundOn: 'TON AN', soundOff: 'TON AUS',
+    placeholder: 'help',
+    insults: ['VERPISS DICH.', 'HAU BLOSS AB.', 'NIX FÜR DICH HIER.', 'ALTER, GEH HEIM.',
+              'BYE BYE, LOSER.', '404: CHANCE WEG.', 'DAS IST NICHT DEINES.', 'TRÄUM WEITER.'],
+    boot: [
+      'MESCAK BIOS v6.66  ·  (c) 1999–2026 MESCAK SYSTEMS',
+      'Speichertest ............. <span class="w">640K OK</span>',
+      'Verbinde mit mescak.de ... <span class="w">OK</span>',
+      'Firewall umgehen ......... <span class="w">ERLEDIGT</span>',
+      'Besucher wird gescannt ... <span class="w">100%</span>',
+      '<span class="r">WARNUNG: unerwünschter Besucher erkannt.</span>',
+      '<span class="r big">ZUGRIFF VERWEIGERT</span>'
+    ],
+    lines: [
+      ['ok',   '<span class="ok">&gt;</span> KI-ANALYSE GESTARTET...'],
+      ['err',  '<span class="r">[ERR 666]</span> Nutzer: <span class="r">KOMPLETT PLANLOS</span>'],
+      ['warn', '<span class="y">[WARN]</span> Dreistigkeit: <span class="y">LEVEL 9000</span> — ÜBERSCHRITTEN'],
+      ['cyan', '<span class="c">[KI]</span> Empfehlung: <span class="r">HAU BLOSS AB.</span>'],
+      ['ok',   '<span class="ok">&gt;</span> Dein Status: <span class="r">NICHT FÜR DICH.</span>'],
+      ['warn', '<span class="y">[SYS]</span> Nächster Schritt: <span class="r">GO HOME.</span>']
+    ],
+    scan: { tag: '[SCAN]', device: 'Gerät', browser: 'Browser', time: 'Uhrzeit', screen: 'Bildschirm',
+            battery: 'Akku', charging: 'lädt', net: 'Netz', lang: 'Sprache',
+            done: '<span class="c">[KI]</span> Profil gespeichert. <span class="r">Wir wissen Bescheid.</span>',
+            bye:  '<span class="c">[KI]</span> Auf Wiedersehen, Loser.' },
+    buy: ['DOMAIN KAUFEN', 'ZU LANGSAM', 'NÖ', 'FAST!', 'HAHA', 'NIE IM LEBEN', 'GIB AUF'],
+    buyDone: '<span class="r">[SYS]</span> Kaufversuch Nr. {n} abgewehrt. <span class="r">Preis: unbezahlbar.</span>',
+    konami: '<span class="y">[CHEAT]</span> Konami-Code erkannt. Belohnung: <span class="r">immer noch nichts.</span>',
+    shake: '<span class="y">[SENSOR]</span> Erschütterung erkannt. Beruhig dich.',
+    cmd: {
+      help: [
+        'Befehle:',
+        '  <span class="c">help</span>      diese Liste',
+        '  <span class="c">whoami</span>    wer bist du überhaupt?',
+        '  <span class="c">kaufen</span>    Domain kaufen (viel Glück)',
+        '  <span class="c">ls</span> / <span class="c">cat</span>  Dateien ansehen',
+        '  <span class="c">hack</span>      versuch es ruhig',
+        '  <span class="c">sudo</span>      Admin spielen',
+        '  <span class="c">matrix</span>    rote Pille, blaue Pille',
+        '  <span class="c">glitch</span>    kaputt machen',
+        '  <span class="c">ping</span> · <span class="c">date</span> · <span class="c">echo</span> · <span class="c">clear</span>',
+        '  <span class="c">sound</span>     Ton an/aus',
+        '  <span class="c">lang</span> de|tr|en   Sprache',
+        '  <span class="c">privacy</span>   was wir über dich wissen',
+        '  <span class="c">exit</span>      die beste Idee heute'
       ],
-      lines: [
-        ['ok',   '<span class="ok">&gt;</span> KI-ANALYSE GESTARTET...'],
-        ['err',  '<span class="r">[ERR 666]</span> Nutzer: <span class="r">KOMPLETT PLANLOS</span>'],
-        ['warn', '<span class="y">[WARN]</span> Dreistigkeit: <span class="y">LEVEL 9000</span> — ÜBERSCHRITTEN'],
-        ['cyan', '<span class="c">[KI]</span> Empfehlung: <span class="r">HAU BLOSS AB.</span>'],
-        ['ok',   '<span class="ok">&gt;</span> Dein Status: <span class="r">NICHT FÜR DICH.</span>'],
-        ['warn', '<span class="y">[SYS]</span> Nächster Schritt: <span class="r">GO HOME.</span>'],
-        ['cyan', '<span class="c">[KI]</span> Auf Wiedersehen, Loser.']
-      ]
-    },
-    tr: {
-      title: 'ALAN ADI ALINMIŞ',
-      status: 'YZ MODÜLÜ AKTİF  |  KÜSTAHLIK: MAKS',
-      insults: [
-        'DEFOL GİT.', 'HADİ YALLAH.', 'BURADA SANA BİR ŞEY YOK.', 'KARDEŞİM, EVİNE GİT.',
-        'BAY BAY, EZİK.', '404: ŞANS BİTTİ.', 'BU SENİN DEĞİL.', 'RÜYANDA GÖRÜRSÜN.'
-      ],
-      lines: [
-        ['ok',   '<span class="ok">&gt;</span> YAPAY ZEKÂ ANALİZİ BAŞLADI...'],
-        ['err',  '<span class="r">[HATA 666]</span> Kullanıcı: <span class="r">TAMAMEN PLANSIZ</span>'],
-        ['warn', '<span class="y">[UYARI]</span> Küstahlık: <span class="y">SEVİYE 9000</span> — AŞILDI'],
-        ['cyan', '<span class="c">[YZ]</span> Öneri: <span class="r">HEMEN KAYBOL.</span>'],
-        ['ok',   '<span class="ok">&gt;</span> Durumun: <span class="r">SANA GÖRE DEĞİL.</span>'],
-        ['warn', '<span class="y">[SİS]</span> Sonraki adım: <span class="r">EVİNE DÖN.</span>'],
-        ['cyan', '<span class="c">[YZ]</span> Güle güle, ezik.']
-      ]
+      whoami: 'Ein Niemand mit {device}. Nächste Frage.',
+      buy: ['<span class="r">NEIN.</span>', 'Preis: unbezahlbar. Wartezeit: für immer.'],
+      ls: '<span class="c">geheim.txt</span>  <span class="c">passwörter.txt</span>  <span class="c">nix_für_dich/</span>',
+      secret: 'Ätsch. Hier steht nichts. Hast du echt geglaubt …?',
+      pw: 'hunter2  ·  passwort123  ·  <span class="r">war nur Spaß, Loser.</span>',
+      nofile: 'cat: {f}: Datei nicht gefunden. Wie dein Plan.',
+      cd: 'cd: Zugriff verweigert. Du bleibst draußen.',
+      sudo: '<span class="r">{u} ist nicht in der sudoers-Datei. Dieser Vorfall wird gemeldet.</span>',
+      rm: '<span class="r">SELBSTZERSTÖRUNG …</span> abgebrochen. Netter Versuch.',
+      hack: ['Starte Hack …', 'Knacke Passwort … [##########] 100%', 'Umgehe Firewall …', '<span class="r">HACK FEHLGESCHLAGEN.</span> Du übrigens auch.'],
+      matrix: 'Folge dem weißen Kaninchen …',
+      glitch: 'Upsi.',
+      ping: 'pong. Und jetzt geh.',
+      hello: 'Nein.',
+      exit: 'Gute Idee. Den Tab musst du aber selbst zumachen.',
+      privacy: 'Keine Panik: alles läuft nur in deinem Browser. Nichts wird gespeichert oder verschickt. Bisschen Angst gehabt? 😏',
+      soundOn: 'Ton an. 🔊', soundOff: 'Ton aus. 🔇',
+      lang: 'Sprache: lang de | tr | en',
+      unknown: 'Befehl nicht gefunden: <span class="r">{c}</span>. Versuch <span class="c">help</span>. Oder geh.'
     }
-  };
+  },
 
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.getElementById('year').textContent = new Date().getFullYear();
+  tr: {
+    title: 'ALAN ADI ALINMIŞ',
+    status: 'YZ MODÜLÜ AKTİF  |  KÜSTAHLIK: MAKS',
+    hint: 'TERMİNALE <b>help</b> YAZ · TELEFONUNU SALLA',
+    skip: '[ GEÇMEK İÇİN DOKUN ]',
+    soundOn: 'SES AÇIK', soundOff: 'SES KAPALI',
+    placeholder: 'help',
+    insults: ['DEFOL GİT.', 'HADİ YALLAH.', 'BURADA SANA BİR ŞEY YOK.', 'KARDEŞİM, EVİNE GİT.',
+              'BAY BAY, EZİK.', '404: ŞANS BİTTİ.', 'BU SENİN DEĞİL.', 'RÜYANDA GÖRÜRSÜN.'],
+    boot: [
+      'MESCAK BIOS v6.66  ·  (c) 1999–2026 MESCAK SYSTEMS',
+      'Bellek testi ............. <span class="w">640K TAMAM</span>',
+      'mescak.de bağlanıyor ..... <span class="w">TAMAM</span>',
+      'Güvenlik duvarı aşılıyor . <span class="w">BİTTİ</span>',
+      'Ziyaretçi taranıyor ...... <span class="w">%100</span>',
+      '<span class="r">UYARI: istenmeyen ziyaretçi tespit edildi.</span>',
+      '<span class="r big">ERİŞİM REDDEDİLDİ</span>'
+    ],
+    lines: [
+      ['ok',   '<span class="ok">&gt;</span> YAPAY ZEKÂ ANALİZİ BAŞLADI...'],
+      ['err',  '<span class="r">[HATA 666]</span> Kullanıcı: <span class="r">TAMAMEN PLANSIZ</span>'],
+      ['warn', '<span class="y">[UYARI]</span> Küstahlık: <span class="y">SEVİYE 9000</span> — AŞILDI'],
+      ['cyan', '<span class="c">[YZ]</span> Öneri: <span class="r">HEMEN KAYBOL.</span>'],
+      ['ok',   '<span class="ok">&gt;</span> Durumun: <span class="r">SANA GÖRE DEĞİL.</span>'],
+      ['warn', '<span class="y">[SİS]</span> Sonraki adım: <span class="r">EVİNE DÖN.</span>']
+    ],
+    scan: { tag: '[TARAMA]', device: 'Cihaz', browser: 'Tarayıcı', time: 'Saat', screen: 'Ekran',
+            battery: 'Pil', charging: 'şarj oluyor', net: 'Ağ', lang: 'Dil',
+            done: '<span class="c">[YZ]</span> Profil kaydedildi. <span class="r">Her şeyi biliyoruz.</span>',
+            bye:  '<span class="c">[YZ]</span> Güle güle, ezik.' },
+    buy: ['ALAN ADINI SATIN AL', 'ÇOK YAVAŞ', 'YOK', 'AZ KALDI!', 'HAHA', 'ASLA', 'VAZGEÇ'],
+    buyDone: '<span class="r">[SİS]</span> {n}. satın alma denemesi engellendi. <span class="r">Fiyat: paha biçilemez.</span>',
+    konami: '<span class="y">[HİLE]</span> Konami kodu algılandı. Ödül: <span class="r">yine hiçbir şey.</span>',
+    shake: '<span class="y">[SENSÖR]</span> Sarsıntı algılandı. Sakin ol.',
+    cmd: {
+      help: [
+        'Komutlar:',
+        '  <span class="c">help</span>      bu liste',
+        '  <span class="c">whoami</span>    sen kimsin ki?',
+        '  <span class="c">satın al</span>  alan adını al (bol şans)',
+        '  <span class="c">ls</span> / <span class="c">cat</span>  dosyalara bak',
+        '  <span class="c">hack</span>      dene bakalım',
+        '  <span class="c">sudo</span>      admin taklidi yap',
+        '  <span class="c">matrix</span>    kırmızı hap, mavi hap',
+        '  <span class="c">glitch</span>    boz',
+        '  <span class="c">ping</span> · <span class="c">date</span> · <span class="c">echo</span> · <span class="c">clear</span>',
+        '  <span class="c">sound</span>     ses aç/kapat',
+        '  <span class="c">lang</span> de|tr|en   dil',
+        '  <span class="c">privacy</span>   hakkında ne biliyoruz',
+        '  <span class="c">exit</span>      bugünün en iyi fikri'
+      ],
+      whoami: '{device} kullanan bir hiç. Sıradaki soru.',
+      buy: ['<span class="r">HAYIR.</span>', 'Fiyat: paha biçilemez. Bekleme süresi: sonsuza dek.'],
+      ls: '<span class="c">gizli.txt</span>  <span class="c">şifreler.txt</span>  <span class="c">sana_değil/</span>',
+      secret: 'Oh olsun. Burada hiçbir şey yok. Gerçekten inandın mı …?',
+      pw: 'hunter2  ·  sifre123  ·  <span class="r">şakaydı, ezik.</span>',
+      nofile: 'cat: {f}: dosya bulunamadı. Tıpkı planın gibi.',
+      cd: 'cd: erişim reddedildi. Dışarıda kalıyorsun.',
+      sudo: '<span class="r">{u} sudoers dosyasında yok. Bu olay bildirilecek.</span>',
+      rm: '<span class="r">KENDİNİ İMHA …</span> iptal edildi. İyi denemeydi.',
+      hack: ['Hack başlatılıyor …', 'Şifre kırılıyor … [##########] %100', 'Güvenlik duvarı aşılıyor …', '<span class="r">HACK BAŞARISIZ.</span> Sen de öylesin.'],
+      matrix: 'Beyaz tavşanı takip et …',
+      glitch: 'Hoppala.',
+      ping: 'pong. Şimdi git.',
+      hello: 'Hayır.',
+      exit: 'İyi fikir. Ama sekmeyi kendin kapatacaksın.',
+      privacy: 'Panik yok: her şey sadece senin tarayıcında çalışıyor. Hiçbir şey kaydedilmiyor ya da gönderilmiyor. Biraz korktun mu? 😏',
+      soundOn: 'Ses açık. 🔊', soundOff: 'Ses kapalı. 🔇',
+      lang: 'Dil: lang de | tr | en',
+      unknown: 'Komut bulunamadı: <span class="r">{c}</span>. <span class="c">help</span> yaz. Ya da git.'
+    }
+  },
 
-  /* ---------- Sprache wählen: ?lang= > gespeichert > Browser > Deutsch ---------- */
-  function pickLang() {
-    const q = new URLSearchParams(location.search).get('lang');
-    if (q && TEXT[q]) return q;
-    try { const s = localStorage.getItem('lang'); if (s && TEXT[s]) return s; } catch (e) {}
-    const nav = (navigator.languages || [navigator.language || '']).join(',').toLowerCase();
-    return /(^|,)tr/.test(nav) ? 'tr' : 'de';
+  en: {
+    title: 'DOMAIN TAKEN',
+    status: 'AI MODULE ACTIVE  |  AUDACITY: MAX',
+    hint: 'TYPE <b>help</b> IN THE TERMINAL · SHAKE YOUR PHONE',
+    skip: '[ TAP TO SKIP ]',
+    soundOn: 'SOUND ON', soundOff: 'SOUND OFF',
+    placeholder: 'help',
+    insults: ['GET LOST.', 'BEAT IT.', 'NOTHING FOR YOU HERE.', 'GO HOME, BRO.',
+              'BYE BYE, LOSER.', '404: CHANCE GONE.', 'NOT YOURS.', 'KEEP DREAMING.'],
+    boot: [
+      'MESCAK BIOS v6.66  ·  (c) 1999–2026 MESCAK SYSTEMS',
+      'Memory test .............. <span class="w">640K OK</span>',
+      'Connecting to mescak.de .. <span class="w">OK</span>',
+      'Bypassing firewall ....... <span class="w">DONE</span>',
+      'Scanning visitor ......... <span class="w">100%</span>',
+      '<span class="r">WARNING: unwanted visitor detected.</span>',
+      '<span class="r big">ACCESS DENIED</span>'
+    ],
+    lines: [
+      ['ok',   '<span class="ok">&gt;</span> AI ANALYSIS STARTED...'],
+      ['err',  '<span class="r">[ERR 666]</span> User: <span class="r">TOTALLY CLUELESS</span>'],
+      ['warn', '<span class="y">[WARN]</span> Audacity: <span class="y">LEVEL 9000</span> — EXCEEDED'],
+      ['cyan', '<span class="c">[AI]</span> Recommendation: <span class="r">GET LOST.</span>'],
+      ['ok',   '<span class="ok">&gt;</span> Your status: <span class="r">NOT FOR YOU.</span>'],
+      ['warn', '<span class="y">[SYS]</span> Next step: <span class="r">GO HOME.</span>']
+    ],
+    scan: { tag: '[SCAN]', device: 'Device', browser: 'Browser', time: 'Time', screen: 'Screen',
+            battery: 'Battery', charging: 'charging', net: 'Network', lang: 'Language',
+            done: '<span class="c">[AI]</span> Profile saved. <span class="r">We know everything.</span>',
+            bye:  '<span class="c">[AI]</span> Goodbye, loser.' },
+    buy: ['BUY THIS DOMAIN', 'TOO SLOW', 'NOPE', 'ALMOST!', 'HAHA', 'NEVER EVER', 'GIVE UP'],
+    buyDone: '<span class="r">[SYS]</span> Purchase attempt #{n} blocked. <span class="r">Price: priceless.</span>',
+    konami: '<span class="y">[CHEAT]</span> Konami code detected. Reward: <span class="r">still nothing.</span>',
+    shake: '<span class="y">[SENSOR]</span> Shaking detected. Calm down.',
+    cmd: {
+      help: [
+        'Commands:',
+        '  <span class="c">help</span>      this list',
+        '  <span class="c">whoami</span>    who even are you?',
+        '  <span class="c">buy</span>       buy the domain (good luck)',
+        '  <span class="c">ls</span> / <span class="c">cat</span>  look at files',
+        '  <span class="c">hack</span>      go on, try it',
+        '  <span class="c">sudo</span>      play admin',
+        '  <span class="c">matrix</span>    red pill, blue pill',
+        '  <span class="c">glitch</span>    break stuff',
+        '  <span class="c">ping</span> · <span class="c">date</span> · <span class="c">echo</span> · <span class="c">clear</span>',
+        '  <span class="c">sound</span>     sound on/off',
+        '  <span class="c">lang</span> de|tr|en   language',
+        '  <span class="c">privacy</span>   what we know about you',
+        '  <span class="c">exit</span>      best idea today'
+      ],
+      whoami: 'A nobody on {device}. Next question.',
+      buy: ['<span class="r">NO.</span>', 'Price: priceless. Waiting time: forever.'],
+      ls: '<span class="c">secret.txt</span>  <span class="c">passwords.txt</span>  <span class="c">not_for_you/</span>',
+      secret: 'Ha. Nothing here. Did you really think …?',
+      pw: 'hunter2  ·  password123  ·  <span class="r">just kidding, loser.</span>',
+      nofile: 'cat: {f}: no such file. Just like your plan.',
+      cd: 'cd: permission denied. You stay outside.',
+      sudo: '<span class="r">{u} is not in the sudoers file. This incident will be reported.</span>',
+      rm: '<span class="r">SELF-DESTRUCT …</span> aborted. Nice try.',
+      hack: ['Starting hack …', 'Cracking password … [##########] 100%', 'Bypassing firewall …', '<span class="r">HACK FAILED.</span> So did you.'],
+      matrix: 'Follow the white rabbit …',
+      glitch: 'Oops.',
+      ping: 'pong. Now leave.',
+      hello: 'No.',
+      exit: 'Good idea. You have to close the tab yourself, though.',
+      privacy: 'Relax: everything runs only in your browser. Nothing is stored or sent. Got a little scared? 😏',
+      soundOn: 'Sound on. 🔊', soundOff: 'Sound off. 🔇',
+      lang: 'Language: lang de | tr | en',
+      unknown: 'Command not found: <span class="r">{c}</span>. Try <span class="c">help</span>. Or leave.'
+    }
   }
+};
 
-  /* ---------- Terminal mit Tipp-Effekt ---------- */
-  let runId = 0;
-  function typeLines(lines) {
-    const id = ++runId;
-    const box = document.getElementById('lines');
-    box.innerHTML = '';
-    const cursor = document.createElement('span');
-    cursor.className = 'cursor';
+/* =====================================================================
+   GRUNDLAGEN
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+const fill = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k] ?? '');
+const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+$('#year').textContent = new Date().getFullYear();
 
-    if (reduce) {
-      lines.forEach(([cls, html]) => {
-        const d = document.createElement('div');
-        d.className = 'tline ' + cls; d.innerHTML = html; box.appendChild(d);
-      });
-      box.lastChild.appendChild(cursor);
-      return;
-    }
+function pickLang() {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q && TEXT[q]) return q;
+  const s = store.get('lang'); if (s && TEXT[s]) return s;
+  for (const l of (navigator.languages || [navigator.language || ''])) {
+    const p = (l || '').slice(0, 2).toLowerCase();
+    if (TEXT[p]) return p;
+  }
+  return 'de';
+}
+let lang = pickLang();
+let T = TEXT[lang];
 
-    let li = 0;
-    function nextLine() {
-      if (id !== runId) return;
-      if (li >= lines.length) { box.lastChild.appendChild(cursor); return; }
-      const [cls, html] = lines[li++];
-      const d = document.createElement('div');
-      d.className = 'tline ' + cls;
-      box.appendChild(d);
-      // HTML in Tags und Zeichen zerlegen, Zeichen einzeln tippen
-      const tokens = html.match(/<[^>]+>|&[a-z]+;|[\s\S]/g);
-      let ti = 0, built = '';
-      (function step() {
+/* =====================================================================
+   TON  (wird live im Browser erzeugt, keine Dateien)
+   ===================================================================== */
+let actx = null, soundOn = store.get('sound') === '1';
+function audio() {
+  if (!actx) {
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return null;
+    actx = new C();
+  }
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+function tone(f, d = .06, type = 'square', vol = .04, slide) {
+  if (!soundOn) return;
+  const a = audio(); if (!a) return;
+  const t = a.currentTime, o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + d);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + d + .02);
+}
+function noise(d = .25, vol = .1, freq = 1200, toFreq) {
+  if (!soundOn) return;
+  const a = audio(); if (!a) return;
+  const t = a.currentTime, len = Math.floor(a.sampleRate * d);
+  const buf = a.createBuffer(1, len, a.sampleRate), ch = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) ch[i] = Math.random() * 2 - 1;
+  const src = a.createBufferSource(), flt = a.createBiquadFilter(), g = a.createGain();
+  src.buffer = buf; flt.type = 'bandpass'; flt.Q.value = 1.2;
+  flt.frequency.setValueAtTime(freq, t);
+  if (toFreq) flt.frequency.exponentialRampToValueAtTime(toFreq, t + d);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  src.connect(flt).connect(g).connect(a.destination); src.start(t);
+}
+const sfx = {
+  key:    () => tone(1700 + Math.random() * 900, .012, 'square', .012),
+  beep:   () => tone(880, .07, 'square', .03),
+  ok:     () => { tone(660, .06, 'square', .03); setTimeout(() => tone(990, .08, 'square', .03), 70); },
+  err:    () => tone(150, .28, 'sawtooth', .05, 60),
+  glitch: () => { noise(.35, .14, 600, 4000); tone(55, .3, 'sawtooth', .06, 30); },
+  whoosh: () => noise(.18, .07, 3000, 500),
+  boom:   () => { noise(.7, .25, 400, 60); tone(110, .6, 'sine', .2, 25); },
+  deny:   () => { tone(220, .14, 'sawtooth', .06); setTimeout(() => tone(165, .3, 'sawtooth', .06), 150); }
+};
+
+const SPK_ON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.8 5.8a9 9 0 0 1 0 12.4"/></svg>';
+const SPK_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+function renderSound() {
+  const b = $('#snd');
+  b.innerHTML = (soundOn ? SPK_ON : SPK_OFF) + '<span>' + (soundOn ? T.soundOn : T.soundOff) + '</span>';
+  b.setAttribute('aria-pressed', String(soundOn));
+}
+function setSound(on) {
+  soundOn = on; store.set('sound', on ? '1' : '0');
+  if (on) { audio(); sfx.ok(); }
+  renderSound();
+}
+$('#snd').addEventListener('click', () => setSound(!soundOn));
+
+/* =====================================================================
+   GLITCH-ANFALL  (+ Vibration)
+   ===================================================================== */
+let glitchTimer = 0;
+function glitch(ms = 650, soft = false) {
+  if (reduce) return;
+  document.body.classList.add('glitch');
+  document.body.classList.toggle('soft', soft);
+  if (!soft) {
+    sfx.glitch();
+    if (navigator.vibrate) navigator.vibrate([40, 30, 80, 30, 40]);
+  }
+  clearTimeout(glitchTimer);
+  glitchTimer = setTimeout(() => document.body.classList.remove('glitch', 'soft'), ms);
+}
+// gelegentlich ein kleiner Zucker von selbst
+(function randomGlitch() {
+  setTimeout(() => { if (!document.hidden) glitch(180, true); randomGlitch(); }, 7000 + Math.random() * 9000);
+})();
+
+/* =====================================================================
+   MATRIX-REGEN
+   ===================================================================== */
+const cv = $('#rain'), ctx = cv.getContext('2d');
+const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜĞŞİÇ$#%&*+<>/\\=';
+const FS = 16;
+let W = 0, H = 0, cols = [];
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const n = Math.ceil(W / FS);
+  cols = Array.from({ length: n }, (_, i) => cols[i] ?? Math.random() * -H / FS);
+}
+resize(); addEventListener('resize', resize);
+let last = 0;
+function rain(ts) {
+  requestAnimationFrame(rain);
+  if (ts - last < 50) return;   // ~20 Bilder/s reichen und schonen den Akku (im Hintergrund pausiert der Browser ohnehin)
+  last = ts;
+  const matrix = document.body.classList.contains('matrix');
+  ctx.fillStyle = 'rgba(0,0,0,0.07)'; ctx.fillRect(0, 0, W, H);
+  ctx.font = '700 ' + FS + 'px "JetBrains Mono", monospace';
+  for (let i = 0; i < cols.length; i++) {
+    const y = cols[i] * FS;
+    const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+    const r = Math.random();
+    ctx.fillStyle = r < .03 ? '#ff0055' : r < .1 ? '#d6ffe0' : (matrix && r < .2 ? '#00ffff' : '#00ff41');
+    ctx.fillText(ch, i * FS, y);
+    if (y > H && Math.random() > (matrix ? .9 : .975)) cols[i] = 0;
+    cols[i] += matrix ? 1 : .55;
+  }
+}
+if (reduce) {
+  ctx.font = '700 ' + FS + 'px monospace'; ctx.fillStyle = 'rgba(0,255,65,.4)';
+  for (let i = 0; i < 400; i++) ctx.fillText(CHARS[i % CHARS.length], Math.random() * W, Math.random() * H);
+} else requestAnimationFrame(rain);
+
+/* =====================================================================
+   BESUCHER-SCAN  (nur lokal, nichts wird verschickt)
+   ===================================================================== */
+function deviceName() {
+  const ua = navigator.userAgent;
+  if (/iPhone/.test(ua)) return 'iPhone';
+  if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return 'iPad';
+  if (/Android/.test(ua)) {
+    const m = ua.match(/Android [\d.]+; ([^;)]+)/);
+    const model = m && m[1].trim();
+    return 'Android' + (model && model !== 'K' ? ' · ' + model : '');
+  }
+  if (/Windows/.test(ua)) return 'Windows-PC';
+  if (/Mac/.test(ua)) return 'Mac';
+  if (/CrOS/.test(ua)) return 'Chromebook';
+  if (/Linux/.test(ua)) return 'Linux';
+  return '???';
+}
+function browserName() {
+  const ua = navigator.userAgent;
+  if (navigator.brave) return 'Brave';
+  if (/Edg(e|A|iOS)?\//.test(ua)) return 'Edge';
+  if (/OPR\/|Opera/.test(ua)) return 'Opera';
+  if (/SamsungBrowser/.test(ua)) return 'Samsung Internet';
+  if (/Firefox|FxiOS/.test(ua)) return 'Firefox';
+  if (/CriOS|Chrome/.test(ua)) return 'Chrome';
+  if (/Safari/.test(ua)) return 'Safari';
+  return '???';
+}
+const DEVICE = deviceName(), BROWSER = browserName();
+let battery = null;
+const batteryReady = (navigator.getBattery
+  ? Promise.race([navigator.getBattery().then(b => { battery = b; }).catch(() => {}), sleep(900)])
+  : Promise.resolve());
+
+function scanLines() {
+  const s = T.scan, tag = '<span class="c">' + s.tag + '</span> ';
+  const now = new Date();
+  const time = now.toLocaleTimeString(lang === 'en' ? 'en-GB' : lang, { hour: '2-digit', minute: '2-digit' });
+  let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+  const L = [
+    ['cyan', tag + s.device + ': <span class="w">' + esc(DEVICE) + '</span> · ' + s.browser + ': <span class="w">' + esc(BROWSER) + '</span>'],
+    ['cyan', tag + s.time + ': <span class="w">' + time + '</span>' + (tz ? ' <span class="dim">(' + esc(tz) + ')</span>' : '')],
+    ['cyan', tag + s.screen + ': <span class="w">' + screen.width + '×' + screen.height + '</span> · ' + s.lang + ': <span class="w">' + esc(navigator.language || '?') + '</span>']
+  ];
+  if (battery) {
+    L.push(['cyan', tag + s.battery + ': <span class="' + (battery.level < .2 ? 'r' : 'w') + '">' + Math.round(battery.level * 100) + ' %</span>' + (battery.charging ? ' (' + s.charging + ')' : '')]);
+  }
+  L.push(['cyan', s.done], ['cyan', s.bye]);
+  return L;
+}
+
+/* =====================================================================
+   TERMINAL
+   ===================================================================== */
+const out = $('#out'), screenEl = $('#screen'), promptEl = $('#prompt'), cmdEl = $('#cmd');
+const cursor = document.createElement('span'); cursor.className = 'cursor';
+let runId = 0;
+const toBottom = () => { screenEl.scrollTop = screenEl.scrollHeight; };
+
+function addLine(cls, html) {
+  const d = document.createElement('div');
+  d.className = 'tline ' + (cls || 'ok');
+  d.innerHTML = html;
+  out.appendChild(d); toBottom();
+  return d;
+}
+async function typeLine(cls, html, id, speed = 1) {
+  const d = addLine(cls, '');
+  if (reduce) { d.innerHTML = html; return id === runId; }
+  const tokens = html.match(/<[^>]+>|&[a-z#0-9]+;|[\s\S]/gu) || [];
+  let built = '', n = 0;
+  for (let i = 0; i < tokens.length; i++) {
+    if (id !== runId) return false;
+    built += tokens[i];
+    if (tokens[i][0] === '<') continue;
+    d.innerHTML = built; d.appendChild(cursor); toBottom();
+    if (++n % 2 === 0) sfx.key();
+    await sleep((12 + Math.random() * 20) / speed);
+  }
+  d.innerHTML = built;
+  return id === runId;
+}
+async function runIntro() {
+  const id = ++runId;
+  out.innerHTML = ''; promptEl.hidden = true;
+  await sleep(350);
+  for (const [cls, html] of T.lines) {
+    if (!await typeLine(cls, html, id)) return;
+    await sleep(200);
+  }
+  await batteryReady;
+  for (const [cls, html] of scanLines()) {
+    if (id !== runId) return;
+    if (!await typeLine(cls, html, id, 1.6)) return;
+    await sleep(140);
+  }
+  if (id !== runId) return;
+  sfx.beep();
+  promptEl.hidden = false;
+  cmdEl.placeholder = T.placeholder;
+  toBottom();
+}
+
+/* --- Befehle --- */
+const history = []; let hIdx = 0;
+async function runCmd(raw) {
+  const C = T.cmd, input = raw.trim(), low = input.toLocaleLowerCase('tr').replace(/İ/g, 'i');
+  const [w0, ...rest] = low.split(/\s+/); const arg = rest.join(' ');
+  addLine('dim', '<span class="c">root@mescak.de:~$</span> ' + esc(input));
+  if (!input) return;
+  const say = (h, cls = 'ok') => addLine(cls, h);
+  const id = runId;
+
+  switch (true) {
+    case ['help', 'hilfe', 'yardım', 'yardim', '?', 'man'].includes(w0):
+      C.help.forEach(l => say(l)); break;
+    case ['whoami', 'kimim', 'wer'].includes(w0):
+      say(fill(C.whoami, { device: '<span class="w">' + esc(DEVICE) + '</span>' })); break;
+    case ['kaufen', 'buy', 'purchase', 'preis', 'price', 'fiyat'].includes(w0) || /^satın|^satin/.test(low):
+      sfx.deny(); glitch(400); C.buy.forEach(l => say(l, 'err')); break;
+    case w0 === 'ls' || w0 === 'dir':
+      say(C.ls); break;
+    case w0 === 'cat' || w0 === 'type' || w0 === 'less' || w0 === 'more':
+      if (/geheim|gizli|secret/.test(arg)) say(C.secret, 'warn');
+      else if (/pass|şifre|sifre/.test(arg)) { say(C.pw, 'warn'); }
+      else { sfx.err(); say(fill(C.nofile, { f: esc(arg || '?') }), 'err'); }
+      break;
+    case w0 === 'cd':
+      sfx.err(); say(C.cd, 'err'); break;
+    case w0 === 'sudo' || w0 === 'su' || w0 === 'admin' || w0 === 'root':
+      sfx.err(); glitch(300); say(fill(C.sudo, { u: esc(DEVICE.split(' ')[0].toLowerCase()) }), 'err'); break;
+    case w0 === 'rm' || w0 === 'del' || w0 === 'format':
+      glitch(1200); say(C.rm, 'err'); break;
+    case w0 === 'hack' || w0 === 'hacker' || w0 === 'nmap' || w0 === 'ssh':
+      promptEl.hidden = true;
+      for (let i = 0; i < C.hack.length; i++) {
+        await sleep(i ? 650 : 150);
         if (id !== runId) return;
-        while (ti < tokens.length && tokens[ti][0] === '<') built += tokens[ti++];
-        if (ti < tokens.length) built += tokens[ti++];
-        d.innerHTML = built;
-        d.appendChild(cursor);
-        if (ti < tokens.length) setTimeout(step, 14 + Math.random() * 22);
-        else setTimeout(nextLine, 260);
-      })();
+        if (i === C.hack.length - 1) { glitch(700); sfx.err(); }
+        else sfx.beep();
+        say(C.hack[i], i === C.hack.length - 1 ? 'err' : 'warn');
+      }
+      promptEl.hidden = false; cmdEl.focus({ preventScroll: true });
+      break;
+    case w0 === 'matrix' || w0 === 'neo':
+      document.body.classList.add('matrix'); sfx.whoosh();
+      say(C.matrix, 'ok');
+      setTimeout(() => document.body.classList.remove('matrix'), 9000); break;
+    case w0 === 'glitch' || w0 === 'bug':
+      glitch(1000); say(C.glitch, 'err'); break;
+    case w0 === 'ping':
+      say(C.ping); break;
+    case ['date', 'datum', 'tarih', 'time', 'zeit', 'saat'].includes(w0):
+      say(new Date().toLocaleString(lang === 'en' ? 'en-GB' : lang)); break;
+    case w0 === 'echo':
+      say(esc(input.slice(5)) || '…'); break;
+    case ['clear', 'cls', 'temizle'].includes(w0):
+      out.innerHTML = ''; break;
+    case ['sound', 'ton', 'ses', 'mute'].includes(w0):
+      setSound(w0 === 'mute' ? false : !soundOn); say(soundOn ? C.soundOn : C.soundOff); break;
+    case ['lang', 'sprache', 'dil', 'language'].includes(w0):
+      if (TEXT[arg]) { setLang(arg, true); return; }
+      say(C.lang, 'warn'); break;
+    case ['privacy', 'datenschutz', 'gizlilik'].includes(w0):
+      say(C.privacy, 'cyan'); break;
+    case ['exit', 'quit', 'logout', 'bye', 'tschüss', 'çıkış', 'cikis'].includes(w0):
+      say(C.exit, 'warn'); break;
+    case ['hallo', 'hello', 'hi', 'hey', 'merhaba', 'selam', 'moin', 'servus'].includes(w0):
+      say(C.hello, 'err'); break;
+    default:
+      sfx.err(); say(fill(C.unknown, { c: esc(input.slice(0, 40)) }), 'err');
+  }
+  toBottom();
+}
+promptEl.addEventListener('submit', e => {
+  e.preventDefault();
+  const v = cmdEl.value; cmdEl.value = '';
+  if (v.trim()) { history.push(v); hIdx = history.length; }
+  runCmd(v);
+});
+cmdEl.addEventListener('keydown', e => {
+  if (e.key === 'ArrowUp' && history.length) { hIdx = Math.max(0, hIdx - 1); cmdEl.value = history[hIdx]; e.preventDefault(); }
+  else if (e.key === 'ArrowDown') { hIdx = Math.min(history.length, hIdx + 1); cmdEl.value = history[hIdx] || ''; e.preventDefault(); }
+  else if (e.key.length === 1) sfx.key();
+});
+$('#term').addEventListener('click', () => { if (!promptEl.hidden && !getSelection().toString()) cmdEl.focus({ preventScroll: true }); });
+
+/* =====================================================================
+   WECHSELNDE SPRÜCHE
+   ===================================================================== */
+let ii = 0;
+const insEl = $('#ins');
+const showInsult = () => { insEl.innerHTML = T.insults[ii] + ' <span class="blink">_</span>'; };
+setInterval(() => {
+  if (reduce) { ii = (ii + 1) % T.insults.length; showInsult(); return; }
+  insEl.classList.add('out');
+  setTimeout(() => { ii = (ii + 1) % T.insults.length; showInsult(); insEl.classList.remove('out'); }, 300);
+}, 2800);
+
+/* =====================================================================
+   WEGLAUFENDER KAUF-KNOPF
+   ===================================================================== */
+const buy = $('#buy'), slot = buy.parentElement;
+let flees = 0, attempts = 0, lastFlee = 0, buyDead = false;
+const MAX_FLEES = 7;
+
+function fleeFrom(px, py) {
+  if (buyDead) return;
+  const now = performance.now();
+  if (now - lastFlee < 120) return;
+  lastFlee = now;
+  const r = buy.getBoundingClientRect();
+  if (!buy.classList.contains('free')) {
+    buy.style.left = r.left + 'px'; buy.style.top = r.top + 'px';
+    buy.classList.add('free');
+    slot.style.width = r.width + 'px';
+    void buy.offsetWidth;
+  }
+  flees++;
+  if (flees >= MAX_FLEES) { explode(); return; }
+  buy.textContent = T.buy[flees % T.buy.length];
+  const bw = buy.offsetWidth, bh = buy.offsetHeight, m = 16, topMin = 70;
+  let x, y, tries = 0;
+  do {
+    x = m + Math.random() * Math.max(1, innerWidth - bw - 2 * m);
+    y = topMin + Math.random() * Math.max(1, innerHeight - bh - topMin - m);
+    tries++;
+  } while (tries < 20 && Math.hypot(x + bw / 2 - px, y + bh / 2 - py) < Math.min(260, innerWidth * .45));
+  buy.style.left = x + 'px'; buy.style.top = y + 'px';
+  sfx.whoosh();
+  if (navigator.vibrate) navigator.vibrate(15);
+}
+function explode() {
+  buyDead = true; attempts++;
+  const r = buy.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  buy.classList.add('boom'); sfx.boom(); glitch(500);
+  if (navigator.vibrate) navigator.vibrate([80, 40, 160]);
+  if (!reduce) for (let i = 0; i < 26; i++) {
+    const s = document.createElement('i'); s.className = 'shard';
+    const a = Math.random() * Math.PI * 2, d = 80 + Math.random() * 220;
+    s.style.left = cx + 'px'; s.style.top = cy + 'px';
+    s.style.setProperty('--dx', Math.cos(a) * d + 'px');
+    s.style.setProperty('--dy', Math.sin(a) * d + 'px');
+    s.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+    if (i % 3 === 0) s.style.background = 'var(--cyan)';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+  if (!promptEl.hidden || out.childElementCount) addLine('err', fill(T.buyDone, { n: attempts }));
+  // nach ein paar Sekunden steht er wieder brav an seinem Platz
+  setTimeout(() => {
+    buy.classList.remove('free', 'boom');
+    buy.style.left = buy.style.top = ''; slot.style.width = '';
+    flees = 0; buyDead = false; buy.textContent = T.buy[0];
+  }, 4500);
+}
+// Maus kommt zu nah → weg
+document.addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse' || buyDead) return;
+  const r = buy.getBoundingClientRect();
+  const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
+  const dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+  if (Math.hypot(dx, dy) < 40) fleeFrom(e.clientX, e.clientY);
+});
+// Finger/Klick/Tastatur → weg
+buy.addEventListener('pointerdown', e => { e.preventDefault(); fleeFrom(e.clientX, e.clientY); });
+buy.addEventListener('click', e => {
+  e.preventDefault();
+  const r = buy.getBoundingClientRect();
+  fleeFrom(r.left + r.width / 2, r.top + r.height / 2);
+});
+
+/* =====================================================================
+   HANDY SCHÜTTELN  ·  KONAMI-CODE
+   ===================================================================== */
+let lastShake = 0, motionAsked = false, prevAcc = null;
+function onMotion(e) {
+  const a = e.accelerationIncludingGravity; if (!a || a.x == null) return;
+  if (prevAcc) {
+    const delta = Math.abs(a.x - prevAcc.x) + Math.abs(a.y - prevAcc.y) + Math.abs(a.z - prevAcc.z);
+    const now = Date.now();
+    if (delta > 32 && now - lastShake > 1500) {
+      lastShake = now; glitch(900);
+      if (out.childElementCount) addLine('warn', T.shake);
     }
-    setTimeout(nextLine, 400);
   }
+  prevAcc = { x: a.x, y: a.y, z: a.z };
+}
+function enableMotion() {
+  if (motionAsked || typeof DeviceMotionEvent === 'undefined') return;
+  motionAsked = true;
+  if (typeof DeviceMotionEvent.requestPermission === 'function') {
+    // iPhone: braucht einmal Erlaubnis nach dem ersten Antippen
+    DeviceMotionEvent.requestPermission().then(p => { if (p === 'granted') addEventListener('devicemotion', onMotion); }).catch(() => {});
+  } else addEventListener('devicemotion', onMotion);
+}
+if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission !== 'function') enableMotion();
+addEventListener('pointerup', () => { enableMotion(); if (soundOn) audio(); }, { once: false });
 
-  /* ---------- Wechselnde Sprüche ---------- */
-  let insults = [], ii = 0;
-  const insEl = document.getElementById('ins');
-  function showInsult() {
-    insEl.innerHTML = insults[ii] + ' <span class="blink">_</span>';
+const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let kPos = 0;
+addEventListener('keydown', e => {
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+  kPos = (k === KONAMI[kPos]) ? kPos + 1 : (k === KONAMI[0] ? 1 : 0);
+  if (kPos === KONAMI.length) {
+    kPos = 0; glitch(1500);
+    document.body.classList.add('matrix'); setTimeout(() => document.body.classList.remove('matrix'), 6000);
+    addLine('warn', T.konami);
   }
-  setInterval(() => {
-    if (reduce) { ii = (ii + 1) % insults.length; showInsult(); return; }
-    insEl.classList.add('out');
-    setTimeout(() => { ii = (ii + 1) % insults.length; showInsult(); insEl.classList.remove('out'); }, 300);
-  }, 2800);
+});
 
-  /* ---------- Sprache anwenden ---------- */
-  function setLang(lang, save) {
-    const t = TEXT[lang];
-    document.documentElement.lang = lang;
-    document.title = t.title + ' · mescak.de';
-    const title = document.getElementById('title');
-    title.textContent = t.title;
-    title.dataset.text = t.title;
-    document.getElementById('status').textContent = t.status;
-    insults = t.insults; ii = 0; showInsult();
-    typeLines(t.lines);
-    document.querySelectorAll('.lang button').forEach(b =>
-      b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
-    if (save) { try { localStorage.setItem('lang', lang); } catch (e) {} }
-  }
-  document.querySelectorAll('.lang button').forEach(b =>
-    b.addEventListener('click', () => setLang(b.dataset.lang, true)));
-  setLang(pickLang(), false);
+/* =====================================================================
+   SPRACHE ANWENDEN
+   ===================================================================== */
+function setLang(l, save) {
+  lang = l; T = TEXT[l];
+  document.documentElement.lang = l;
+  document.title = T.title + ' · mescak.de';
+  const title = $('#title'); title.textContent = T.title; title.dataset.text = T.title;
+  $('#status').textContent = T.status;
+  $('#hint').innerHTML = T.hint;
+  $('#skip').textContent = T.skip;
+  if (!buyDead) buy.textContent = T.buy[flees % T.buy.length];
+  ii = 0; showInsult();
+  renderSound();
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === l)));
+  if (save) store.set('lang', l);
+  if (booted) runIntro();
+}
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { if (lang !== b.dataset.lang) { setLang(b.dataset.lang, true); glitch(250); } }));
 
-  /* ---------- Partikel ---------- */
-  const cv = document.getElementById('particles');
-  const ctx = cv.getContext('2d');
-  let W = 0, H = 0;
-  function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = innerWidth; H = innerHeight;
-    cv.width = W * dpr; cv.height = H * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+/* =====================================================================
+   BOOT-SEQUENZ
+   ===================================================================== */
+let booted = false;
+const boot = $('#boot');
+function finishBoot() {
+  if (booted) return;
+  booted = true;
+  boot.classList.add('gone');
+  document.body.classList.add('on');
+  setTimeout(() => boot.remove(), 500);
+  playVideo();
+  runIntro();
+}
+// manche Browser halten Autoplay an (Stromsparen, Hintergrund) → wieder anschubsen
+const vid = document.querySelector('video');
+function playVideo() { if (vid.paused) { const p = vid.play(); if (p) p.catch(() => {}); } }
+document.addEventListener('visibilitychange', () => { if (!document.hidden) playVideo(); });
+addEventListener('pointerup', playVideo);
+async function runBoot() {
+  if (reduce || new URLSearchParams(location.search).has('skip')) { boot.remove(); booted = true; runIntro(); return; }
+  const log = $('#bootlog'), bar = $('#bootfill');
+  for (let i = 0; i < T.boot.length; i++) {
+    if (booted) return;
+    const line = document.createElement('div');
+    line.innerHTML = T.boot[i];
+    log.appendChild(line);
+    bar.style.width = Math.round((i + 1) / T.boot.length * 100) + '%';
+    if (i === T.boot.length - 1) { sfx.deny(); if (navigator.vibrate) navigator.vibrate([60, 40, 60]); }
+    else sfx.beep();
+    await sleep(i === 0 ? 450 : i === T.boot.length - 2 ? 520 : 330);
   }
-  resize(); addEventListener('resize', resize);
-  const colors = ['#00ff41', '#ff0055', '#00ffff', '#ffcc00'];
-  const pts = Array.from({ length: 70 }, () => ({
-    x: Math.random() * innerWidth, y: Math.random() * innerHeight,
-    s: Math.random() * 1.4 + 0.3, v: Math.random() * 0.5 + 0.15,
-    c: colors[Math.floor(Math.random() * 4)], o: Math.random() * 0.35 + 0.08
-  }));
-  function draw(move) {
-    ctx.clearRect(0, 0, W, H);
-    for (const p of pts) {
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
-      ctx.fillStyle = p.c; ctx.globalAlpha = p.o; ctx.fill();
-      if (move) { p.y -= p.v; if (p.y < 0) { p.y = H; p.x = Math.random() * W; } }
-    }
-    ctx.globalAlpha = 1;
-  }
-  if (reduce) draw(false);
-  else (function loop() { if (!document.hidden) draw(true); requestAnimationFrame(loop); })();
+  await sleep(900);
+  finishBoot();
+}
+boot.addEventListener('pointerdown', finishBoot);
+addEventListener('keydown', e => { if (!booted && e.key !== 'Tab') finishBoot(); });
+
+setLang(lang, false);
+runBoot();
 </script>
 </body>
 </html>
