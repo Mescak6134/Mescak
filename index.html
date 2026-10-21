@@ -22,6 +22,12 @@
   <meta name="twitter:image" content="https://mescak.de/og.jpg">
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%2300ff41'%3E%3E_%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="mescak">
   <link rel="preload" href="finger.mp4" as="video" type="video/mp4">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -470,6 +476,120 @@
     .gamebox .pad .q { color: var(--pink); border-color: var(--pink); font-size: .8rem; }
     @media (pointer: coarse) { .gamebox .pad { display: grid; } }
 
+    /* ---------- Teilen-Knopf ---------- */
+    #shareBtn {
+      margin-top: 1rem;
+      font: inherit; font-size: .74rem; font-weight: 700; letter-spacing: .12em;
+      color: var(--cyan); background: rgba(0,255,255,.06);
+      border: 1px solid var(--cyan); border-radius: 4px; padding: .6rem 1rem; min-height: 40px; cursor: pointer;
+      box-shadow: 0 0 14px rgba(0,255,255,.2);
+    }
+    #shareBtn:hover { background: var(--cyan); color: #000; }
+
+    /* ---------- gemeinsame Overlays ---------- */
+    .ovl {
+      position: fixed; inset: 0; z-index: 91;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+      padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+      background: rgba(0,0,0,.9); text-align: center;
+      animation: ovlIn .25s ease-out;
+    }
+    @keyframes ovlIn { from { opacity: 0; transform: scale(1.04); } }
+    .ovl h2 { font-size: clamp(1rem, 4.6vw, 1.5rem); letter-spacing: .12em; color: var(--yellow); text-shadow: 0 0 12px rgba(255,204,0,.6); }
+    .btnrow { display: flex; gap: .7rem; flex-wrap: wrap; justify-content: center; }
+    .ovl .b {
+      font: inherit; font-weight: 800; font-size: .82rem; letter-spacing: .12em;
+      color: #000; background: var(--green); border: 0; border-radius: 4px; padding: .8rem 1.2rem; min-height: 44px; cursor: pointer;
+    }
+    .ovl .b.alt { background: transparent; color: var(--green); border: 1px solid var(--green); }
+    .ovl .b:disabled { opacity: .4; cursor: default; }
+
+    /* ---------- Glücksrad ---------- */
+    .wheelwrap { position: relative; width: min(78vw, 340px); aspect-ratio: 1; }
+    .wheelwrap svg { width: 100%; height: 100%; display: block; transition: transform 5.4s cubic-bezier(.12,.62,.08,1); filter: drop-shadow(0 0 18px rgba(255,0,85,.5)); }
+    .wheelwrap svg.nudge { transition: transform .9s cubic-bezier(.5,0,.3,1.4); }
+    .wheelwrap::before {
+      content: ''; position: absolute; left: 50%; top: -6px; z-index: 2; transform: translateX(-50%);
+      border: 14px solid transparent; border-top: 26px solid var(--yellow); filter: drop-shadow(0 0 6px var(--yellow));
+    }
+    .wheelwrap .hub { position: absolute; left: 50%; top: 50%; width: 18%; aspect-ratio: 1; transform: translate(-50%,-50%); border-radius: 50%; background: #000; border: 3px solid var(--yellow); display: grid; place-items: center; font-size: 1.4rem; }
+    .wres { min-height: 2.6em; font-size: clamp(1rem, 5vw, 1.6rem); font-weight: 800; letter-spacing: .1em; color: var(--pink); text-shadow: 0 0 14px var(--pink); }
+
+    /* ---------- Fake-Anruf ---------- */
+    #call {
+      position: fixed; inset: 0; z-index: 92; overflow: hidden;
+      font-family: -apple-system, 'SF Pro Display', system-ui, Roboto, Helvetica, Arial, sans-serif;
+      color: #fff; background: #111;
+      display: flex; flex-direction: column; align-items: center;
+      padding: max(9vh, env(safe-area-inset-top)) 24px max(7vh, env(safe-area-inset-bottom));
+      animation: ovlIn .3s ease-out;
+    }
+    #call::before {
+      content: ''; position: absolute; inset: -40px; z-index: -1;
+      background: url(poster.jpg) center / cover; filter: blur(34px) brightness(.45) saturate(1.4);
+    }
+    #call .av { width: 112px; height: 112px; border-radius: 50%; background: url(poster.jpg) center / 140%; box-shadow: 0 0 0 3px rgba(255,255,255,.25); }
+    #call .nm { margin-top: 1.1rem; font-size: clamp(1.8rem, 8vw, 2.4rem); font-weight: 600; letter-spacing: .01em; }
+    #call .sub { margin-top: .3rem; font-size: .95rem; color: rgba(255,255,255,.7); }
+    #call .st { margin-top: .4rem; font-size: 1rem; color: rgba(255,255,255,.85); animation: bl 1.6s ease-in-out infinite; }
+    #call .subs { margin-top: auto; margin-bottom: 1.6rem; min-height: 5.5em; max-width: 30rem; font-size: clamp(1rem, 4.4vw, 1.25rem); line-height: 1.45; text-align: center; color: #fff; text-shadow: 0 1px 6px #000; }
+    #call .row { display: flex; justify-content: space-around; width: min(100%, 340px); }
+    #call .cb { display: flex; flex-direction: column; align-items: center; gap: .5rem; font-size: .85rem; color: rgba(255,255,255,.9); background: none; border: 0; cursor: pointer; font-family: inherit; }
+    #call .cb i { width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 2rem; }
+    #call .cb.no i { background: #ff3b30; } #call .cb.no i span { transform: rotate(135deg); display: inline-block; }
+    #call .cb.yes i { background: #34c759; animation: callBounce 1s ease-in-out infinite; }
+    @keyframes callBounce { 50% { transform: translateY(-6px); } }
+    #call .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem 2rem; margin-bottom: 2rem; }
+    #call .tools div { display: flex; flex-direction: column; align-items: center; gap: .4rem; font-size: .75rem; color: rgba(255,255,255,.8); }
+    #call .tools div i { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,.16); display: grid; place-items: center; font-style: normal; font-size: 1.5rem; }
+
+    /* ---------- Rätsel-Finale ---------- */
+    #finale { background: radial-gradient(ellipse at center, rgba(60,45,0,.95), rgba(0,0,0,.97)); z-index: 93; overflow-y: auto; justify-content: flex-start; padding-top: max(8vh, env(safe-area-inset-top)); }
+    #finale .trophy { font-size: clamp(4rem, 22vw, 7rem); animation: trophy 1.2s ease-out; filter: drop-shadow(0 0 30px rgba(255,204,0,.8)); }
+    @keyframes trophy { from { transform: scale(0) rotate(-30deg); } 70% { transform: scale(1.2) rotate(8deg); } }
+    #finale .big { font-size: clamp(1.6rem, 8vw, 3rem); font-weight: 800; letter-spacing: .1em; color: var(--yellow); text-shadow: 0 0 20px var(--yellow); }
+    #finale p { color: #fff; font-size: clamp(.9rem, 3.8vw, 1.1rem); line-height: 1.5; max-width: 32rem; }
+    #finale .prize { font-size: clamp(2rem, 11vw, 4rem); font-weight: 800; color: var(--pink); text-shadow: 0 0 24px var(--pink); min-height: 1.2em; }
+    .cert {
+      width: min(100%, 440px); padding: 1.4rem 1.2rem; margin-top: .4rem;
+      background: #0b0900; border: 4px double var(--yellow); outline: 1px solid rgba(255,204,0,.4); outline-offset: 5px;
+      color: #ffe9a6; text-align: center; box-shadow: 0 0 40px rgba(255,204,0,.25);
+    }
+    .cert .ct { font-size: 1.3rem; font-weight: 800; letter-spacing: .3em; color: var(--yellow); }
+    .cert .cn { margin: .8rem 0; font-size: clamp(1.2rem, 6vw, 1.8rem); font-weight: 800; color: #fff; }
+    .cert .cx { font-size: .85rem; line-height: 1.5; }
+    .cert .cs { margin-top: 1rem; font-size: .68rem; color: rgba(255,233,166,.7); letter-spacing: .1em; }
+    .confetti { position: fixed; top: -12px; z-index: 94; width: 9px; height: 14px; pointer-events: none; animation: fall linear forwards; }
+    @keyframes fall { to { transform: translate(var(--x), 110vh) rotate(var(--r)); } }
+
+    /* ---------- Teilen-Dialog ---------- */
+    #sharebox .panel { width: min(100%, 380px); border: 1px solid var(--cyan); border-radius: 8px; background: #000a0a; padding: 1.2rem; display: flex; flex-direction: column; gap: .8rem; box-shadow: 0 0 30px rgba(0,255,255,.25); }
+    #sharebox label { font-size: .8rem; color: var(--cyan); text-align: left; }
+    #sharebox input { font: inherit; font-size: 16px; color: var(--green); background: #000; border: 1px solid var(--green-dim); border-radius: 4px; padding: .7rem; outline: 0; }
+    #sharebox input:focus { border-color: var(--green); }
+
+    /* ---------- Erfolge ---------- */
+    #toasts { position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 97; display: flex; flex-direction: column; gap: .5rem; width: min(92vw, 380px); pointer-events: none; }
+    .toast {
+      display: flex; gap: .8rem; align-items: center; text-align: left;
+      background: rgba(10,8,0,.96); border: 1px solid var(--yellow); border-radius: 8px; padding: .7rem .9rem;
+      box-shadow: 0 0 24px rgba(255,204,0,.35); color: #fff;
+      animation: toastIn .4s cubic-bezier(.2,1.4,.4,1), toastOut .4s 3.6s ease-in forwards;
+    }
+    .toast .ti { font-size: 1.9rem; }
+    .toast .tt { font-size: .62rem; letter-spacing: .16em; color: var(--yellow); }
+    .toast .tn { font-size: .9rem; font-weight: 800; }
+    .toast .td { font-size: .7rem; color: rgba(255,255,255,.7); }
+    @keyframes toastIn { from { transform: translateY(120%); opacity: 0; } }
+    @keyframes toastOut { to { transform: translateY(40%); opacity: 0; } }
+
+    /* ---------- Feiertags-Themen ---------- */
+    body.th-halloween { --green: #ff7a00; --green-dim: #b35400; --cyan: #c77dff; }
+    body.th-xmas { --pink: #ff2a2a; }
+    .floater { position: fixed; z-index: 6; pointer-events: none; font-size: 30px; animation: floatX linear forwards; filter: drop-shadow(0 0 8px rgba(255,255,255,.3)); }
+    @keyframes floatX { from { transform: translate(var(--sx), 0) rotate(0); } to { transform: translate(var(--ex), var(--ey)) rotate(var(--r)); } }
+    main.flip { transform: rotate(180deg) !important; transition: transform 1s; }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
       .video-wrap { box-shadow: 0 0 0 3px var(--pink), 0 0 40px var(--pink); }
@@ -536,10 +656,13 @@
   </div>
   <div class="hint" id="hint"></div>
 
+  <button type="button" id="shareBtn"></button>
+
   <footer>MESCAK.DE · © <span id="year">2026</span></footer>
 </main>
 
 <div id="ctx" role="menu"></div>
+<div id="toasts" aria-live="polite"></div>
 
 <noscript><p style="position:fixed;inset:auto 0 40%;text-align:center;color:#ff0055;z-index:99">VERPISS DICH. · DEFOL GİT. · GET LOST.</p></noscript>
 
@@ -1142,7 +1265,7 @@ function rain(ts) {
     const y = cols[i] * FS;
     const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
     const r = Math.random();
-    ctx.fillStyle = r < .03 ? '#ff0055' : r < .1 ? '#d6ffe0' : (matrix && r < .2 ? '#00ffff' : '#00ff41');
+    ctx.fillStyle = rainColor(r, matrix);
     ctx.fillText(ch, i * FS, y);
     if (y > H && Math.random() > (matrix ? .9 : .975)) cols[i] = 0;
     cols[i] += matrix ? 1 : .55;
@@ -1286,8 +1409,8 @@ async function runCmd(raw) {
   if (!input) return;
 
   // erst ganze Sätze, dann einzelne Befehle
-  if (SWEAR.test(flat)) { glitch(500); sfx.err(); say(pick(C.swear), 'err'); speak(T.voice.swear); return toBottom(); }
-  if (has('ich liebe dich', 'seni seviyorum', 'i love you', 'love you')) { say(C.love, 'err'); speak(strip(C.love)); return toBottom(); }
+  if (SWEAR.test(flat)) { unlock('potty'); glitch(500); sfx.err(); say(pick(C.swear), 'err'); speak(T.voice.swear); return toBottom(); }
+  if (has('ich liebe dich', 'seni seviyorum', 'i love you', 'love you')) { unlock('lonely'); say(C.love, 'err'); speak(strip(C.love)); return toBottom(); }
   if (has('wie geht', 'nasilsin', 'naber', 'how are you')) { say(C.howru, 'cyan'); speak(C.howru); return toBottom(); }
   if (has('wer bist du', 'kimsin', 'who are you')) { say(C.who, 'cyan'); speak(C.who); return toBottom(); }
   if (has('sinn des lebens', 'hayatin anlami', 'meaning of life') || w0 === '42') { say(C.life, 'warn'); return toBottom(); }
@@ -1296,7 +1419,7 @@ async function runCmd(raw) {
 
   switch (true) {
     case is('help', 'hilfe', 'yardim', '?', 'man', 'befehle', 'komutlar', 'commands', 'menu'):
-      C.help.forEach(l => say(l)); break;
+      C.help.slice(0, -1).forEach(l => say(l)); say(XT.helpExtra); say(C.help[C.help.length - 1]); unlock('curious'); break;
     case is('whoami', 'kimim', 'ich'):
       say(fill(NAME ? C.whoamiName : C.whoami, { device: '<span class="w">' + esc(DEVICE) + '</span>', name: '<span class="r">' + esc(up(NAME)) + '</span>' })); break;
     case is('kaufen', 'buy', 'purchase', 'preis', 'price', 'fiyat', 'satin'):
@@ -1304,7 +1427,7 @@ async function runCmd(raw) {
     case is('ls', 'dir', 'll'):
       say(/-a|-l/.test(arg) || w0 === 'll' ? C.lsA : C.ls); break;
     case is('cat', 'type', 'less', 'more', 'open', 'ac'):
-      if (/versteckt|sakli|hidden/.test(arg)) say(C.hidden, 'warn');
+      if (/versteckt|sakli|hidden/.test(arg)) { say(C.hidden, 'warn'); unlock('explorer'); foundFrag('FI'); }
       else if (/geheim|gizli|secret/.test(arg)) say(C.secret, 'warn');
       else if (/pass|sifre/.test(arg)) say(C.pw, 'warn');
       else { sfx.err(); say(fill(C.nofile, { f: esc(argRaw || '?') }), 'err'); }
@@ -1312,10 +1435,11 @@ async function runCmd(raw) {
     case is('cd'):
       sfx.err(); say(C.cd, 'err'); break;
     case is('sudo', 'su', 'admin', 'root', 'chmod'):
-      sfx.err(); glitch(300); say(fill(C.sudo, { u: esc(DEVICE.split(' ')[0].toLowerCase()) }), 'err'); speak(T.voice.sudo); break;
+      unlock('sudo'); sfx.err(); glitch(300); say(fill(C.sudo, { u: esc(DEVICE.split(' ')[0].toLowerCase()) }), 'err'); speak(T.voice.sudo); break;
     case is('rm', 'del', 'format', 'bsod', 'crash', 'absturz', 'cokme', 'bluescreen'):
       bsod(); return;
     case is('hack', 'hacker', 'nmap', 'ssh', 'hackle'):
+      unlock('hacker');
       await sequence(C.hack, id, () => { glitch(700); sfx.err(); speak(T.voice.hack); }); return;
     case is('virus', 'download', 'indir', 'malware', 'trojan'):
       await sequence(C.virus.map(l => fill(l, { device: esc(DEVICE) })), id, () => { glitch(500); }); return;
@@ -1353,7 +1477,7 @@ async function runCmd(raw) {
     case is('witz', 'joke', 'saka', 'fikra', 'lustig'):
       { const r = pick(C.jokes); say('😂 ' + r, 'warn'); speak(r); } break;
     case is('liebe', 'love', 'ask', 'sevgi'):
-      say(C.love, 'err'); speak(strip(C.love)); break;
+      unlock('lonely'); say(C.love, 'err'); speak(strip(C.love)); break;
     case is('geld', 'money', 'para', 'konto', 'bank'):
       say(C.money, 'warn'); break;
     case is('ip', 'ifconfig', 'ipconfig'):
@@ -1384,6 +1508,29 @@ async function runCmd(raw) {
       camScan(); break;
     case is('game', 'snake', 'spiel', 'oyun', 'yilan', 'play'):
       startGame(); return;
+    case is('ratsel', 'raetsel', 'puzzle', 'bulmaca', 'riddle', 'raetsel'):
+      showPuzzle(); break;
+    case is('hinweis', 'hint', 'ipucu', 'tipp', 'tip'):
+      showHint(); break;
+    case is('unlock', 'entsperren', 'solve', 'losung', 'loesung', 'coz', 'cozum'):
+      tryUnlock(argRaw); break;
+    case is('erfolge', 'achievements', 'basarilar', 'badges', 'trophies', 'pokale', 'ach'):
+      listAch(); break;
+    case is('anruf', 'call', 'ara', 'arama', 'telefon', 'phone', 'anrufen'):
+      fakeCall(); break;
+    case is('glucksrad', 'gluecksrad', 'wheel', 'cark', 'spin', 'rad', 'casino', 'sanscarki'):
+      wheel(); break;
+    case is('transfer', 'ubertragen', 'uebertragen', 'aktar', 'aktarim'):
+      transfer(); return;
+    case is('teilen', 'share', 'paylas', 'senden', 'gonder'):
+      shareDialog(); break;
+    case is('halloween', 'weihnachten', 'christmas', 'xmas', 'noel', 'silvester', 'newyear', 'yilbasi', 'april', 'theme', 'thema', 'tema'):
+      { const map = { halloween: 'halloween', weihnachten: 'xmas', christmas: 'xmas', xmas: 'xmas', noel: 'xmas', silvester: 'ny', newyear: 'ny', yilbasi: 'ny', april: 'april' };
+        const want = map[w0] || map[arg] || '';
+        if (!want) { say('🎨 <span class="c">halloween</span> · <span class="c">xmas</span> · <span class="c">silvester</span> · <span class="c">april</span>', 'warn'); break; }
+        SEASON = SEASON === want ? '' : want; applySeason(); ii = 0; showInsult();
+        say(SEASON ? fill(XT.themeOn, { t: SEASON }) : XT.themeOff, 'warn'); glitch(300); }
+      break;
     default:
       sfx.err(); say(fill(pick(C.unknown), { c: esc(input.slice(0, 40)) }), 'err');
   }
@@ -1407,7 +1554,7 @@ async function makeLink(n) {
   const u = 'https://mescak.de/?name=' + encodeURIComponent(name) + '&lang=' + lang;
   let copied = false;
   try { await navigator.clipboard.writeText(u); copied = true; } catch (e) {}
-  addLine('ok', fill(copied ? C.linkDone : C.linkNoCopy, { n: esc(name), u: esc(u) }));
+  addLine('ok', fill(copied ? C.linkDone : C.linkNoCopy, { n: esc(name), u: esc(u) })); unlock('friend');
   sfx.ok(); toBottom();
 }
 
@@ -1429,13 +1576,13 @@ $('#term').addEventListener('click', () => { if (!promptEl.hidden && !getSelecti
    ===================================================================== */
 let ii = 0, hi = 0;
 const insEl = $('#ins'), hintEl = $('#hint');
-const showInsult = () => { insEl.innerHTML = esc((NAME ? up(NAME) + ', ' : '') + T.insults[ii]) + ' <span class="blink">_</span>'; };
+const showInsult = () => { const L = insultList(); insEl.innerHTML = esc((NAME ? up(NAME) + ', ' : '') + L[ii % L.length]) + ' <span class="blink">_</span>'; };
 setInterval(() => {
-  if (reduce) { ii = (ii + 1) % T.insults.length; showInsult(); return; }
+  if (reduce) { ii = (ii + 1) % insultList().length; showInsult(); return; }
   insEl.classList.add('out');
-  setTimeout(() => { ii = (ii + 1) % T.insults.length; showInsult(); insEl.classList.remove('out'); }, 300);
+  setTimeout(() => { ii = (ii + 1) % insultList().length; showInsult(); insEl.classList.remove('out'); }, 300);
 }, 2800);
-setInterval(() => { hi = (hi + 1) % T.hints.length; hintEl.innerHTML = T.hints[hi]; }, 3600);
+setInterval(() => { const H = T.hints.concat(XT.hints); hi = (hi + 1) % H.length; hintEl.innerHTML = H[hi]; }, 3600);
 
 /* =====================================================================
    WEGLAUFENDER KAUF-KNOPF
@@ -1475,7 +1622,7 @@ function resetBuy() {
   flees = 0; buyDead = false; buy.textContent = T.buy[0];
 }
 function explode() {
-  buyDead = true; attempts++;
+  buyDead = true; attempts++; unlock('buyer');
   const r = buy.getBoundingClientRect();
   buy.classList.add('boom'); sfx.boom(); glitch(500); buzz([80, 40, 160]);
   spawnShards(r.left + r.width / 2, r.top + r.height / 2);
@@ -1504,7 +1651,7 @@ buy.addEventListener('click', e => {
 async function bsod() {
   if (busy === 'bsod') return;
   closeAll();
-  busy = 'bsod';
+  busy = 'bsod'; unlock('crash');
   const B = T.bsod, el = document.createElement('div');
   el.id = 'bsod';
   el.innerHTML = '<div class="sad">:(</div><p>' + B.text + '</p><p class="pct"></p>' +
@@ -1554,6 +1701,7 @@ async function selfDestruct() {
   spawnShards(innerWidth / 2, innerHeight / 2, 60, Math.max(innerWidth, innerHeight) * .6);
   document.body.classList.add('crumble');
   await sleep(1300);
+  unlock('boom');
   busy = null;
   restart();
 }
@@ -1587,6 +1735,7 @@ async function camScan() {
   } catch (e) {
     busy = null; showPrompt();
     const msg = e && e.name === 'NotFoundError' ? C.none : C.denied;
+    if (msg === C.denied) unlock('coward');
     addLine('err', msg); sfx.err(); speak(msg); return;
   }
   const el = document.createElement('div');
@@ -1613,7 +1762,7 @@ async function camScan() {
   sfx.deny(); buzz([100, 50, 100, 50, 300]); glitch(500); speak(T.voice.scan);
   await sleep(4200);
   if (busy !== 'cam') return;
-  closeCam();
+  closeCam(); unlock('face');
   addLine('err', fill(C.done, { d: Date.now().toString(36).slice(-5) }));
 }
 
@@ -1674,6 +1823,8 @@ function startGame() {
     S.alive = false; clearTimeout(S.timer);
     removeEventListener('keydown', onKey, true);
     const hiScore = best(), isHigh = S.score > hiScore;
+    if (S.score >= 5) { unlock('snake'); setTimeout(() => foundFrag('ER'), 1200); }
+    if (S.score >= 15) unlock('snakePro');
     if (isHigh) store.set('snakeBest', S.score);
     setTimeout(() => {
       box.remove(); out.hidden = false; if (busy === 'game') busy = null; game = null;
@@ -1732,9 +1883,9 @@ function closeMenu() { ctxEl.classList.remove('open'); }
 addEventListener('contextmenu', e => {
   if (!started || e.target === cmdEl || busy === 'bsod') return;
   e.preventDefault();
-  const M = T.menu;
-  const items = [['hack', 'hack'], ['buy', 'kaufen'], null, ['scan', 'scan'], ['game', 'game'], null,
-                 ['destruct', 'destruct'], ['crash', 'bsod'], null, ['link', 'link'], ['leave', 'exit']];
+  const M = Object.assign({}, T.menu, XT.menu);
+  const items = [['hack', 'hack'], ['buy', 'kaufen'], ['wheel', 'wheel'], null, ['scan', 'scan'], ['call', 'call'], ['game', 'game'], null,
+                 ['puzzle', 'puzzle'], ['ach', 'erfolge'], null, ['destruct', 'destruct'], ['crash', 'bsod'], null, ['share', 'share'], ['leave', 'exit']];
   ctxEl.innerHTML = items.map(it => it ? '<button type="button" role="menuitem" data-c="' + it[1] + '">' + M[it[0]] + '</button>' : '<hr>').join('');
   ctxEl.classList.add('open');
   const w = ctxEl.offsetWidth, h = ctxEl.offsetHeight;
@@ -1766,7 +1917,7 @@ document.addEventListener('visibilitychange', () => {
   } else {
     clearInterval(awayTimer);
     document.title = T.title + ' · mescak.de';
-    if (wasAway && booted && !busy) { addLine('warn', T.back); speak(fill(T.voice.back, { n: nameVoice() })); glitch(300); }
+    if (wasAway && booted && !busy) { unlock('traitor'); addLine('warn', T.back); speak(fill(T.voice.back, { n: nameVoice() })); glitch(300); }
     wasAway = false;
   }
 });
@@ -1774,7 +1925,7 @@ document.addEventListener('copy', e => {
   if (e.target === cmdEl || !e.clipboardData) return;
   e.clipboardData.setData('text/plain', T.copy + ' – https://mescak.de');
   e.preventDefault();
-  addLine('warn', T.copyLine); sfx.ok();
+  addLine('warn', T.copyLine); sfx.ok(); unlock('thief');
 });
 
 /* =====================================================================
@@ -1787,7 +1938,7 @@ function onMotion(e) {
     const delta = Math.abs(a.x - prevAcc.x) + Math.abs(a.y - prevAcc.y) + Math.abs(a.z - prevAcc.z);
     const now = Date.now();
     if (delta > 32 && now - lastShake > 1500 && busy !== 'bsod') {
-      lastShake = now; glitch(900);
+      lastShake = now; glitch(900); unlock('shaker'); if (booted) foundFrag('NG');
       if (out.childElementCount) addLine('warn', T.shake);
     }
   }
@@ -1811,7 +1962,7 @@ addEventListener('keydown', e => {
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   kPos = (k === KONAMI[kPos]) ? kPos + 1 : (k === KONAMI[0] ? 1 : 0);
   if (kPos === KONAMI.length) {
-    kPos = 0; glitch(1500);
+    kPos = 0; glitch(1500); unlock('konami'); foundFrag('NG');
     document.body.classList.add('matrix'); setTimeout(() => document.body.classList.remove('matrix'), 6000);
     addLine('warn', T.konami); speak(strip(T.konami));
   }
@@ -1821,7 +1972,7 @@ addEventListener('keydown', e => {
    SPRACHE ANWENDEN
    ===================================================================== */
 function setLang(l, save) {
-  lang = l; T = TEXT[l];
+  lang = l; T = TEXT[l]; XT = X[l];
   document.documentElement.lang = l;
   document.title = T.title + ' · mescak.de';
   const title = $('#title'); title.textContent = T.title; title.dataset.text = T.title;
@@ -1834,7 +1985,10 @@ function setLang(l, save) {
     $('#gateNote').textContent = T.gateNote;
   }
   if (!buyDead) buy.textContent = T.buy[flees % T.buy.length];
+  $('#shareBtn').textContent = XT.share.btn;
   ii = 0; showInsult();
+  const seen = new Set((store.get('langs') || '').split(',').filter(Boolean)); seen.add(l); store.set('langs', [...seen].join(','));
+  if (seen.size >= 3) unlock('polyglot');
   renderSound();
   document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === l)));
   // Wahl in die Adresse schreiben, damit Neuladen/Teilen die Sprache behält
@@ -1847,6 +2001,482 @@ function switchLang(l) {
   else sfx.beep();
 }
 document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => switchLang(b.dataset.lang)));
+
+/* =====================================================================
+   EXTRAS: Erfolge · Rätsel · Anruf · Glücksrad · Übertragung · Teilen · Feiertage
+   ===================================================================== */
+const ACH = ['welcome', 'curious', 'hacker', 'sudo', 'crash', 'boom', 'buyer', 'coward', 'face', 'snake', 'snakePro', 'konami', 'shaker',
+             'thief', 'traitor', 'potty', 'lonely', 'explorer', 'caller', 'ghost', 'gambler', 'dreamer', 'friend', 'polyglot', 'nightowl', 'master'];
+const ACH_ICON = { welcome: '🚪', curious: '🤓', hacker: '💻', sudo: '👮', crash: '🟦', boom: '💥', buyer: '💸', coward: '🐔', face: '📸',
+  snake: '🐍', snakePro: '🐉', konami: '🎮', shaker: '📳', thief: '🦝', traitor: '👀', potty: '🧼', lonely: '💔', explorer: '🔦',
+  caller: '📞', ghost: '👻', gambler: '🎰', dreamer: '🌈', friend: '📤', polyglot: '🌍', nightowl: '🦉', master: '👑' };
+
+const X = {
+  de: {
+    ach: {
+      welcome: ['Lebensmüde', 'Die Seite trotz Warnung betreten'], curious: ['Neugierig', 'help eingetippt'],
+      hacker: ['Hacker-Lehrling', 'Einen Hack versucht'], sudo: ['Möchtegern-Admin', 'sudo probiert'],
+      crash: ['Absturzpilot', 'Einen Bluescreen verursacht'], boom: ['Zerstörer', 'Die Selbstzerstörung überlebt'],
+      buyer: ['Kaufsüchtig', 'Den Kaufknopf zur Explosion gebracht'], coward: ['Feigling', 'Die Kamera verweigert'],
+      face: ['Gesicht gezeigt', 'Den Gesichtsscan durchgezogen'], snake: ['Schlangenbeschwörer', '5 Punkte bei Snake'],
+      snakePro: ['Drachenzähmer', '15 Punkte bei Snake'], konami: ['Retro-Gamer', 'Den Konami-Code eingegeben'],
+      shaker: ['Shaker', 'Das Handy geschüttelt'], thief: ['Dieb', 'Versucht, etwas zu kopieren'],
+      traitor: ['Verräter', 'Den Tab verlassen und zurückgekommen'], potty: ['Dreckiges Mundwerk', 'Geschimpft'],
+      lonely: ['Einsam', 'Der KI deine Liebe gestanden'], explorer: ['Entdecker', 'Die versteckte Datei gefunden'],
+      caller: ['Rangeher', 'Den Anruf angenommen'], ghost: ['Ghoster', 'Den Anruf dreimal abgelehnt'],
+      gambler: ['Zocker', 'Am Glücksrad gedreht'], dreamer: ['Träumer', 'Die Domain-Übertragung gestartet'],
+      friend: ['Petze', 'Die Seite mit jemandem geteilt'], polyglot: ['Weltenbummler', 'Alle 3 Sprachen ausprobiert'],
+      nightowl: ['Nachteule', 'Nachts zwischen 0 und 5 Uhr hier'], master: ['Rätselmeister', 'Das geheime Rätsel gelöst']
+    },
+    achToast: '🏆 ERFOLG FREIGESCHALTET', achHead: '🏆 ERFOLGE: {n} / {t}', achLocked: '??? (noch geheim)',
+    achAll: '<span class="y">ALLE ERFOLGE!</span> Du hast offiziell zu viel Zeit. 👑',
+    helpExtra: '<span class="y">NEU</span>         <span class="c">rätsel</span> · <span class="c">erfolge</span> · <span class="c">anruf</span> · <span class="c">glücksrad</span> · <span class="c">transfer</span> · <span class="c">teilen</span>',
+    hints: ['ES GIBT EIN <b>rätsel</b> …', 'SAMMLE ALLE <b>erfolge</b>', 'PROBIER MAL: <b>glücksrad</b>', 'PROBIER MAL: <b>transfer</b>'],
+    menu: { wheel: '🎰 Glücksrad', call: '📞 Anruf', puzzle: '🧩 Rätsel', ach: '🏆 Erfolge', share: '📤 Teilen' },
+    puzzle: ['🧩 <span class="y">DAS RÄTSEL VON MESCAK.DE</span>', 'Drei Fragmente sind auf dieser Seite versteckt.',
+             'Finde sie, setz sie zusammen und tippe: <span class="c">unlock WORT</span>', 'Gefunden: {f}', 'Kommst du nicht weiter? Tippe <span class="c">hinweis</span>.'],
+    hint: ['Manche Dateien sind versteckt. Wie sieht man versteckte Dateien? 🤔', 'Alte Gamer kennen den Code. Handy-Leute schütteln einfach.', 'Friss genug € – mindestens 5.'],
+    hintDone: 'Du hast alle Fragmente. Jetzt nur noch zusammensetzen …',
+    frag: '🧩 <span class="y">FRAGMENT GEFUNDEN: {x}</span> ({n}/3) – tippe <span class="c">rätsel</span>',
+    unlockUsage: 'So geht’s: <span class="c">unlock WORT</span>',
+    wrong: '<span class="r">FALSCH.</span> Das Rätsel lacht dich aus. 🧩',
+    fin: { title: 'GLÜCKWUNSCH!', l1: 'Du hast das Rätsel von mescak.de gelöst.', l2: 'Dein Preis ist …', prize: 'NICHTS. 😂',
+           l3: 'Aber hier ist deine offizielle Urkunde:', cert: 'URKUNDE',
+           text: 'ist hiermit offiziell der größte Loser von mescak.de – mit Auszeichnung.',
+           sign: 'ausgestellt am {d} von der KI · Stempel: VERGEBEN', share: 'URKUNDE TEILEN', close: 'SCHLIESSEN',
+           voice: 'Glückwunsch. Du hast das Rätsel gelöst. Dein Preis ist: nichts.', anon: 'Unbekannter Loser',
+           shareText: 'Ich habe das Rätsel von mescak.de gelöst und bin jetzt offiziell der größte Loser. 🏆' },
+    call: { name: 'MESCAK', sub: 'Mobil · Domain-Abteilung', ring: 'ruft an …', accept: 'Annehmen', decline: 'Ablehnen',
+            again: ['GEH RAN!!', 'ICH WEISS, DASS DU DA BIST'], speaker: 'Lautsprecher', mute: 'Stumm', keys: 'Tastatur',
+            script: ['Hallo? Ja, hier ist die KI von mescak.de.', 'Ich wollte dir nur kurz sagen: Die Domain ist vergeben.',
+                     'Und du? Du bist es nicht. Single und planlos.', 'Ruf nicht zurück. Tschüss.'],
+            ended: 'Anruf beendet', missed: '<span class="r">[📞]</span> 3 verpasste Anrufe von MESCAK. Er gibt nicht auf.',
+            log: '<span class="c">[📞]</span> Anruf von MESCAK: {t}. Er hat aufgelegt. Natürlich.' },
+    wheel: { title: '🎰 GLÜCKSRAD: GEWINNE DIE DOMAIN', labels: ['NIX', 'NOCHMAL NIX', 'DOMAIN!', 'FAST', 'NEIN', '404', 'PECH', 'LOL'],
+             spin: 'DREHEN', again: 'NOCHMAL', close: 'SCHLIESSEN', res: 'ERGEBNIS: {r}', cheat: 'DOMAIN! … ach nee. 😈',
+             log: '<span class="y">[🎰]</span> Glücksrad: {r}. Wie immer.' },
+    transfer: { lines: ['Starte Domain-Übertragung an {n} …', 'Prüfe Identität … <span class="w">OK</span>', 'Übertrage DNS-Einträge …'],
+                you: 'dich', bar: 'Übertragung', stuck: 'Hänge bei 99 % … gleich …', end: '<span class="r">ABGEBROCHEN.</span> War nie geplant. 😂',
+                voice: 'Übertragung abgebrochen. War nie geplant.' },
+    share: { btn: '📤 SCHICK’S EINEM FREUND', title: '📤 AN EINEN FREUND SCHICKEN', label: 'Name deines Freundes (optional):',
+             go: 'TEILEN', cancel: 'ABBRECHEN', text: 'Schau dir das an 😂', copied: '<span class="ok">Link kopiert:</span> <span class="c">{u}</span>',
+             done: '<span class="y">[SYS]</span> Geteilt. Dein Freund wird dich hassen. 😈' },
+    season: {
+      halloween: ['SÜSSES ODER SAURES? WEDER NOCH.', '🎃 HALLOWEEN-MODUS ............ <span class="w">AKTIV</span>'],
+      xmas: ['HO HO HAU AB.', '🎄 WEIHNACHTS-MODUS ........... <span class="w">AKTIV</span>'],
+      ny: ['NEUES JAHR, GLEICHES NEIN.', '🎆 SILVESTER-MODUS ............ <span class="w">AKTIV</span>'],
+      april: ['APRIL, APRIL … NEIN, ERNST GEMEINT.', '🃏 1.-APRIL-MODUS ............. <span class="w">AKTIV</span>']
+    },
+    themeOn: 'Thema aktiviert: {t} 🎨', themeOff: 'Thema aus.'
+  },
+
+  tr: {
+    ach: {
+      welcome: ['Gözü kara', 'Uyarıya rağmen girdin'], curious: ['Meraklı', 'help yazdın'],
+      hacker: ['Çırak hacker', 'Hack denedin'], sudo: ['Sözde admin', 'sudo denedin'],
+      crash: ['Çökme pilotu', 'Mavi ekran yaptın'], boom: ['Yok edici', 'Kendini imhadan sağ çıktın'],
+      buyer: ['Alışveriş bağımlısı', 'Satın al butonunu patlattın'], coward: ['Korkak', 'Kamerayı reddettin'],
+      face: ['Yüzünü gösterdin', 'Yüz taramasını tamamladın'], snake: ['Yılan oynatıcısı', 'Yılanda 5 puan'],
+      snakePro: ['Ejderha terbiyecisi', 'Yılanda 15 puan'], konami: ['Retro oyuncu', 'Konami kodunu girdin'],
+      shaker: ['Sallayıcı', 'Telefonu salladın'], thief: ['Hırsız', 'Bir şey kopyalamaya çalıştın'],
+      traitor: ['Hain', 'Sekmeden çıkıp geri geldin'], potty: ['Ağzı bozuk', 'Küfrettin'],
+      lonely: ['Yalnız', 'Yapay zekâya aşkını itiraf ettin'], explorer: ['Kâşif', 'Gizli dosyayı buldun'],
+      caller: ['Telefon açan', 'Aramayı cevapladın'], ghost: ['Ghostlayan', 'Aramayı üç kez reddettin'],
+      gambler: ['Kumarbaz', 'Çarkı çevirdin'], dreamer: ['Hayalperest', 'Alan adı aktarımını başlattın'],
+      friend: ['Ispiyoncu', 'Siteyi biriyle paylaştın'], polyglot: ['Dünya gezgini', '3 dili de denedin'],
+      nightowl: ['Gece kuşu', 'Gece 0 ile 5 arası buradaydın'], master: ['Bilmece ustası', 'Gizli bilmeceyi çözdün']
+    },
+    achToast: '🏆 BAŞARI KAZANILDI', achHead: '🏆 BAŞARILAR: {n} / {t}', achLocked: '??? (henüz gizli)',
+    achAll: '<span class="y">TÜM BAŞARILAR!</span> Resmen çok boş vaktin var. 👑',
+    helpExtra: '<span class="y">YENİ</span>        <span class="c">bulmaca</span> · <span class="c">başarılar</span> · <span class="c">ara</span> · <span class="c">çark</span> · <span class="c">transfer</span> · <span class="c">paylaş</span>',
+    hints: ['BİR <b>bulmaca</b> VAR …', 'TÜM <b>başarılar</b>I TOPLA', 'BUNU DENE: <b>çark</b>', 'BUNU DENE: <b>transfer</b>'],
+    menu: { wheel: '🎰 Şans çarkı', call: '📞 Arama', puzzle: '🧩 Bulmaca', ach: '🏆 Başarılar', share: '📤 Paylaş' },
+    puzzle: ['🧩 <span class="y">MESCAK.DE BULMACASI</span>', 'Bu sayfada üç parça saklı.',
+             'Onları bul, birleştir ve yaz: <span class="c">unlock KELİME</span>', 'Bulunan: {f}', 'Takıldın mı? <span class="c">ipucu</span> yaz.'],
+    hint: ['Bazı dosyalar gizli. Gizli dosyalar nasıl görülür? 🤔', 'Eski oyuncular kodu bilir. Telefoncular sadece sallar.', 'Yeterince € ye – en az 5 tane.'],
+    hintDone: 'Tüm parçalar sende. Şimdi sadece birleştir …',
+    frag: '🧩 <span class="y">PARÇA BULUNDU: {x}</span> ({n}/3) – <span class="c">bulmaca</span> yaz',
+    unlockUsage: 'Şöyle: <span class="c">unlock KELİME</span>',
+    wrong: '<span class="r">YANLIŞ.</span> Bulmaca sana gülüyor. 🧩',
+    fin: { title: 'TEBRİKLER!', l1: 'mescak.de bulmacasını çözdün.', l2: 'Ödülün …', prize: 'HİÇBİR ŞEY. 😂',
+           l3: 'Ama işte resmi sertifikan:', cert: 'SERTİFİKA',
+           text: 'bundan böyle resmen mescak.de’nin en büyük eziğidir – üstün başarıyla.',
+           sign: '{d} tarihinde yapay zekâ tarafından verilmiştir · Mühür: ALINMIŞ', share: 'SERTİFİKAYI PAYLAŞ', close: 'KAPAT',
+           voice: 'Tebrikler. Bulmacayı çözdün. Ödülün: hiçbir şey.', anon: 'Bilinmeyen ezik',
+           shareText: 'mescak.de bulmacasını çözdüm ve artık resmen en büyük eziğim. 🏆' },
+    call: { name: 'MESCAK', sub: 'Mobil · Alan Adı Departmanı', ring: 'arıyor …', accept: 'Cevapla', decline: 'Reddet',
+            again: ['AÇ ŞUNU!!', 'ORADA OLDUĞUNU BİLİYORUM'], speaker: 'Hoparlör', mute: 'Sessiz', keys: 'Tuşlar',
+            script: ['Alo? Evet, burası mescak.de’nin yapay zekâsı.', 'Sadece şunu söylemek istedim: Bu alan adı alınmış.',
+                     'Ve sana göre değil. Hiç olmadı, hiç olmayacak.', 'Geri arama. Hoşça kal.'],
+            ended: 'Arama sonlandı', missed: '<span class="r">[📞]</span> MESCAK’tan 3 cevapsız arama. Pes etmiyor.',
+            log: '<span class="c">[📞]</span> MESCAK araması: {t}. Telefonu kapattı. Tabii ki.' },
+    wheel: { title: '🎰 ŞANS ÇARKI: ALAN ADINI KAZAN', labels: ['HİÇ', 'YİNE HİÇ', 'ALAN ADI!', 'AZ KALDI', 'HAYIR', '404', 'ŞANSSIZ', 'LOL'],
+             spin: 'ÇEVİR', again: 'TEKRAR', close: 'KAPAT', res: 'SONUÇ: {r}', cheat: 'ALAN ADI! … yok be. 😈',
+             log: '<span class="y">[🎰]</span> Şans çarkı: {r}. Her zamanki gibi.' },
+    transfer: { lines: ['Alan adı {n} için aktarılıyor …', 'Kimlik kontrol ediliyor … <span class="w">TAMAM</span>', 'DNS kayıtları aktarılıyor …'],
+                you: 'senin', bar: 'Aktarım', stuck: '%99’da takıldı … birazdan …', end: '<span class="r">İPTAL EDİLDİ.</span> Hiç planlanmamıştı. 😂',
+                voice: 'Aktarım iptal edildi. Hiç planlanmamıştı.' },
+    share: { btn: '📤 BİR ARKADAŞINA GÖNDER', title: '📤 ARKADAŞINA GÖNDER', label: 'Arkadaşının adı (isteğe bağlı):',
+             go: 'PAYLAŞ', cancel: 'İPTAL', text: 'Şuna bir bak 😂', copied: '<span class="ok">Link kopyalandı:</span> <span class="c">{u}</span>',
+             done: '<span class="y">[SİS]</span> Paylaşıldı. Arkadaşın senden nefret edecek. 😈' },
+    season: {
+      halloween: ['ŞEKER Mİ ŞAKA MI? HİÇBİRİ.', '🎃 CADILAR BAYRAMI MODU ....... <span class="w">AKTİF</span>'],
+      xmas: ['HO HO HO, DEFOL.', '🎄 NOEL MODU .................. <span class="w">AKTİF</span>'],
+      ny: ['YENİ YIL, AYNI HAYIR.', '🎆 YILBAŞI MODU ............... <span class="w">AKTİF</span>'],
+      april: ['1 NİSAN … ŞAKA DEĞİL, CİDDİYİM.', '🃏 1 NİSAN MODU ............... <span class="w">AKTİF</span>']
+    },
+    themeOn: 'Tema açıldı: {t} 🎨', themeOff: 'Tema kapandı.'
+  },
+
+  en: {
+    ach: {
+      welcome: ['Death wish', 'Entered despite the warning'], curious: ['Curious', 'Typed help'],
+      hacker: ['Hacker apprentice', 'Tried a hack'], sudo: ['Wannabe admin', 'Tried sudo'],
+      crash: ['Crash pilot', 'Caused a bluescreen'], boom: ['Destroyer', 'Survived the self-destruct'],
+      buyer: ['Shopaholic', 'Blew up the buy button'], coward: ['Coward', 'Denied the camera'],
+      face: ['Face reveal', 'Completed the face scan'], snake: ['Snake charmer', '5 points in snake'],
+      snakePro: ['Dragon tamer', '15 points in snake'], konami: ['Retro gamer', 'Entered the Konami code'],
+      shaker: ['Shaker', 'Shook the phone'], thief: ['Thief', 'Tried to copy something'],
+      traitor: ['Traitor', 'Left the tab and came back'], potty: ['Potty mouth', 'Swore'],
+      lonely: ['Lonely', 'Confessed your love to the AI'], explorer: ['Explorer', 'Found the hidden file'],
+      caller: ['Picked up', 'Answered the call'], ghost: ['Ghoster', 'Declined the call three times'],
+      gambler: ['Gambler', 'Spun the wheel'], dreamer: ['Dreamer', 'Started the domain transfer'],
+      friend: ['Snitch', 'Shared the site with someone'], polyglot: ['Globetrotter', 'Tried all 3 languages'],
+      nightowl: ['Night owl', 'Here between midnight and 5 am'], master: ['Puzzle master', 'Solved the secret puzzle']
+    },
+    achToast: '🏆 ACHIEVEMENT UNLOCKED', achHead: '🏆 ACHIEVEMENTS: {n} / {t}', achLocked: '??? (still secret)',
+    achAll: '<span class="y">ALL ACHIEVEMENTS!</span> You officially have too much time. 👑',
+    helpExtra: '<span class="y">NEW</span>         <span class="c">puzzle</span> · <span class="c">achievements</span> · <span class="c">call</span> · <span class="c">wheel</span> · <span class="c">transfer</span> · <span class="c">share</span>',
+    hints: ['THERE IS A <b>puzzle</b> …', 'COLLECT ALL <b>achievements</b>', 'TRY: <b>wheel</b>', 'TRY: <b>transfer</b>'],
+    menu: { wheel: '🎰 Wheel of fortune', call: '📞 Call', puzzle: '🧩 Puzzle', ach: '🏆 Achievements', share: '📤 Share' },
+    puzzle: ['🧩 <span class="y">THE MESCAK.DE PUZZLE</span>', 'Three fragments are hidden on this page.',
+             'Find them, put them together and type: <span class="c">unlock WORD</span>', 'Found: {f}', 'Stuck? Type <span class="c">hint</span>.'],
+    hint: ['Some files are hidden. How do you see hidden files? 🤔', 'Old-school gamers know the code. Phone people just shake.', 'Eat enough € – at least 5.'],
+    hintDone: 'You have all fragments. Now just put them together …',
+    frag: '🧩 <span class="y">FRAGMENT FOUND: {x}</span> ({n}/3) – type <span class="c">puzzle</span>',
+    unlockUsage: 'Like this: <span class="c">unlock WORD</span>',
+    wrong: '<span class="r">WRONG.</span> The puzzle is laughing at you. 🧩',
+    fin: { title: 'CONGRATULATIONS!', l1: 'You solved the mescak.de puzzle.', l2: 'Your prize is …', prize: 'NOTHING. 😂',
+           l3: 'But here is your official certificate:', cert: 'CERTIFICATE',
+           text: 'is hereby officially the biggest loser of mescak.de – with honours.',
+           sign: 'issued on {d} by the AI · Stamp: TAKEN', share: 'SHARE CERTIFICATE', close: 'CLOSE',
+           voice: 'Congratulations. You solved the puzzle. Your prize is: nothing.', anon: 'Unknown loser',
+           shareText: 'I solved the mescak.de puzzle and I am now officially the biggest loser. 🏆' },
+    call: { name: 'MESCAK', sub: 'mobile · Domain Department', ring: 'calling …', accept: 'Accept', decline: 'Decline',
+            again: ['PICK UP!!', 'I KNOW YOU’RE THERE'], speaker: 'Speaker', mute: 'Mute', keys: 'Keypad',
+            script: ['Hello? Yes, this is the AI of mescak.de.', 'I just wanted to tell you: the domain is taken.',
+                     'And you? You are not. Single and clueless.', 'Don’t call back. Bye.'],
+            ended: 'Call ended', missed: '<span class="r">[📞]</span> 3 missed calls from MESCAK. He doesn’t give up.',
+            log: '<span class="c">[📞]</span> Call from MESCAK: {t}. He hung up. Of course.' },
+    wheel: { title: '🎰 WHEEL OF FORTUNE: WIN THE DOMAIN', labels: ['NOTHING', 'NOTHING AGAIN', 'DOMAIN!', 'ALMOST', 'NO', '404', 'BAD LUCK', 'LOL'],
+             spin: 'SPIN', again: 'AGAIN', close: 'CLOSE', res: 'RESULT: {r}', cheat: 'DOMAIN! … nah. 😈',
+             log: '<span class="y">[🎰]</span> Wheel of fortune: {r}. As always.' },
+    transfer: { lines: ['Starting domain transfer to {n} …', 'Checking identity … <span class="w">OK</span>', 'Transferring DNS records …'],
+                you: 'you', bar: 'Transfer', stuck: 'Stuck at 99 % … any second now …', end: '<span class="r">ABORTED.</span> Was never planned. 😂',
+                voice: 'Transfer aborted. It was never planned.' },
+    share: { btn: '📤 SEND IT TO A FRIEND', title: '📤 SEND TO A FRIEND', label: 'Your friend’s name (optional):',
+             go: 'SHARE', cancel: 'CANCEL', text: 'Check this out 😂', copied: '<span class="ok">Link copied:</span> <span class="c">{u}</span>',
+             done: '<span class="y">[SYS]</span> Shared. Your friend will hate you. 😈' },
+    season: {
+      halloween: ['TRICK OR TREAT? NEITHER.', '🎃 HALLOWEEN MODE ............. <span class="w">ACTIVE</span>'],
+      xmas: ['HO HO GO AWAY.', '🎄 CHRISTMAS MODE ............. <span class="w">ACTIVE</span>'],
+      ny: ['NEW YEAR, SAME NO.', '🎆 NEW YEAR MODE .............. <span class="w">ACTIVE</span>'],
+      april: ['APRIL FOOLS … NO, I MEAN IT.', '🃏 APRIL FOOLS MODE ........... <span class="w">ACTIVE</span>']
+    },
+    themeOn: 'Theme on: {t} 🎨', themeOff: 'Theme off.'
+  }
+};
+let XT = X[lang];
+
+/* ---------- Erfolge ---------- */
+let achSet = new Set((store.get('ach') || '').split(',').filter(Boolean));
+function unlock(id) {
+  if (achSet.has(id) || !ACH.includes(id)) return;
+  achSet.add(id); store.set('ach', [...achSet].join(','));
+  const [nm, ds] = XT.ach[id];
+  const t = document.createElement('div'); t.className = 'toast';
+  t.innerHTML = '<div class="ti">' + ACH_ICON[id] + '</div><div><div class="tt">' + XT.achToast + ' · ' + achSet.size + '/' + ACH.length +
+    '</div><div class="tn">' + esc(nm) + '</div><div class="td">' + esc(ds) + '</div></div>';
+  $('#toasts').appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+  setTimeout(() => { tone(784, .08, 'square', .035); setTimeout(() => tone(1175, .14, 'square', .035), 90); }, 50);
+  if (achSet.size === ACH.length) setTimeout(() => addLine('warn', XT.achAll), 600);
+}
+function listAch() {
+  addLine('warn', fill(XT.achHead, { n: achSet.size, t: ACH.length }));
+  ACH.forEach(id => {
+    const ok = achSet.has(id), [nm, ds] = XT.ach[id];
+    addLine(ok ? 'ok' : 'dim', ok ? ACH_ICON[id] + ' <span class="w">' + esc(nm) + '</span> – ' + esc(ds) : '🔒 ' + XT.achLocked);
+  });
+}
+
+/* ---------- Rätsel ---------- */
+const FRAGS = ['FI', 'NG', 'ER'];        // Lösung: FINGER
+let frags = new Set((store.get('frags') || '').split(',').filter(f => FRAGS.includes(f)));
+function foundFrag(f) {
+  if (frags.has(f)) return;
+  frags.add(f); store.set('frags', [...frags].join(','));
+  addLine('warn', fill(XT.frag, { x: f, n: frags.size }));
+  sfx.ok(); buzz([30, 30, 30]);
+}
+const fragView = () => FRAGS.map(f => frags.has(f) ? '<span class="y">' + f + '</span>' : '<span class="dim">??</span>').join(' ');
+function showPuzzle() {
+  XT.puzzle.forEach((l, i) => addLine(i === 0 ? 'warn' : 'ok', fill(l, { f: fragView() })));
+}
+function showHint() {
+  const i = FRAGS.findIndex(f => !frags.has(f));
+  addLine('cyan', '💡 ' + (i < 0 ? XT.hintDone : XT.hint[i]));
+}
+function tryUnlock(word) {
+  if (!word) { addLine('dim', XT.unlockUsage); return; }
+  const w = word.toUpperCase().replace(/[^A-ZİI]/g, '').replace(/İ/g, 'I');
+  if (w !== 'FINGER') { sfx.err(); glitch(300); addLine('err', XT.wrong); return; }
+  finale();
+}
+async function finale() {
+  if (busy) { addLine('warn', T.cmd.busy); return; }
+  busy = 'finale'; unlock('master');
+  const F = XT.fin, el = document.createElement('div');
+  el.id = 'finale'; el.className = 'ovl';
+  const who = NAME ? up(NAME) : F.anon;
+  const date = new Date().toLocaleDateString(locale(), { day: '2-digit', month: 'long', year: 'numeric' });
+  el.innerHTML = '<div class="trophy">🏆</div><div class="big">' + F.title + '</div><p>' + F.l1 + '</p><p>' + F.l2 + '</p><div class="prize"></div>' +
+    '<div class="rest" hidden><p>' + F.l3 + '</p><div class="cert"><div class="ct">' + F.cert + '</div><div class="cn">' + esc(who) + '</div>' +
+    '<div class="cx">' + F.text + '</div><div class="cs">' + fill(F.sign, { d: date }) + '</div></div>' +
+    '<div class="btnrow" style="margin-top:1rem"><button type="button" class="b sh">' + F.share + '</button><button type="button" class="b alt cl">' + F.close + '</button></div></div>';
+  document.body.appendChild(el);
+  confetti(140); sfx.ok();
+  // Trommelwirbel
+  for (let i = 0; i < 24; i++) setTimeout(() => tone(90 + Math.random() * 40, .05, 'triangle', .08), i * 70);
+  await sleep(2000);
+  el.querySelector('.prize').textContent = F.prize;
+  sfx.boom(); glitch(400); speak(F.voice);
+  await sleep(1400);
+  el.querySelector('.rest').hidden = false;
+  el.querySelector('.cl').addEventListener('click', () => { el.remove(); busy = null; showPrompt(); });
+  el.querySelector('.sh').addEventListener('click', () => shareThing({ text: F.shareText + ' – ' + who, url: 'https://mescak.de/?lang=' + lang }));
+}
+function confetti(n) {
+  if (reduce) return;
+  const cols = ['#ffcc00', '#ff0055', '#00ff41', '#00ffff', '#ffffff'];
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('i'); c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = cols[i % cols.length];
+    c.style.setProperty('--x', (Math.random() * 200 - 100) + 'px');
+    c.style.setProperty('--r', (Math.random() * 1440 - 720) + 'deg');
+    c.style.animationDuration = 2.2 + Math.random() * 2.5 + 's';
+    c.style.animationDelay = Math.random() * 1.2 + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 6000);
+  }
+}
+
+/* ---------- Fake-Anruf ---------- */
+let callDone = false, callTimer = 0;
+function ringOnce() { tone(440, .45, 'sine', .07); tone(480, .45, 'sine', .07); setTimeout(() => { tone(440, .45, 'sine', .07); tone(480, .45, 'sine', .07); }, 650); }
+function fakeCall(attempt = 0) {
+  if (busy && busy !== 'call') { if (attempt === 0) addLine('warn', T.cmd.busy); return; }
+  busy = 'call'; callDone = true; clearTimeout(callTimer); closeMenu();
+  const Cl = XT.call;
+  $('#call')?.remove();
+  const el = document.createElement('div'); el.id = 'call';
+  el.innerHTML = '<div class="av"></div><div class="nm">' + (attempt ? Cl.again[attempt - 1] : Cl.name) + '</div><div class="sub">' + Cl.sub + '</div>' +
+    '<div class="st">' + Cl.ring + '</div><div class="subs"></div>' +
+    '<div class="row"><button type="button" class="cb no"><i><span>📞</span></i>' + Cl.decline + '</button>' +
+    '<button type="button" class="cb yes"><i>📞</i>' + Cl.accept + '</button></div>';
+  document.body.appendChild(el);
+  ringOnce(); buzz([500, 250, 500]);
+  const ringer = setInterval(() => { ringOnce(); buzz([500, 250, 500]); }, 2600);
+  const giveUp = setTimeout(() => decline(), 20000);
+  const stop = () => { clearInterval(ringer); clearTimeout(giveUp); if (navigator.vibrate) navigator.vibrate(0); };
+  function decline() {
+    stop(); el.remove();
+    if (attempt < 2) { setTimeout(() => fakeCall(attempt + 1), 2200); return; }
+    busy = null; unlock('ghost'); addLine('err', Cl.missed); showPrompt();
+  }
+  el.querySelector('.no').addEventListener('click', () => { sfx.err(); decline(); });
+  el.querySelector('.yes').addEventListener('click', async () => {
+    stop(); unlock('caller');
+    el.querySelector('.nm').textContent = Cl.name;
+    const st = el.querySelector('.st'), subs = el.querySelector('.subs');
+    el.querySelector('.row').outerHTML = '<div class="tools"><div><i>🔈</i>' + Cl.speaker + '</div><div><i>🎙️</i>' + Cl.mute + '</div><div><i>⌨️</i>' + Cl.keys +
+      '</div></div><div class="row"><button type="button" class="cb no"><i><span>📞</span></i></button></div>';
+    st.style.animation = 'none';
+    let sec = 0; const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+    st.textContent = fmt(0);
+    const clock = setInterval(() => { st.textContent = fmt(++sec); }, 1000);
+    let over = false;
+    const hang = () => {
+      if (over) return; over = true; clearInterval(clock);
+      if (canSpeak) speechSynthesis.cancel();
+      st.textContent = Cl.ended; [0, 220, 440].forEach(d => setTimeout(() => tone(480, .15, 'sine', .06), d));
+      setTimeout(() => { el.remove(); busy = null; addLine('cyan', fill(Cl.log, { t: fmt(sec) })); showPrompt(); }, 1100);
+    };
+    el.querySelector('.no').addEventListener('click', hang);
+    speak(Cl.script.join(' '));
+    for (const line of Cl.script) {
+      if (over) return;
+      subs.textContent = line;
+      await sleep(Math.max(2200, line.length * 75));
+    }
+    hang();
+  });
+}
+function scheduleCall() {
+  clearTimeout(callTimer);
+  if (callDone) return;
+  callTimer = setTimeout(function tryIt() {
+    if (callDone) return;
+    if (busy || document.hidden) { callTimer = setTimeout(tryIt, 12000); return; }
+    fakeCall();
+  }, 32000);
+}
+
+/* ---------- Glücksrad ---------- */
+function wheel() {
+  if (busy) { addLine('warn', T.cmd.busy); return; }
+  busy = 'wheel';
+  const Wt = XT.wheel, L = Wt.labels, N = L.length, seg = 360 / N;
+  const cols = ['#ff0055', '#111', '#00ff41', '#111', '#ffcc00', '#111', '#00ffff', '#111'];
+  let svg = '<svg viewBox="-100 -100 200 200">';
+  for (let i = 0; i < N; i++) {
+    const a0 = (i * seg - 90 - seg / 2) * Math.PI / 180, a1 = ((i + 1) * seg - 90 - seg / 2) * Math.PI / 180;
+    svg += '<path d="M0 0 L' + (95 * Math.cos(a0)).toFixed(2) + ' ' + (95 * Math.sin(a0)).toFixed(2) + ' A95 95 0 0 1 ' +
+      (95 * Math.cos(a1)).toFixed(2) + ' ' + (95 * Math.sin(a1)).toFixed(2) + ' Z" fill="' + cols[i] + '" stroke="#000" stroke-width="1.5"/>';
+    const fg = cols[i] === '#111' ? '#fff' : '#000';
+    svg += '<text transform="rotate(' + (i * seg) + ') translate(0 -58)" text-anchor="middle" dominant-baseline="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="' +
+      (L[i].length > 9 ? 7.5 : 10) + '" fill="' + fg + '">' + esc(L[i]) + '</text>';
+  }
+  svg += '<circle r="96" fill="none" stroke="#ffcc00" stroke-width="3"/></svg>';
+  const el = document.createElement('div'); el.id = 'wheel'; el.className = 'ovl';
+  el.innerHTML = '<h2>' + Wt.title + '</h2><div class="wheelwrap">' + svg + '<div class="hub">💰</div></div><div class="wres"></div>' +
+    '<div class="btnrow"><button type="button" class="b sp">' + Wt.spin + '</button><button type="button" class="b alt cl">' + Wt.close + '</button></div>';
+  document.body.appendChild(el);
+  const svgEl = el.querySelector('svg'), res = el.querySelector('.wres'), sp = el.querySelector('.sp');
+  let rot = 0, spins = 0;
+  const close = () => { el.remove(); if (busy === 'wheel') busy = null; showPrompt(); };
+  el.querySelector('.cl').addEventListener('click', close);
+  sp.addEventListener('click', async () => {
+    sp.disabled = true; res.textContent = ''; spins++; unlock('gambler');
+    const cheat = spins % 3 === 1;                       // jedes 3. Mal (ab dem 1.) scheinbar Gewinn
+    let target = cheat ? 2 : [0, 1, 3, 4, 5, 6, 7][Math.floor(Math.random() * 7)];
+    const base = rot - (rot % 360) + 360 * 6;
+    rot = base + (360 - target * seg) + (Math.random() * seg * .5 - seg * .25);
+    svgEl.classList.remove('nudge'); svgEl.style.transform = 'rotate(' + rot + 'deg)';
+    // Ticken, das langsamer wird
+    let t = 0, d = 40;
+    while (t < 5200) { setTimeout(() => tone(1500, .015, 'square', .02), t); t += d; d *= 1.07; }
+    await sleep(5500);
+    if (cheat) {
+      res.textContent = Wt.cheat.split('…')[0] + '…'; sfx.ok();
+      await sleep(1100);
+      target = 1; rot += seg;                         // ruckelt noch ein Feld weiter
+      svgEl.classList.add('nudge'); svgEl.style.transform = 'rotate(' + rot + 'deg)';
+      sfx.err(); glitch(300);
+      await sleep(1000);
+      res.textContent = Wt.cheat; speak(Wt.cheat);
+    } else {
+      sfx.deny(); res.textContent = fill(Wt.res, { r: L[target] }); speak(L[target]);
+    }
+    addLine('warn', fill(Wt.log, { r: L[target] }));
+    sp.textContent = Wt.again; sp.disabled = false;
+  });
+}
+
+/* ---------- Domain-Übertragung ---------- */
+async function transfer() {
+  if (busy) { addLine('warn', T.cmd.busy); return; }
+  busy = 'transfer'; promptEl.hidden = true; unlock('dreamer');
+  const Tr = XT.transfer, id = runId;
+  const who = NAME ? up(NAME) : Tr.you;
+  for (const l of Tr.lines) { await sleep(600); if (id !== runId) { busy = null; return; } addLine('warn', fill(l, { n: esc(who) })); sfx.beep(); }
+  const bar = addLine('cyan', '');
+  const draw = p => { const n = Math.round(p / 5); bar.textContent = Tr.bar + ' [' + '#'.repeat(n) + '-'.repeat(20 - n) + '] ' + p + ' %'; };
+  for (let p = 0; p <= 99; p += Math.ceil(Math.random() * 6)) {
+    if (id !== runId) { busy = null; return; }
+    draw(Math.min(p, 99)); sfx.key(); await sleep(90 + Math.random() * 160);
+  }
+  draw(99); addLine('warn', Tr.stuck);
+  for (let i = 0; i < 3; i++) { await sleep(900); sfx.beep(); }
+  if (id !== runId) { busy = null; return; }
+  glitch(700); sfx.deny(); addLine('err', Tr.end); speak(Tr.voice);
+  busy = null; showPrompt();
+}
+
+/* ---------- Teilen ---------- */
+async function shareThing({ text, url }) {
+  try {
+    if (navigator.share) { await navigator.share({ title: 'mescak.de', text, url }); addLine('warn', XT.share.done); unlock('friend'); return true; }
+  } catch (e) { if (e && e.name === 'AbortError') return false; }
+  try { await navigator.clipboard.writeText(text + ' ' + url); addLine('ok', fill(XT.share.copied, { u: esc(url) })); unlock('friend'); return true; } catch (e) {}
+  addLine('ok', '<span class="c">' + esc(url) + '</span>');
+  return false;
+}
+function shareDialog() {
+  if ($('#sharebox')) return;
+  const S = XT.share, el = document.createElement('div'); el.id = 'sharebox'; el.className = 'ovl';
+  el.innerHTML = '<form class="panel"><h2>' + S.title + '</h2><label for="fname">' + S.label + '</label>' +
+    '<input id="fname" maxlength="16" autocomplete="off" autocapitalize="words" placeholder="Ali">' +
+    '<div class="btnrow"><button type="submit" class="b">' + S.go + '</button><button type="button" class="b alt cl">' + S.cancel + '</button></div></form>';
+  document.body.appendChild(el);
+  const inp = el.querySelector('input');
+  setTimeout(() => inp.focus(), 50);
+  el.querySelector('.cl').addEventListener('click', () => el.remove());
+  el.querySelector('form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const n = inp.value.replace(/[^\p{L}\p{N} .'-]/gu, '').trim().slice(0, 16);
+    const url = 'https://mescak.de/?' + (n ? 'name=' + encodeURIComponent(n) + '&' : '') + 'lang=' + lang;
+    el.remove();
+    await shareThing({ text: S.text, url });
+  });
+}
+$('#shareBtn').addEventListener('click', shareDialog);
+
+/* ---------- Feiertage ---------- */
+const SEASONS = ['halloween', 'xmas', 'ny', 'april'];
+function seasonFor(d) {
+  const m = d.getMonth() + 1, day = d.getDate();
+  if ((m === 10 && day >= 15) || (m === 11 && day <= 1)) return 'halloween';
+  if (m === 12 && day <= 26) return 'xmas';
+  if ((m === 12 && day === 31) || (m === 1 && day === 1)) return 'ny';
+  if (m === 4 && day === 1) return 'april';
+  return '';
+}
+let SEASON = SEASONS.includes(params.get('theme')) ? params.get('theme') : seasonFor(new Date());
+const FLOAT = { halloween: ['🎃', '🦇', '👻', '🕷️', '🦇'], xmas: ['❄️', '🎄', '⛄', '🎁', '❄️'], ny: ['🎆', '🥂', '✨', '🎇'], april: ['🃏', '🤡', '🎭'] };
+let floatTimer = 0, fwTimer = 0;
+function applySeason() {
+  SEASONS.forEach(s => document.body.classList.remove('th-' + s));
+  clearInterval(floatTimer); clearInterval(fwTimer);
+  if (!SEASON) return;
+  document.body.classList.add('th-' + SEASON);
+  if (reduce) return;
+  floatTimer = setInterval(() => {
+    if (document.hidden) return;
+    const f = document.createElement('span'); f.className = 'floater';
+    f.textContent = pick(FLOAT[SEASON]);
+    const ltr = Math.random() < .5, y = 10 + Math.random() * 70;
+    f.style.top = y + 'vh'; f.style.left = '0';
+    f.style.setProperty('--sx', ltr ? '-60px' : '105vw');
+    f.style.setProperty('--ex', ltr ? '105vw' : '-60px');
+    f.style.setProperty('--ey', (Math.random() * 30 - 15) + 'vh');
+    f.style.setProperty('--r', (Math.random() * 60 - 30) + 'deg');
+    f.style.fontSize = 22 + Math.random() * 20 + 'px';
+    f.style.animationDuration = 9 + Math.random() * 7 + 's';
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), 17000);
+  }, 3200);
+  if (SEASON === 'ny') fwTimer = setInterval(() => { if (!document.hidden && !busy) spawnShards(Math.random() * innerWidth, innerHeight * (.15 + Math.random() * .4), 30, 160); }, 2600);
+}
+function rainColor(r, matrix) {
+  if (SEASON === 'halloween') return r < .05 ? '#ffffff' : r < .25 ? '#c77dff' : '#ff7a00';
+  if (SEASON === 'xmas') return r < .06 ? '#ff2a2a' : r < .16 ? '#00ff41' : '#e8f6ff';
+  if (SEASON === 'ny') return r < .03 ? '#ff0055' : r < .18 ? '#ffd700' : '#00ff41';
+  return r < .03 ? '#ff0055' : r < .1 ? '#d6ffe0' : (matrix && r < .2 ? '#00ffff' : '#00ff41');
+}
+const insultList = () => SEASON ? [XT.season[SEASON][0], ...T.insults] : T.insults;
+applySeason();
 
 /* =====================================================================
    START · BOOT · NEUSTART
@@ -1873,6 +2503,8 @@ function finishBoot() {
   playVideo();
   runIntro();
   scheduleSelfDestruct();
+  scheduleCall();
+  if (SEASON === 'april' && !reduce) { const m = $('main'); setTimeout(() => m.classList.add('flip'), 1500); setTimeout(() => m.classList.remove('flip'), 4500); }
 }
 async function runBoot() {
   const id = ++bootRun;
@@ -1885,6 +2517,7 @@ async function runBoot() {
   boot.classList.remove('gone'); boot.hidden = false;
   const lines = T.boot.slice();
   if (NAME) lines.splice(lines.length - 2, 0, fill(T.bootName, { n: esc(up(NAME)) }));
+  if (SEASON) lines.splice(1, 0, XT.season[SEASON][1]);
   for (let i = 0; i < lines.length; i++) {
     if (id !== bootRun) return;
     const line = document.createElement('div');
@@ -1905,7 +2538,8 @@ function closeAll() {
   if (game) game.end(true);
   if (busy === 'cam') closeCam();
   const cd = $('#cd'); if (cd) cd.remove();
-  if (busy === 'cd') busy = null;
+  ['#call', '#wheel', '#finale', '#sharebox'].forEach(q => $(q)?.remove());
+  if (['cd', 'call', 'wheel', 'finale', 'transfer'].includes(busy)) busy = null;
   closeMenu();
 }
 // alles von vorne (Sprachwechsel, Neustart, nach Absturz/Zerstörung)
@@ -1927,6 +2561,8 @@ function start() {
   }
   enableMotion();
   playVideo();
+  unlock('welcome');
+  if (new Date().getHours() < 5) setTimeout(() => unlock('nightowl'), 4500);
   gate.classList.add('gone');
   setTimeout(() => gate.remove(), 450);
   runBoot();
